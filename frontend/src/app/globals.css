@@ -19,10 +19,10 @@
   }
 }
 
-body {
+/* body {
   background: var(--background);
   color: var(--foreground);
-}
+} */
 
 
 /* FONT CONFIGURATION, going with global definitions for now */

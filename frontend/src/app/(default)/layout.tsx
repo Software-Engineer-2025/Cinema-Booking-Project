@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${allFontVariables} ${fonts.body.className} antialiased`}
+        className={`${allFontVariables} ${fonts.body.className} antialiased bg-red-900`}
       >
         <header>
           <Navbar />
