@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from .schemas import Movie, MovieCreate
 from . import crud
 
-router = APIRouter(prefix="/movies", tags=["movies"])
+router = APIRouter(prefix="/movies", tags=["Movies"])
 
 @router.post("/", response_model=Movie)
 def create_movie(movie: MovieCreate):
