@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "../ui/Button";
 import NavbarSearch from "../ui/NavbarSearch";
 import ProfileDropdown from "./ProfileDropdown";
+import Link from "next/link";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,14 +14,14 @@ export default function Navbar() {
         <nav className="w-full p-4 px-8 text-white flex justify-between items-center font-[var(--font-annapurna)] bg-black relative">
         {/* LEFT: Logo + Nav */}
         <div className="flex items-center gap-6">
-            <div className="flex items-center">
+        <Link href="/" className="flex items-center">
             <img
-                src="/logo-cinema.png"
-                alt="Logo"
-                className="w-12 h-12 inline-block mr-2"
+            src="/logo-cinema.png"
+            alt="Logo"
+            className="w-12 h-12 inline-block mr-2"
             />
             <span className="text-4xl uppercase font-special">Cinema</span>
-            </div>
+        </Link>
 
             {/* Desktop Nav Buttons */}
             <div className="hidden md:flex space-x-4">
@@ -39,7 +40,7 @@ export default function Navbar() {
 
             {/* Mobile Hamburger */}
             <button
-            className="md:hidden"
+            className="md:hidden cursor-pointer"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             >
             <svg
@@ -62,30 +63,29 @@ export default function Navbar() {
         </nav>
 
 
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-black text-white px-6 py-4 space-y-4 font-special uppercase tracking-wider shadow-lg">
-          <Button children="movies" />
-          <Button children="book a ticket" />
-          <NavbarSearch />
-
-          {/* Profile dropdown */}
-          <div className="border-t border-dotted border-gray-600 pt-2 space-y-2">
-            <a href="/dashboard" className="block hover:text-gray-400">
-              Dashboard
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+        <div className="md:hidden bg-black text-white px-6 py-4 space-y-2 font-special uppercase tracking-wider shadow-lg">
+            <a href="/movies" className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2">
+            Movies
             </a>
-            <a href="/settings" className="block hover:text-gray-400">
-              Settings
+            <a href="/book" className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2">
+            Book a Ticket
             </a>
-            <button className="w-full text-left hover:text-gray-400">
-              Log Out
+            <a href="/dashboard" className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2">
+            Dashboard
+            </a>
+            <a href="/settings" className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2">
+            Settings
+            </a>
+            <button className="w-full text-left hover:text-gray-400 cursor-pointer">
+            LOG OUT
             </button>
-          </div>
         </div>
-      )}
+        )}
 
-      {/* BLACK GRADIENT EFFECT */}
+
+        {/* BLACK GRADIENT EFFECT */}
       <div className="left-0 w-full h-8 bg-gradient-to-b from-black to-transparent pointer-events-none"></div>
     </div>
   );
