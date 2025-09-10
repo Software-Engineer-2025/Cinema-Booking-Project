@@ -23,15 +23,15 @@ export default function ProfileDropdown() {
       {/* Profile Button */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={`rounded-full focus:outline-none transition-all cursor-pointer ${
+        className={`rounded-full focus:outline-none transition-all ${
           open ? "drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]" : ""
+
         }`}
         aria-haspopup="true"
         aria-expanded={open}
       >
         <ProfileIcon size={40} />
       </button>
-
 
       {/* Dropdown Menu */}
       {open && (
@@ -44,18 +44,18 @@ export default function ProfileDropdown() {
         >
           <a
             href="/dashboard"
-            className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+            className="block px-4 py-2 hover:bg-gray-800 border-b border-dotted border-white"
           >
             Dashboard
           </a>
           <a
             href="/settings"
-            className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+            className="block px-4 py-2 hover:bg-gray-800 border-b border-dotted border-white"
           >
             Settings
           </a>
           <button
-            className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400"
+            className="w-full text-left px-4 py-2 hover:bg-gray-800"
           >
             LOG OUT
           </button>
