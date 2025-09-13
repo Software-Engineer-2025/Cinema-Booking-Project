@@ -26,7 +26,7 @@ export default function Navbar() {
             {/* Desktop Nav Buttons */}
             <div className="hidden md:flex space-x-4">
             <Button children="movies" />
-            <Button children="book a ticket" />
+            <Button children="book" />
             </div>
         </div>
 
