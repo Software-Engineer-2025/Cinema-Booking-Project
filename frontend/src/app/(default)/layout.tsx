@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { allFontVariables, fonts } from "@/lib/utils/fonts";
-import "../globals.css";
 
+import "../globals.css";
 import Navbar from "@/components/default/Navbar";
-import Providers from "@/Providers";
+
 
 export const metadata: Metadata = {
   title: "Cinema",
@@ -17,17 +17,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Providers>
-        <body
-          className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-800`}
-        >
-          <header className="sticky top-0 z-50">
-            <Navbar />
-          </header>
-          <main>{children}</main>
-          <footer></footer>
-        </body>
-      </Providers>
+      <body
+        className={`${allFontVariables} ${fonts.body.className} antialiased bg-red-900`}
+      >
+        <header>
+          <Navbar />
+        </header>
+        <main>
+            {children}
+        </main>
+        <footer>
+
+        </footer>
+      </body>
     </html>
   );
 }
