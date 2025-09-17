@@ -3,5 +3,5 @@ CREATE TABLE TheaterSection (
     screen_number INT NOT NULL,
     date DATE NOT NULL,
     time TIME NOT NULL,
-    movie_id BIGINT REFERENCES Movie(movie_id)
+    movie_id BIGINT REFERENCES Movie(movie_id) 
 );

@@ -15,4 +15,3 @@ CREATE TABLE Movie (
     show_times TIMESTAMP[],
     released BOOLEAN DEFAULT FALSE
 );
-
