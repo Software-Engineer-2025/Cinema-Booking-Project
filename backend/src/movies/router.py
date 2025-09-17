@@ -4,6 +4,11 @@ from . import crud
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
+@router.get("/genres", response_model=list[str])
+def get_genres():
+    genres = crud.get_genres()
+    return genres
+
 @router.post("/", response_model=Movie)
 def create_movie(movie: MovieCreate):
     result = crud.create_movie(movie)
