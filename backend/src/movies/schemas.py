@@ -4,18 +4,18 @@ from datetime import date, datetime
 
 class MovieBase(BaseModel):
     title: str
-    release_date: Optional[date] = None
-    genre: Optional[str] = None
-    director: Optional[str] = None
-    cast_list: Optional[List[str]] = []
-    rating: Optional[float] = None
-    producer: Optional[str] = None
-    synopsis: Optional[str] = None
-    reviews: Optional[List[str]] = []
-    trailer_img: Optional[str] = None
-    trailer_video: Optional[str] = None
-    MPAA_rating: Optional[str] = None
-    show_times: Optional[List[datetime]] = []
+    release_date: date = None
+    genre: str = None
+    director: str = None
+    cast_list: List[str] = []
+    rating: float = None
+    producer: str = None
+    synopsis: str = None
+    reviews: List[str] = []
+    trailer_img: str = None
+    trailer_video: str = None
+    MPAA_rating: str = None
+    show_times: List[datetime] = []
     released: bool = False
 
 class MovieCreate(MovieBase):

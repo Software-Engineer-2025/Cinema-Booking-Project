@@ -142,9 +142,13 @@ function FilterMenu({
 }) {
   return (
     <div
-      className={`absolute top-full left-0 mt-2 w-65 sm:w-70 bg-black/90 shadow-lg transition-transform duration-300 origin-top ${
-        isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 "
-      }`}
+      className={`absolute top-full left-0 mt-2 w-65 sm:w-70 bg-black/90 shadow-lg transition-all duration-300 origin-top
+        ${
+          isOpen
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
+        }
+      `}
     >
       <div className="p-4 space-y-4">
         <h3 className="font-semibold text-lg">Filters</h3>
@@ -202,7 +206,7 @@ function SearchBar({
 }
 
 function MovieCard({ movie }: { movie: Movie }) {
-  const starCount = Math.round(movie.rating / 2);
+  const starCount = Math.round((movie.rating ?? 0) / 2);
   return (
     <div className="bg-black/70  shadow-lg overflow-hidden hover:scale-105 transition-transform">
       <div className="w-full aspect-[2/3] overflow-hidden ">

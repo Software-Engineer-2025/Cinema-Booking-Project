@@ -21,51 +21,51 @@ export type Movie = {
     /**
      * Release Date
      */
-    release_date?: string | null;
+    release_date?: string;
     /**
      * Genre
      */
-    genre?: string | null;
+    genre?: string;
     /**
      * Director
      */
-    director?: string | null;
+    director?: string;
     /**
      * Cast List
      */
-    cast_list?: Array<string> | null;
+    cast_list?: Array<string>;
     /**
      * Rating
      */
-    rating?: number | null;
+    rating?: number;
     /**
      * Producer
      */
-    producer?: string | null;
+    producer?: string;
     /**
      * Synopsis
      */
-    synopsis?: string | null;
+    synopsis?: string;
     /**
      * Reviews
      */
-    reviews?: Array<string> | null;
+    reviews?: Array<string>;
     /**
      * Trailer Img
      */
-    trailer_img?: string | null;
+    trailer_img?: string;
     /**
      * Trailer Video
      */
-    trailer_video?: string | null;
+    trailer_video?: string;
     /**
      * Mpaa Rating
      */
-    MPAA_rating?: string | null;
+    MPAA_rating?: string;
     /**
      * Show Times
      */
-    show_times?: Array<string> | null;
+    show_times?: Array<string>;
     /**
      * Released
      */
@@ -87,51 +87,51 @@ export type MovieCreate = {
     /**
      * Release Date
      */
-    release_date?: string | null;
+    release_date?: string;
     /**
      * Genre
      */
-    genre?: string | null;
+    genre?: string;
     /**
      * Director
      */
-    director?: string | null;
+    director?: string;
     /**
      * Cast List
      */
-    cast_list?: Array<string> | null;
+    cast_list?: Array<string>;
     /**
      * Rating
      */
-    rating?: number | null;
+    rating?: number;
     /**
      * Producer
      */
-    producer?: string | null;
+    producer?: string;
     /**
      * Synopsis
      */
-    synopsis?: string | null;
+    synopsis?: string;
     /**
      * Reviews
      */
-    reviews?: Array<string> | null;
+    reviews?: Array<string>;
     /**
      * Trailer Img
      */
-    trailer_img?: string | null;
+    trailer_img?: string;
     /**
      * Trailer Video
      */
-    trailer_video?: string | null;
+    trailer_video?: string;
     /**
      * Mpaa Rating
      */
-    MPAA_rating?: string | null;
+    MPAA_rating?: string;
     /**
      * Show Times
      */
-    show_times?: Array<string> | null;
+    show_times?: Array<string>;
     /**
      * Released
      */
