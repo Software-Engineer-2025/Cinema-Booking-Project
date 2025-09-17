@@ -6,6 +6,7 @@ from users import router as users_router
 from tickets import router as tickets_router
 from theaters import router as theaters_router
 from db.supabase import supabase
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -17,7 +18,13 @@ app.include_router(tickets_router.router, prefix="/api/v1", tags=["Tickets"])
 app.include_router(users_router.router, prefix="/api/v1", tags=["Users"])
 app.include_router(theaters_router.router, prefix="/api/v1", tags=["Theaters"])
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def ping():
