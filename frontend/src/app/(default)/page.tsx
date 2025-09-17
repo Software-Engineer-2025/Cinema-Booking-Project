@@ -1,29 +1,20 @@
 import Carousel from "@/components/default/Carousel";
+import Slideshow from "@/components/default/Slideshow";
+import {fullWidthClassName} from "react-remove-scroll-bar";
 
 export default function Home() {
 
   return (
-      <>
-        <section>
-            {
-                /*
-                   Make a component that has a movie poster, name, and cover. When the user clicks right/left it moves
-                   through an array of 4 or less "Featured"
-
-                   Slideshow
-                   SlideshowCard
-                 */
-            }
-
-        </section>
-        <section>
+      <main className={"w-full flex flex-col justify-center items-center"}>
+          <Slideshow></Slideshow>
+          <section className={"w-[90dvw]"}>
             <h2>Playing Now</h2>
             <Carousel carouselType={"playing-now"}/>
-        </section>
-        <section>
-            <h2>Coming Soon</h2>
-            <Carousel carouselType={"coming-soon"}/>
-        </section>
-      </>
+          </section>
+          <section className={"w-[90dvw]"}>
+              <h2>Coming Soon</h2>
+              <Carousel carouselType={"coming-soon"}/>
+          </section>
+      </main>
   );
 }

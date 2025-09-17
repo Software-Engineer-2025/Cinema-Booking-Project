@@ -1,43 +1,65 @@
-import {useEffect, useState} from "react";
-import MovieCard from "@/components/default/MovieCard";
+"use client"
 
-// make enum for which type of Carousel it is for the filter to grab from the db?
+import '@radix-ui/themes/styles.css';
+import {useState} from "react";
+import {Skeleton} from "@radix-ui/themes";
+import Image from "next/image";
+import Stars from "@/components/ui/Stars";
 
 export interface MovieData {
-    id: String,
-    name: String,
-    poster: String,
+    movieId: string,
+    name: string,
+    poster: string,
     stars: number
 }
 
-export default function Carousel(carouselType: String) {
+export default function Carousel({ carouselType }: { carouselType: string }) {
 
     // clear the movies when the new data is brought in
-    // replace the data of the cards already created when the data loads and create new cards as needed
-    const CAROUSEL_NAME = `scrollable-carousel ${carouselType}`
-    const [movies, setMovies] = useState<MovieData[]>(Array(6).fill(null));
-    const [movieCards, setMovieCards] = useState<MovieCard[]>(
-        movies.map(movie => (
-            <MovieCard id={movie.id} name={movie.name} poster={movie.poster} stars={movie.stars}/>
-        )));
+    const CAROUSEL_NAME = `scrollable-carousel-${carouselType}`
+    const [movies, setMovies] = useState<MovieData[] | null>(Array(8).fill(null));
 
-    useEffect(() => {
-        for(let i = movieCards.length; i < movies.length; i++) {
-            setMovieCards((prevCards) => [...prevCards,
-                <MovieCard id={movies[i].id} name={movies[i].name} poster={movies[i].poster} stars={movies[i].stars}/>]);
-        }
-    }, [movies]);
-
-    const scrollingLeft = () => {document.getElementById(CAROUSEL_NAME).scrollLeft += 100}
-    const scrollingRight = () => {document.getElementById(CAROUSEL_NAME).scrollLeft -= 100}
+    const scrolling = (direction) => {document.getElementById(CAROUSEL_NAME).scrollLeft += (100 * direction)}
 
     return(
-        <div className={"w-4/5"}>
-            <button className={""} onClick={scrollingLeft}></button>
-            <div id={CAROUSEL_NAME} className={"w-full overflow-x-scroll no-scrollbar"}>
-                {movieCards}
+        <div className={"w-full relative flex flex-row content-center justify-center"}>
+            <button className={"absolute"} onClick={() => scrolling(-1)}></button>
+            <div id={CAROUSEL_NAME} className={"w-[80dvw] flex flex-row justify-evenly w-full overflow-x-scroll no-scrollbar gap-10"}>
+                {movies.map((movie, index) => (
+                    <MovieCard key={index} movieData={movie}/>
+                ))}
             </div>
-            <button className={""} onClick={scrollingRight}></button>
+            <button className={"absolute"} onClick={() => scrolling(1)}></button>
+        </div>
+    );
+}
+
+
+function MovieCard({movieData}: {movieData: MovieData}) {
+    const isLoading = !movieData;
+    const handleClick = () => {/* add routing to movie's page*/}
+
+    return(
+        <div onClick={handleClick} className={"flex flex-col justify-center items-center gap-1"}>
+                {movieData?.poster ? (
+                    <Image
+                        src={movieData?.poster}
+                        alt={movieData?.name}
+                        width={150}
+                        height={225}
+                        className={"hover:opacity-30"}
+                    />
+                ) : (
+                    <Skeleton loading={isLoading}>
+                        <div className="w-[150px] h-[225px]">&nbsp;</div>
+                    </Skeleton>
+                )}
+            <Skeleton loading={isLoading}>
+                <h4>{movieData?.name ?? "Loading..."}</h4>
+            </Skeleton>
+            <Skeleton loading={isLoading}>
+                <Stars numStars={movieData?.stars ? Math.floor(Number(movieData?.stars)) : 0}/>
+            </Skeleton>
         </div>
     );
 }
