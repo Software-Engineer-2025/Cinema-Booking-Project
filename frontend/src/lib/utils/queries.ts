@@ -15,3 +15,4 @@ export const allGenresQuery = () => ({
         return response.data;
     },
 })
+
