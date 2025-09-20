@@ -11,6 +11,11 @@ export default function Home() {
 
     const { data: allMovies= []} = useQuery(allMoviesQuery());
 
+    const featuredMovies = useMemo(
+        () => allMovies?.slice(0,4) || null
+        , [allMovies]
+    );
+
     const releasedMovies = useMemo(
         () => allMovies?.filter(movie => movie.released === true) || [],
         [allMovies]
@@ -25,7 +30,7 @@ export default function Home() {
 
     return (
         <main className={"w-full flex flex-col justify-center items-center gap-4 mb-[10dvh] text-stone-300"}>
-            <Slideshow></Slideshow>
+            <Slideshow movies={featuredMovies}></Slideshow>
             <section className={"w-[90dvw] flex flex-col gap-4"}>
                 <h2>Playing Now</h2>
                 <Carousel carouselType={"playing-now"} movies={releasedMovies}/>

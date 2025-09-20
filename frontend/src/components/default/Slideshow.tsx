@@ -1,25 +1,22 @@
 "use client"
 
 import '@radix-ui/themes/styles.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Skeleton} from "@radix-ui/themes";
-import Image from "next/image";
-import Stars from "@/components/ui/Stars";
 import { Movie } from "@/client";
+import MovieCard from "@/components/ui/MovieCard";
 
-export interface MovieData {
-    movieId: string | null,
-    name: string | null,
-    poster: string | null,
-    cover: string | null,
-    stars: string | null
-}
+export default function Slideshow({movies: moviesProp}: {movies: Movie[] | null}) {
 
-export default function Slideshow() {
-
-    const [movies, setMovies] = useState<MovieData[] | null>([null]);
+    const [movies, setMovies] = useState<Movie[] | null>([null]);
 
     const [shownCard, setShownCard] = useState<number>(0);
+
+    useEffect(() => {
+        if(moviesProp) {
+            setMovies(moviesProp);
+        }
+    }, [moviesProp]);
 
     const scroll = (direction) => {
         setShownCard(prevCard => {
@@ -49,38 +46,26 @@ export default function Slideshow() {
 }
 
 
-function SlideshowCard({movieData}: { movieData: MovieData }) {
+function SlideshowCard({movieData}: { movieData: Movie }) {
     const isLoading = !movieData;
 
     return(
-        <div className={"relative w-full overflow-hidden h-[90dvh] md:h-[80dvh] lg:h-[70dvh]"}>
+        <div className={"relative w-full overflow-hidden h-[55dvh] md:h-[70dvh] lg:h-[70dvh]"}>
                 {!isLoading ? (
-                    <Image
-                        src={movieData?.cover}
-                        alt={movieData?.name}
-                        fill
-                        className="object-cover"
+                    // need to replace trailer_img with trailer_cover when possible
+                    <img
+                        src={movieData?.trailer_img}
+                        alt={movieData?.title}
+                        className={"object-cover w-full"}
                     />
                 ) : (
                     <Skeleton loading={isLoading}>
                         <div className="w-full h-full">&nbsp;</div>
                     </Skeleton>
                 )}
-            <div className={"w-[80dvw] absolute flex flex-col justify-between items-end md:flex-row top-57 left-20"}>
-                <div className={"flex flex-col gap-1"}>
-                        {isLoading ? (
-                            <img
-                                src={movieData?.poster}
-                                alt={movieData?.name}
-                                className={"aspect-2/3"}
-                            />
-                        ) : (
-                            <Skeleton loading={isLoading}>
-                                <div className="w-[180px] h-[270px]">&nbsp;</div>
-                            </Skeleton>
-                        )}
-                    <h2>{movieData?.name || "Loading..."}</h2>
-                   <Stars numStars={isLoading ? Math.floor(Number(movieData?.stars)) : 0}/>
+            <div className={"w-[80dvw] absolute flex flex-col gap-10 top-1/2 left-1/2 -translate-1/2 md:gap-0 md:flex-row md:justify-between md:items-end md:top-57 md:left-20 md:-translate-0"}>
+                <div className={"m-auto md:m-0"}>
+                    <MovieCard movieData={movieData}/>
                 </div>
                 <div className={"flex flex-row gap-10"}>
                         <Button>Details</Button>
@@ -93,7 +78,6 @@ function SlideshowCard({movieData}: { movieData: MovieData }) {
 
 function Button({ children }) {
     return (
-        <button className={"w-[12dvw] py-2 outline-solid text-xl rounded-xs bg-stone-800 text-stone-400 outline-1 hover:bg-stone-700"}>{children}</button>
+        <button className={"w-[35dvw] py-2 outline-solid text-xl rounded-xs bg-stone-800 text-stone-400 outline-1 hover:bg-stone-700 md:w-[20dvw] py-2 lg:w-[15dvw]"}>{children}</button>
     );
 }
-
