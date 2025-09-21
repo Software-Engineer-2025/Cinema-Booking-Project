@@ -20,9 +20,7 @@ export default function Navbar() {
   return (
     <div>
       <nav
-        className={`w-full p-2 px-8 text-white flex justify-between items-center font-[var(--font-annapurna)] relative top-0 transition-all duration-300 bg-gradient-to-b from-black/90 from-60% to-black/0 ${
-          scrolled ? "backdrop-blur-sm bg-black/50" : ""
-        }`}
+        className={`w-full p-2 px-8 text-white flex justify-between items-center font-[var(--font-annapurna)] relative top-0 transition-all duration-300 bg-gradient-to-b from-black/90 from-60% to-black/0backdrop-blur-sm bg-black/50`}
       >
         {/* LEFT: Logo + Nav */}
         <div className="flex items-center gap-6">

@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
-
+/* from  https://www.reddit.com/r/tailwindcss/comments/1iqephx/hide_scrollbar_tailwind_css_40/ */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
 
 
 :root {
