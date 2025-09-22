@@ -37,14 +37,14 @@
 /* FONT CONFIGURATION, going with global definitions for now */
 h1 {
   font-family: var(--font-anton), sans-serif;
-  font-size: 2.25rem;
+  font-size: 3rem;
   font-weight: 700;
 }
 
 h2 {
   font-family: var(--font-anton), sans-serif; 
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.7rem;
+  font-weight: 550;
 }
 
 p {
