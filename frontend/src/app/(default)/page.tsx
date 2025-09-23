@@ -9,10 +9,10 @@ import { useMemo } from "react";
 
 export default function Home() {
 
-    const { data: allMovies= []} = useQuery(allMoviesQuery());
+    const {data: allMovies = []} = useQuery(allMoviesQuery());
 
     const featuredMovies = useMemo(
-        () => allMovies?.slice(0,4) || null
+        () => allMovies?.slice(0, 4) || null
         , [allMovies]
     );
 
