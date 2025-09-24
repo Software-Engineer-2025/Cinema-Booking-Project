@@ -45,7 +45,7 @@ npx supabase start
 
 Make a copy of the .env.example as .env, add the API URL and the access key to the env
 
-To run the FastAPI server run the following command
+To run the FastAPI server run the following command from backend/src
 ```
 uvicorn main:app
 ```
