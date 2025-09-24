@@ -11,7 +11,7 @@ export default function MovieCard({movieData}: { movieData: Movie }) {
 
     return (
         <div onClick={handleClick}
-             className={"min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1 hover:opacity-60 flex-shrink-0 group"}>
+             className={"min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1 hover:opacity-60 hover:scale-107 flex-shrink-0 group"}>
             {movieData?.trailer_img ? (
                 <div className="w-full relative aspect-[2/3] overflow-hidden rounded hover-trigger">
                     <img

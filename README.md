@@ -33,6 +33,11 @@ Go into the Backend directory and use the following command in the terminal
 pip install -r requirements.txt
 ```
 
+Go into the front end directory and run the following command
+```
+npm install
+```
+
 Go into the root directory and use the following command in the terminal
 ```
 npm install supabase --save-dev
@@ -48,27 +53,48 @@ Make a copy of the .env.example as .env, add the API URL and the access key to t
 To run the FastAPI server run the following command
 ```
 uvicorn main:app
+
+or
+
+python -m uvicorn main:app --reload
 ```
 
-Once that is ran and you open the hosted link provided you can add /docs to the end of the link to see the API docs
-
-
+Once that is ran and you open the hosted 172 link provided by the following command
+```
+npm run dev
+```
+you can add /docs to the end of the link to see the API docs
 
 ## <a name="#start-up">How To Start Up</a>
 
-.
+After following the start up, anytime you want to run the dev environment, 
+use the following commands in separate terminals.
+```
+npx supabase start
+
+python -m uvicorn main:app --reload
+
+npm run dev
+```
+
+Then click the 172 host link provided by npm run dev and you can use the page.
 
 ## <a name="#use-app">How To Use The App</a>
 
-.
+Its a booking app similar to fandango. Have fun and explore the page.
 
 ## <a name="#close-app">How to Close Down the App</a>
 
-.
+In the terminal that run the supabase command to start, run the following:
+```
+npx supabase stop
+```
+
+In the npm run dev and uvicorn terminals, run use ctrl + C (^C) to close them.
 
 ## <a name="#aware-of">Things To Be Aware Of</a>
 
-.
+You should make sure to stop the supabase docker container so that you don't waste your computers resources, it takes up a lot.
 
 ## <a name="#further-work">Ideas for Further Work</a>
 
@@ -76,7 +102,11 @@ Once that is ran and you open the hosted link provided you can add /docs to the 
 
 ## <a name="#other-dependencies">Other Dependencies</a>
 
-.
+We used the supabase local development database:
+https://supabase.com/docs/guides/local-development
+
+We used heyapi to generate typescript client for the backend:
+https://heyapi.dev/
 
 ## <a name="#contrib-acknow">Contributors & Acknowledgements</a>
 
