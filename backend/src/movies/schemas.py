@@ -15,7 +15,7 @@ class MovieBase(BaseModel):
     reviews: List[str] = []
     trailer_img: str = None
     trailer_video: str = None
-    MPAA_rating: str = None
+    mpaa_rating: str = None
     show_times: List[datetime] = []
     released: bool = False
     rating: float
@@ -24,9 +24,8 @@ class MovieBase(BaseModel):
     producer: Optional[str] = None
     reviews: Optional[List[str]] = Field(default_factory=list)
     showtimes: Optional[List[str]] = Field(default_factory=list)
-    MPAA_rating: Optional[str] = None
+    mpaa_rating: Optional[str] = None
     thumbnail: Optional[str] = None
-    duration: str
     synopsis: Optional[str] = None
     genre: Optional[str] = None
     cast: Optional[List[str]] = Field(default_factory=list)

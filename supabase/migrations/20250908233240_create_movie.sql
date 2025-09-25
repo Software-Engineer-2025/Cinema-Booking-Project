@@ -11,7 +11,7 @@ CREATE TABLE Movie (
     reviews TEXT[],
     trailer_img TEXT,
     trailer_video TEXT,
-    MPAA_rating TEXT,
+    mpaa_rating TEXT,
     show_times TIMESTAMP[],
     released BOOLEAN DEFAULT FALSE
 );

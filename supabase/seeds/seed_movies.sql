@@ -10,7 +10,7 @@ INSERT INTO Movie (
     reviews,
     trailer_img,
     trailer_video,
-    MPAA_rating,
+    mpaa_rating,
     show_times,
     released
 ) VALUES

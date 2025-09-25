@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {Skeleton} from "@radix-ui/themes";
 import { Movie } from "@/client";
 import MovieCard from "@/components/ui/MovieCard";
+import Link from "next/link";
 
 export default function Slideshow({movies: moviesProp}: {movies: Movie[] | null}) {
 
@@ -68,9 +69,21 @@ function SlideshowCard({movieData}: { movieData: Movie }) {
                     <MovieCard movieData={movieData}/>
                 </div>
                 <div className={"flex flex-row gap-10"}>
+                {movieData ? (
+                    <>
+                    <Link href={`/movies/${movieData.movie_id}`} passHref>
                         <Button>Details</Button>
-                        <Button>Get Tickets</Button>
+                    </Link>
+                    <Button>Get Tickets</Button>
+                    </>
+                ) : (
+                    <>
+                    <Button>Details</Button>
+                    <Button>Get Tickets</Button>
+                    </>
+                )}
                 </div>
+
             </div>
         </div>
     );
