@@ -6,6 +6,7 @@ import Fuse from "fuse.js";
 import { useQuery } from "@tanstack/react-query";
 import { allGenresQuery, allMoviesQuery } from "@/lib/utils/queries";
 import { Movie } from "@/client";
+import Link from "next/link";
 
 interface MovieFilters {
   genres?: string[];
@@ -208,25 +209,28 @@ function SearchBar({
 function MovieCard({ movie }: { movie: Movie }) {
   const starCount = Math.round((movie.rating ?? 0) / 2);
   return (
-    <div className="bg-black/70  shadow-lg overflow-hidden hover:scale-105 transition-transform">
-      <div className="w-full aspect-[2/3] overflow-hidden ">
-        <img src={movie.trailer_img} className="w-full h-full object-cover" />
-      </div>
-      <div className="bg-black text-center p-3 ">
-        <h2 className="text-lg font-semibold truncate">{movie.title}</h2>
-        <div className="flex justify-center mt-1 text-sm">
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <span
-              key={idx}
-              className={idx < starCount ? "text-white" : "text-gray-600"}
-            >
-              ★
-            </span>
-          ))}
+    <Link href={`/movies/${movie?.movie_id}`}>
+      <div className="bg-black/70  shadow-lg overflow-hidden hover:scale-105 transition-transform">
+        <div className="w-full aspect-[2/3] overflow-hidden ">
+          <img src={movie.trailer_img} className="w-full h-full object-cover" />
         </div>
-        <p className="text-sm text-gray-400 mt-1 truncate">{movie.genre}</p>
+        <div className="bg-black text-center p-3 ">
+          <h2 className="text-lg font-semibold truncate">{movie.title}</h2>
+          <div className="flex justify-center mt-1 text-sm">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <span
+                key={idx}
+                className={idx < starCount ? "text-white" : "text-gray-600"}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <p className="text-sm text-gray-400 mt-1 truncate">{movie.genre}</p>
+        </div>
       </div>
-    </div>
+
+    </Link>
   );
 }
 

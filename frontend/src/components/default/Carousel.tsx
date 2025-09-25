@@ -31,7 +31,8 @@ export default function Carousel({ carouselType, movies: moviesProp }: { carouse
                 <div id={CAROUSEL_NAME}
                      className={"w-[80dvw] h-[40dvh] flex flex-row justify-evenly overflow-x-scroll no-scrollbar gap-10"}>
                     {movies.map((movie, index) => (
-                        <MovieCard key={index} movieData={movie}/>
+                            <MovieCard key={index} movieData={movie}/>
+
                     ))}
                 </div>
                 <button className={"hidden md:block text-4xl opacity-50 hover:opacity-30"} onClick={() => scrolling(1)}>{">"}</button>
