@@ -18,3 +18,16 @@ class TheaterSectionInDBBase(TheaterSectionBase):
     class Config:
         orm_mode = True
     
+
+class TheaterSection(TheaterSectionInDBBase):
+    pass
+
+__all__ = [
+    "TheaterSection",
+    "TheaterSectionCreate",
+    "TheaterSectionUpdate",
+    "TheaterSectionInDBBase",
+]
+
+
+

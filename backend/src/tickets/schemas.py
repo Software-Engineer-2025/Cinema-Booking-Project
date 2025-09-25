@@ -18,3 +18,12 @@ class Ticket(TicketBase):
     class Config:
         orm_mode = True
 
+class TicketUpdate(BaseModel):
+    seat : Optional[str] = None
+    is_taken : Optional[bool] = None
+    price : Optional[float] = None
+    status : Optional[str] = None
+    user_id : Optional[int] = None
+    showtime_id : Optional[int] = None
+
+    
