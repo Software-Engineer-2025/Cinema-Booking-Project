@@ -32,7 +32,6 @@ export default function ProfileDropdown() {
         <ProfileIcon size={40} />
       </button>
 
-
       {/* Dropdown Menu */}
       {open && (
         <div
@@ -54,9 +53,7 @@ export default function ProfileDropdown() {
           >
             Settings
           </a>
-          <button
-            className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400"
-          >
+          <button className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400">
             LOG OUT
           </button>
         </div>

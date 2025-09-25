@@ -229,7 +229,6 @@ function MovieCard({ movie }: { movie: Movie }) {
           <p className="text-sm text-gray-400 mt-1 truncate">{movie.genre}</p>
         </div>
       </div>
-
     </Link>
   );
 }
