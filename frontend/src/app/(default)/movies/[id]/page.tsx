@@ -146,8 +146,20 @@ export default function MoviePage() {
               <h2 className="text-white font-medium border-b border-white">Trailer</h2>
               <div className="w-full aspect-video bg-gray-800 flex rounded-2xl justify-center items-center">
       
-                  <p className="text-white">TODO: ADD TRAILER</p>
-           
+                {movieData.trailer_video ? (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${movieData.trailer_video}`}
+                    title={`${movieData.title} Trailer`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded-2xl"
+                  ></iframe>
+                ) : (
+                  <p className="text-white">Trailer not available</p>
+                )}
+                           
               </div>
             </div>
 
