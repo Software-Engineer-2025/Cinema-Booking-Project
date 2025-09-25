@@ -11,7 +11,7 @@ class UserCreate(UserBase):
     pass 
 
 class User(UserBase):
-    id : int
+    user_id : int
 
     class Config:
         orm_mode = True 
@@ -21,7 +21,7 @@ class UserLogin(BaseModel):
     password : str
 
 class UserInDBBase(UserBase):
-    id : int
+    user_id : int
 
     class Config:
         orm_mode = True
