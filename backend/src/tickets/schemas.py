@@ -13,7 +13,7 @@ class TicketCreate(TicketBase):
     pass
 
 class Ticket(TicketBase):
-    id : int
+    ticket_id : int
 
     class Config:
         orm_mode = True
@@ -24,6 +24,6 @@ class TicketUpdate(BaseModel):
     price : Optional[float] = None
     status : Optional[str] = None
     user_id : Optional[int] = None
-    showtime_id : Optional[int] = None
+    theater_section_id : Optional[int] = None
 
     

@@ -13,7 +13,7 @@ class TheaterSectionUpdate(TheaterSectionBase):
     address: Optional[str] = None
 
 class TheaterSectionInDBBase(TheaterSectionBase):
-    id: int
+    theater_section_id: int
 
     class Config:
         orm_mode = True
