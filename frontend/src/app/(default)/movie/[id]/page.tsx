@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { StarFilledIcon, StarIcon } from "@radix-ui/react-icons";           
-import Button from "@/components/ui/Button";
 
 export default function MoviePage() {
     const movie = {
@@ -13,7 +12,7 @@ export default function MoviePage() {
 
   return (
 // main container 
-<div className="bg-black flex flex-col gap-12 px-4 lg:px-75 sm:px-6 md:px-12 sm:py-8 md:py-25 justify-center">
+<div className="flex-col gap-12 px-4 lg:max-w-[1400px] mx-auto sm:px-6 md:px-12 sm:py-8 md:py-25 justify-center lg:min-w-[900px]">
   
   {/* Movie Info (top info)*/}
   <div className="flex flex-col lg:flex-row justify-center gap-8 lg:gap-16 lg:pb-10 ">
@@ -76,7 +75,7 @@ export default function MoviePage() {
   </div>
 
   {/* Showtimes + Trailer (bottom stuff) */}
-  <div className="flex flex-col lg:flex-row justify-center gap-12 w-full px-2 ">
+  <div className="flex flex-col lg:flex-row justify-center gap-12 w-full px-2 lg:pt-20">
 
     {/* Showtimes */}
     <div className="flex flex-col w-full lg:w-1/2 gap-4">
