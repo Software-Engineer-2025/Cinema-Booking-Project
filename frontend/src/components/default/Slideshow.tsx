@@ -99,14 +99,14 @@ function SlideshowCard({ movieData }: { movieData: Movie }) {
         <div className={"flex flex-row gap-10"}>
           {movieData ? (
             <>
-              <Link href={`/movies/${movieData.movie_id}`} passHref>
+              <Link className="cursor-pointer" href={`/movies/${movieData.movie_id}`} passHref>
                 <Button>Details</Button>
               </Link>
               <Button>Get Tickets</Button>
             </>
           ) : (
             <>
-              <Button>Details</Button>
+              <Button >Details</Button>
               <Button>Get Tickets</Button>
             </>
           )}
