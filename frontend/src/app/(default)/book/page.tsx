@@ -16,7 +16,8 @@ import { allMoviesQuery } from "@/lib/utils/queries";
 export default function BookPage() {
   const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const movieIdFromUrl = searchParams.get("movieId");
+  const movieIdFromUrl = searchParams.get('movieId');
+  const showtimeFromUrl = searchParams.get('showtime');
 
   const router = useRouter();
 
@@ -35,7 +36,7 @@ export default function BookPage() {
   useEffect(() => {
     if (movieIdFromUrl && releasedMovies.length > 0) {
       const movieToSelect = releasedMovies.find(
-        (movie) => movie.movie_id === Number(movieIdFromUrl)
+        movie => movie.movie_id === Number(movieIdFromUrl)
       );
       if (movieToSelect) {
         setSelectedMovie(movieToSelect);
@@ -43,10 +44,17 @@ export default function BookPage() {
     }
   }, [movieIdFromUrl, releasedMovies]);
 
+  // Auto-select showtime from URL parameter
+  useEffect(() => {
+    if (showtimeFromUrl) {
+      setSelectedShowtime(decodeURIComponent(showtimeFromUrl));
+    }
+  }, [showtimeFromUrl]);
+
   const handleChange = useCallback((label: string, subtotal: number) => {
     setTotals((prev) => ({ ...prev, [label]: subtotal }));
   }, []);
-
+  
   const totalPrice = Object.values(totals).reduce((a, b) => a + b, 0);
 
   return (
@@ -105,9 +113,7 @@ export default function BookPage() {
             }}
           >
             {releasedMovies.map((movie: Movie, index) => (
-              <button key={`movie-${movie.movie_id}-${index}`}>
-                {movie.title}
-              </button>
+              <button key={`movie-${movie.movie_id}-${index}`}>{movie.title}</button>
             ))}
           </DefaultDropdown>
 

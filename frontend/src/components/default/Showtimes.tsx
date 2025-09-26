@@ -1,5 +1,6 @@
 "use client";
 import formatShowtime from "@/lib/utils/format_showtimes";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Showtimes({
   movieData,
@@ -10,6 +11,22 @@ export default function Showtimes({
   selectedShowtime?: string | null;
   onSelectShowtime?: (time: string) => void;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  
+  // Check if we're on the movie details page (not booking page)
+  const isMovieDetailsPage = pathname.includes('/movies/');
+
+  const handleShowtimeClick = (timestamp: string) => {
+    if (isMovieDetailsPage) {
+      // Navigate to booking page with movie and showtime pre slected
+      router.push(`/book?movieId=${movieData.movie_id}&showtime=${encodeURIComponent(timestamp)}`);
+    } else {
+      // We're on booking page, just call the callback
+      onSelectShowtime?.(timestamp);
+    }
+  };
+
   // Early return if movieData is not loaded yet
   if (!movieData || !movieData.show_times || !Array.isArray(movieData.show_times)) {
     return (
@@ -63,7 +80,7 @@ export default function Showtimes({
                     }
                     hover:cursor-pointer transition`}
                   type="button"
-                  onClick={() => onSelectShowtime?.(timestamp)}
+                  onClick={() => handleShowtimeClick(timestamp)}
                 >
                   {formatShowtime(timestamp, {
                     showDate: false,
