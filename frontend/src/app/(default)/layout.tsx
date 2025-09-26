@@ -19,7 +19,8 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <body
-          className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-800`}
+          className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-900`}
+          suppressHydrationWarning={true}
         >
           <header className="sticky top-0 z-50">
             <Navbar />

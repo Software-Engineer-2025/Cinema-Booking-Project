@@ -1,5 +1,4 @@
 "use client";
-
 import "@radix-ui/themes/styles.css";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@radix-ui/themes";
@@ -13,7 +12,6 @@ export default function Slideshow({
   movies: Movie[] | null;
 }) {
   const [movies, setMovies] = useState<Movie[] | null>([null]);
-
   const [shownCard, setShownCard] = useState<number>(0);
 
   useEffect(() => {
@@ -22,7 +20,7 @@ export default function Slideshow({
     }
   }, [moviesProp]);
 
-  const scroll = (direction) => {
+  const scroll = (direction: number) => {
     setShownCard((prevCard) => {
       const next = prevCard + direction;
       if (next < 0 || next >= movies.length) return prevCard;
@@ -99,14 +97,24 @@ function SlideshowCard({ movieData }: { movieData: Movie }) {
         <div className={"flex flex-row gap-10"}>
           {movieData ? (
             <>
-              <Link className="cursor-pointer" href={`/movies/${movieData.movie_id}`} passHref>
+              <Link
+                className="cursor-pointer"
+                href={`/movies/${movieData.movie_id}`}
+                passHref
+              >
                 <Button>Details</Button>
               </Link>
-              <Button>Get Tickets</Button>
+              <Link
+                className="cursor-pointer"
+                href={`/book?movieId=${movieData.movie_id}`}
+                passHref
+              >
+                <Button>Get Tickets</Button>
+              </Link>
             </>
           ) : (
             <>
-              <Button >Details</Button>
+              <Button>Details</Button>
               <Button>Get Tickets</Button>
             </>
           )}
@@ -116,7 +124,7 @@ function SlideshowCard({ movieData }: { movieData: Movie }) {
   );
 }
 
-function Button({ children }) {
+function Button({ children }: { children: React.ReactNode }) {
   return (
     <button
       className={

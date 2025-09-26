@@ -5,10 +5,14 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { allMoviesQuery } from "@/lib/utils/queries";
 import { Movie } from "@/client";
+import Showtimes from "@/components/default/Showtimes";
+import formatShowtime from "@/lib/utils/format_showtimes";
+import { useState } from "react";
 
 export default function MoviePage() {
   const { id } = useParams();
   const { data: allMovies = [], isLoading } = useQuery(allMoviesQuery());
+  const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
 
   const movieData: Movie | undefined = allMovies.find(
     (m) => m.movie_id === Number(id)
@@ -33,17 +37,16 @@ export default function MoviePage() {
   const genre = movieData.genre ?? "";
   const mpaa = movieData.mpaa_rating ?? "";
 
-  // Format showtimes from timestamp array
-  const formatShowtime = (timestamp: string | Date) => {
-    try {
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return "Invalid time";
-    }
+  const date =
+    movieData.show_times && movieData.show_times.length > 0
+      ? new Date(movieData.show_times[0]).toLocaleDateString("en-US", {
+          month: "numeric",
+          day: "numeric",
+        })
+      : "No date";
+
+  const handleSelectShowtime = (time: string) => {
+    setSelectedShowtime(time);
   };
 
   return (
@@ -128,30 +131,11 @@ export default function MoviePage() {
       {/* Showtimes + Trailer (bottom stuff) */}
       <div className="flex flex-col lg:flex-row justify-center gap-12 w-full px-2 lg:pt-20">
         {/* Showtimes */}
-        <div className="flex flex-col w-full lg:w-1/2 gap-4">
-          <h2 className="text-white font-medium">Showtimes</h2>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col py-4">
-              <h3 className="text-white font-bold font-body">9/22</h3>
-              <div className="flex flex-wrap gap-x-4 gap-y-4 py-2 max-w-md">
-                {Array.isArray(movieData.show_times) &&
-                movieData.show_times.length > 0 ? (
-                  movieData.show_times.map((timestamp, index) => (
-                    <button
-                      key={`${timestamp}-${index}`}
-                      className="rounded-full hover:text-gray-400 hover:cursor-pointer text-white font-special border px-6 py-2 text-sm sm:text-base"
-                      type="button"
-                    >
-                      {formatShowtime(timestamp)}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-white text-sm">No showtimes available</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <Showtimes
+          movieData={movieData}
+          selectedShowtime={selectedShowtime}
+          onSelectShowtime={handleSelectShowtime}
+        />
 
         {/* Trailer */}
         <div className="flex flex-col w-full lg:w-1/2 gap-6">
