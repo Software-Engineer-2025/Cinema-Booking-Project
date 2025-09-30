@@ -1,9 +1,14 @@
 "use client"
 
-import { useState } from "react";
-import Form from "next/form";
-import { Slider, Skeleton } from "@radix-ui/themes";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import { Movie } from "@/client";
+import Button from "@/components/ui/Button";
+import TicketCounter from "@/components/default/TicketCounter";
+import {usePathname, useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
+import {allMoviesQuery} from "@/lib/utils/queries";
+import DefaultDropdown from "@/components/ui/DefaultDropdown";
+import Showtimes from "@/components/default/Showtimes";
 
 /*
     The button in the bottom right hand corner of the page that allows the user to open it and select certain values
@@ -12,15 +17,26 @@ import { Movie } from "@/client";
     This component should be placed within the body tag of the page.
  */
 export default function BookingPopUp() {
+
+    const [isBookingPage, setIsBookingPage] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const movies= ["", "", ""];
+    const pathname = usePathname();
+
+    /* Checks to make sure its not in the booking page, if it is, it is set to true and hides the component */
+    useEffect(() => {
+        setIsOpen(false);
+        setIsBookingPage(pathname.startsWith('/book'));
+    }, [pathname]);
 
     return (
         <>
+            {/* will show all booking options if the button in the corner is pressed */}
             {isOpen ? (
-                <div className={"fixed bottom-5 right-5 w-[30dvw] h-[70dvh] rounded-md bg-neutral-700 shadow-lg shadow-neutral-800 flex flex-col items-center py-7 px-5 text-neutral-300"}>
+                <div className={"fixed bottom-5 right-5 w-[90dvw] h-[70dvh] rounded-md bg-neutral-700 shadow-lg" +
+                    "shadow-neutral-800 flex flex-col items-center py-7 px-5 text-neutral-300 gap-2 " +
+                    `overflow-y-scroll md:w-[50dvw] lg:w-[40dvw] ${isBookingPage ? "hidden" : ""}`}>
                     <h2>Pre-Booking</h2>
-                    <PreBookForm bookableMovies={movies/*use context within layout and that can extend to others?*/}></PreBookForm>
+                    <PreBookForm/>
                     <button onClick={() => (setIsOpen(current => !current))} className={"absolute top-10 right-10"}>
                         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className={"text-neutral-200"}>
                             <path
@@ -31,7 +47,7 @@ export default function BookingPopUp() {
                 </div>
             ) : (
                 <button onClick={() => (setIsOpen(current => !current))}
-                        className={"fixed bottom-10 right-10 flex justify-center items-center w-[70px] h-[70px] rounded-full  bg-red-400"}>
+                        className={`fixed bottom-10 right-10 flex justify-center items-center w-[70px] h-[70px] rounded-full bg-red-400 ${isBookingPage ? "hidden" : ""}`}>
                     <svg width="30" height="30" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"
                          className={"text-neutral-300 -translate-y-1/10"}>
                         <path
@@ -46,75 +62,79 @@ export default function BookingPopUp() {
 
 /*
     A form including the bookable movies, their times, the amount of tickets, and the ability to continue to checkout.
-    When a user chooses a movie it grabs the showtimes for that to replace the skeletons.
-    When the user continues to book the values the user chose will be saved in cookies for further use.
  */
 function PreBookForm({ bookableMovies }: {bookableMovies: Movie[]}) {
 
-    const [showTimes, setShowTimes] = useState<String[] | null>(null);
-    const [numOfTickets, setNumOfTickets] = useState<number>(1);
+    const router = useRouter();
 
-    /*
-        Sets showTimes to current chosen movie.
-        Will need to update when we decide how show_times will be in the database.
-        Will need figure out finding the amount of tickets left for a movie.
-    */
-    const handleChange = (event) => {
-        setShowTimes(null);
-        setNumOfTickets(1);
-        if (event.target.value != "") {
-            //setShowTimes(bookableMovies.find(movie => movie.title === event.target.value)?.show_times);
-            //setNumOfTickets(bookableMovies.find(movie => movie.title === event.target.value)?.tickets);
+    const { data: allMovies = [] } = useQuery(allMoviesQuery());
+    const releasedMovies = useMemo(
+        () => allMovies?.filter((movie: Movie) => movie.released === true) || [],
+        [allMovies]
+    );
+
+    const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+    const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
+    const [totals, setTotals] = useState<{ [key: string]: number }>({});
+
+    const handleChange = useCallback((label: string, subtotal: number) => {
+        setTotals((prev) => ({ ...prev, [label]: subtotal }));
+    }, []);
+
+    // Routes user to booking page
+    const handleClick = () => {
+        if (selectedMovie === null || selectedShowtime === null) {
+
+        } else {
+            router.push(`/book?movieId=${selectedMovie?.movie_id}&showtime=${encodeURIComponent(selectedShowtime)}`);
         }
     }
+    
+    const totalPrice = Object.values(totals).reduce((a, b) => a + b, 0);
 
-    return(
-        <Form>
-            <div>
-                <label>Movie</label>
-                <select onSelect={handleChange}>
-                    <option id={"movieChoice"} value={""}>-- Select a Movie --</option>
-                    {bookableMovies.map((movie, index) => (
-                        <option key={index} value={movie.title}>{movie.title}</option>
-                    ))}
-                </select>
-            </div>
-            <div>
-                <p>Times</p>
-                {showTimes === null ?
-                    {}
-                    :
-                    {/*showTimes.map((time, index) => {
-                            <ShowTimeCard time={time} key={index}/>
-                        })*/}
-                }
-            </div>
-            <div>
-                <label>Amount of Tickets</label>
-                <Slider.Root className="SliderRoot" defaultValue={[1]} min={1} max={numOfTickets} step={1}>
-                    <Slider.Track className="SliderTrack">
-                        <Slider.Range className="SliderRange" />
-                    </Slider.Track>
-                    <Slider.Thumb className="SliderThumb" aria-label="Volume" />
-                </Slider.Root>
-            </div>
-        </Form>
-    );
-}
+    return (
+        <div className=" flex flex-col w-full mx-auto gap-5">
+            <DefaultDropdown
+                label={selectedMovie ? selectedMovie.title : "Select Movie"}
+                onSelect={(title) => {
+                    const movie = releasedMovies.find((m) => m.title === title);
+                    setSelectedMovie(movie || null);
+                    setSelectedShowtime(null); // reset when movie changes
+                }}
+            >
+                {releasedMovies.map((movie: Movie, index) => (
+                    <button key={`movie-${movie.movie_id}-${index}`}>{movie.title}</button>
+                ))}
+            </DefaultDropdown>
 
-function ShowTimeCard(time: string | null) {
-    return(
-        <>
-            {time === null ? (
-                    <Skeleton>
-                        <div className={"rounded-full w-[20px] h-[10px]"}></div>
-                    </Skeleton>
-                ) : (
-                    <>
-                        <input type={"radio"} id={time} name={"chosen_movie_time"} value={time}/>
-                        <label htmlFor={time}>{time}</label>
-                    </>
+            {/* Showtimes (only if a movie is selected) */}
+            {selectedMovie ? (
+                <Showtimes
+                    movieData={selectedMovie}
+                    selectedShowtime={selectedShowtime}
+                    onSelectShowtime={(time) => setSelectedShowtime(time)}
+                />
+            ) : (
+                <p className="text-white">Select a movie to view showtimes</p>
             )}
-        </>
+
+            <h2>Select Tickets</h2>
+            <div className="flex flex-col gap-4">
+                <TicketCounter label="Adult" price={12} onChange={handleChange}/>
+                <TicketCounter label="Child" price={8} onChange={handleChange}/>
+                <TicketCounter label="Senior" price={10} onChange={handleChange}/>
+            </div>
+
+            <div className="flex justify-between items-center px-3">
+                <span className="font-bold text-lg">Total</span>
+                <span className="font-bold text-lg">${totalPrice.toFixed(2)}</span>
+            </div>
+
+            <div className={"flex justify-center"} onClick={handleClick}>
+                <Button className="w-full text-black bg-gray-300/50 rounded-md py-4">
+                    Continue
+                </Button>
+            </div>
+        </div>
     );
 }
