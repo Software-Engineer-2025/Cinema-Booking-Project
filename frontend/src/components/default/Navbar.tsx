@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../ui/Button";
 import NavbarSearch from "../ui/NavbarSearch";
 import ProfileDropdown from "./ProfileDropdown";
@@ -8,20 +8,10 @@ import Link from "next/link";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  // Check for scroll and blur navbar for better visiblity
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <div>
-      <nav
-        className={`w-full p-2 px-8 text-white flex justify-between items-center font-[var(--font-annapurna)] relative top-0 transition-all duration-300 bg-gradient-to-b from-black/90 from-60% to-black/0backdrop-blur-sm bg-black/50`}
-      >
+      <nav className="w-full p-4 px-8 text-white flex justify-between items-center font-[var(--font-annapurna)] bg-black relative">
         {/* LEFT: Logo + Nav */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center">
@@ -36,9 +26,10 @@ export default function Navbar() {
           {/* Desktop Nav Buttons */}
           <div className="hidden md:flex space-x-4">
             <Link href="/movies">
-              <Button children="movies" />
+                <Button children="movies" />
             </Link>
-            <Button children="book" />
+            <Link href="/book"><Button children="book" /></Link>
+            
           </div>
         </div>
 
@@ -106,6 +97,9 @@ export default function Navbar() {
           </button>
         </div>
       )}
+
+      {/* BLACK GRADIENT EFFECT */}
+      <div className="left-0 w-full h-8 bg-gradient-to-b from-black to-transparent pointer-events-none"></div>
     </div>
   );
 }

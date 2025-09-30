@@ -11,11 +11,11 @@ def get_movies():
     return response.data
 
 def get_movie(movie_id: int):
-    response = supabase.table("movie").select("*").eq("id", movie_id).single().execute()
+    response = supabase.table("movie").select("*").eq("movie_id", movie_id).single().execute()
     return response.data
 
 def delete_movie(movie_id: int):
-    response = supabase.table("movie").delete().eq("id", movie_id).execute()
+    response = supabase.table("movie").delete().eq("movie_id", movie_id).execute()
     return response
 
 def get_genres():

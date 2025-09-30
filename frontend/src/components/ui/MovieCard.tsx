@@ -1,17 +1,17 @@
 import { Movie } from "@/client";
 import { Skeleton } from "@radix-ui/themes";
 import Stars from "@/components/ui/Stars";
+import Link from "next/link";
 
-export default function MovieCard({movieData}: { movieData: Movie }) {
-    const isLoading = !(!!movieData);
+export default function MovieCard({ movieData }: { movieData: Movie }) {
+    const isLoading = !!!movieData;
     const movieTimes = ["1:00pm", "4:30pm", "6:00pm", "7:30pm", "9:00pm", "10:30pm"]
 
-    const handleClick = () => {/* add routing to movie's page*/
-    }
-
     return (
-        <div onClick={handleClick}
-             className={"min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1 hover:opacity-60 hover:scale-107 flex-shrink-0 group"}>
+        <Link
+            href={`/movies/${movieData?.movie_id}`}
+             className={"min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1 hover:opacity-60 hover:scale-107 flex-shrink-0 group"}
+        >
             {movieData?.trailer_img ? (
                 <div className="w-full relative aspect-[2/3] overflow-hidden rounded hover-trigger">
                     <img
@@ -31,15 +31,23 @@ export default function MovieCard({movieData}: { movieData: Movie }) {
                 </Skeleton>
             )}
             <Skeleton loading={isLoading}>
-                <h4 className={"text-center truncate w-full text-xl font-semibold"}>{isLoading ? "Loading..." : movieData?.title}</h4>
+                <h4 className={"text-center truncate w-full text-xl font-semibold"}>
+                    {isLoading ? "Loading..." : movieData?.title}
+                </h4>
             </Skeleton>
-            <Stars numStars={movieData?.rating ? Math.floor(Number(movieData?.rating) / 2) : 0}/>
-        </div>
+            <Stars
+                numStars={
+                    movieData?.rating ? Math.floor(Number(movieData?.rating) / 2) : 0
+                }
+            />
+        </Link>
     );
 }
 
 function ShowtimeCard({ children }) {
     return(
-        <span className={"inline-block bg-stone-700 text-stone-300 rounded-full px-2 py-1 text-lg whitespace-nowrap mr-2 mb-2 no-scrollbar"}>{children}</span>
+        <span className={"inline-block bg-stone-700 text-stone-300 rounded-full px-2 py-1 text-lg whitespace-nowrap mr-2 mb-2 no-scrollbar"}>
+            {children}
+        </span>
     );
 }

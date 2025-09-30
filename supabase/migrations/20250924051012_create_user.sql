@@ -1,7 +1,7 @@
 CREATE TABLE UserProfile (
-    user_id UUID PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
+    user_id BIGSERIAL PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,
-    isAdmin BOOLEAN DEFAULT FALSE,
+    is_admin BOOLEAN DEFAULT FALSE,
     promotional_list BOOLEAN DEFAULT FALSE
 );

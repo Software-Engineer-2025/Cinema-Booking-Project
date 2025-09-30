@@ -61,7 +61,7 @@ export type Movie = {
     /**
      * Mpaa Rating
      */
-    MPAA_rating?: string;
+    mpaa_rating?: string;
     /**
      * Show Times
      */
@@ -127,7 +127,7 @@ export type MovieCreate = {
     /**
      * Mpaa Rating
      */
-    MPAA_rating?: string;
+    mpaa_rating?: string;
     /**
      * Show Times
      */
