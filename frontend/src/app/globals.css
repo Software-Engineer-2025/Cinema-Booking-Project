@@ -51,6 +51,9 @@ p {
   font-family: var(--font-hind), sans-serif;
 }
 
+button {
+  cursor: pointer;
+}
 
 .font-special { font-family: var(--font-annapurna), sans-serif; }
 .font-heading { font-family: var(--font-anton), sans-serif; }
