@@ -4,6 +4,7 @@ import "../globals.css";
 
 import Navbar from "@/components/default/Navbar";
 import Providers from "@/Providers";
+import BookingPopUp from "@/components/default/BookingPopUp";
 
 export const metadata: Metadata = {
   title: "Cinema",
@@ -27,6 +28,7 @@ export default function RootLayout({
           </header>
           <main>{children}</main>
           <footer></footer>
+          <BookingPopUp></BookingPopUp>
         </body>
       </Providers>
     </html>

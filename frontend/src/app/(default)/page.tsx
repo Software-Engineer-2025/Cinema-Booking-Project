@@ -2,10 +2,10 @@
 
 import Carousel from "@/components/default/Carousel";
 import Slideshow from "@/components/default/Slideshow";
-import { Movie } from "@/client";
 import { allMoviesQuery } from "@/lib/utils/queries";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { Movie } from "@/client";
 
 export default function Home() {
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
@@ -24,8 +24,6 @@ export default function Home() {
     () => allMovies?.filter((movie) => movie.released === false) || [],
     [allMovies]
   );
-
-  console.log(unreleasedMovies);
 
   return (
     <main
