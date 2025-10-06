@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* from  https://www.reddit.com/r/tailwindcss/comments/1iqephx/hide_scrollbar_tailwind_css_40/ */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* body {
+  background: var(--background);
+  color: var(--foreground);
+} */
+
+
+/* FONT CONFIGURATION, going with global definitions for now */
+h1 {
+  font-family: var(--font-anton), sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-family: var(--font-anton), sans-serif; 
+  font-size: 1.7rem;
+  font-weight: 550;
+}
+
+p {
+  font-family: var(--font-hind), sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+.font-special { font-family: var(--font-annapurna), sans-serif; }
+.font-heading { font-family: var(--font-anton), sans-serif; }
+.font-body { font-family: var(--font-hind), sans-serif; }
