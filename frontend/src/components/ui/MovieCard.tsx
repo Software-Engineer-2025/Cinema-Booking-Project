@@ -3,6 +3,10 @@ import { Skeleton } from "@radix-ui/themes";
 import Stars from "@/components/ui/Stars";
 import Link from "next/link";
 
+/*
+    Displays the movie and navigates to the movie detail page on click.
+    If the passed movieData is null, a skeleton card is shown.
+ */
 export default function MovieCard({ movieData }: { movieData: Movie }) {
     const isLoading = !!!movieData;
     const movieTimes = ["1:00pm", "4:30pm", "6:00pm", "7:30pm", "9:00pm", "10:30pm"]
@@ -19,6 +23,7 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
                         alt={movieData?.title}
                         className={"h-full w-full object-cover"}
                     />
+                    {/* shows all of the movie showtimes when the card is hovered over. */}
                     <div className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
                         {movieTimes.map((movieTime, index) => (
                             <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
@@ -44,6 +49,7 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
     );
 }
 
+// The mini element that shows a individual showtime for a movie.
 function ShowtimeCard({ children }) {
     return(
         <span className={"inline-block bg-stone-700 text-stone-300 rounded-full px-2 py-1 text-lg whitespace-nowrap mr-2 mb-2 no-scrollbar"}>

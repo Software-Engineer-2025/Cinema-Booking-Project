@@ -6,6 +6,11 @@ import { Movie } from "@/client";
 import MovieCard from "@/components/ui/MovieCard";
 import Link from "next/link";
 
+/*
+  A component that is meant for the top of a landing page.
+  It shows a slide that presents a movie and navigation for it.
+  The user can move through slides by clicking the buttons on the sides of the slideshow.
+ */
 export default function Slideshow({
   movies: moviesProp,
 }: {
@@ -65,6 +70,10 @@ export default function Slideshow({
   );
 }
 
+/*
+ Each separate card within the slideshow.
+ If null is passed as movie data, the card will show a loading skeleton slide.
+ */
 function SlideshowCard({ movieData }: { movieData: Movie }) {
   const isLoading = !movieData;
 
@@ -75,7 +84,6 @@ function SlideshowCard({ movieData }: { movieData: Movie }) {
       }
     >
       {!isLoading ? (
-        // need to replace trailer_img with trailer_cover when possible
         <img
           src={movieData?.trailer_img}
           alt={movieData?.title}
@@ -124,6 +132,7 @@ function SlideshowCard({ movieData }: { movieData: Movie }) {
   );
 }
 
+// Button component for the navigation buttons for each featured movie.
 function Button({ children }: { children: React.ReactNode }) {
   return (
     <button
