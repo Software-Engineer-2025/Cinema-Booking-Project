@@ -19,6 +19,13 @@ export default function BookPage() {
   const movieIdFromUrl = searchParams.get('movieId');
   const showtimeFromUrl = searchParams.get('showtime');
 
+  const [adultTickets, setAdultTickets] = useState<number>(0);
+  const [childTickets, setChildTickets] = useState<number>(0);
+  const [seniorTickets, setSeniorTickets] = useState<number>(0);
+  const adultTicketsFromUrl = searchParams.get('adultTickets');
+  const childTicketsFromUrl = searchParams.get('childTickets');
+  const seniorTicketsFromUrl = searchParams.get('seniorTickets');
+
   const router = useRouter();
 
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
@@ -50,6 +57,27 @@ export default function BookPage() {
       setSelectedShowtime(decodeURIComponent(showtimeFromUrl));
     }
   }, [showtimeFromUrl]);
+
+  // Auto-select adult tickets from URL parameter
+  useEffect(() => {
+    if (adultTicketsFromUrl) {
+      setAdultTickets(Number(adultTicketsFromUrl));
+    }
+  }, [adultTicketsFromUrl]);
+
+  // Auto-select child tickets from URL parameter
+  useEffect(() => {
+    if (childTicketsFromUrl) {
+      setChildTickets(Number(childTicketsFromUrl));
+    }
+  }, [childTicketsFromUrl]);
+
+  // Auto-select senior tickets from URL parameter
+  useEffect(() => {
+    if (seniorTicketsFromUrl) {
+      setSeniorTickets(Number(seniorTicketsFromUrl));
+    }
+  }, [seniorTicketsFromUrl]);
 
   const handleChange = useCallback((label: string, subtotal: number) => {
     setTotals((prev) => ({ ...prev, [label]: subtotal }));
@@ -133,9 +161,9 @@ export default function BookPage() {
         <div className=" flex flex-col w-full mx-auto gap-5">
           <h2>Select Tickets</h2>
           <div className="flex flex-col gap-4">
-            <TicketCounter label="Adult" price={12} onChange={handleChange} />
-            <TicketCounter label="Child" price={8} onChange={handleChange} />
-            <TicketCounter label="Senior" price={10} onChange={handleChange} />
+            <TicketCounter label="Adult" price={12} amount={adultTickets} setAmount={setAdultTickets} onChange={handleChange} />
+            <TicketCounter label="Child" price={8} amount={childTickets} setAmount={setChildTickets} onChange={handleChange} />
+            <TicketCounter label="Senior" price={10} amount={seniorTickets} setAmount={setSeniorTickets} onChange={handleChange} />
           </div>
           <div className="flex justify-between items-center px-3">
             <span className="font-bold text-lg">Total</span>

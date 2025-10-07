@@ -33,7 +33,7 @@ export default function Home() {
     >
       <Slideshow movies={featuredMovies}></Slideshow>
       <section className={"w-[90dvw] flex flex-col gap-4"}>
-        <h2>Playing Now</h2>
+        <h2>Currently Running</h2>
         <Carousel carouselType={"playing-now"} movies={releasedMovies} />
       </section>
       <section className={"w-[90dvw] flex flex-col gap-4"}>
