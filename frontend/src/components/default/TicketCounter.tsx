@@ -4,19 +4,20 @@ import { useState, useEffect } from "react";
 type TicketCounterProps = {
   label: string;
   price: number;
+  amount: number;
+  setAmount: React.Dispatch<React.SetStateAction<number>>;
   className?: string;
   onChange?: (label: string, total: number) => void;
 };
 
-export default function TicketCounter({ label, price, className = "", onChange }: TicketCounterProps) {
-  const [count, setCount] = useState(0);
-  const increment = () => setCount((c) => c + 1);
-  const decrement = () => setCount((c) => (c > 0 ? c - 1 : c));
+export default function TicketCounter({ label, price, amount, setAmount, className = "", onChange }: TicketCounterProps) {
+  const increment = () => setAmount((c) => c + 1);
+  const decrement = () => setAmount((c) => (c > 0 ? c - 1 : c));
 
   // Notify parent of changes
   useEffect(() => {
-    if (onChange) onChange(label, count * price);
-  }, [count, price, label]); // Only depend on values that actually change
+    if (onChange) onChange(label, amount * price);
+  }, [amount, price, label]); // Only depend on values that actually change
 
   return (
     <div className={`flex flex-row rounded-md bg-white/10 items-center justify-between py-3 px-4 sm:px-7 ${className}`}>
@@ -42,7 +43,7 @@ export default function TicketCounter({ label, price, className = "", onChange }
             />
           </svg>
         </button>
-        <span className="min-w-[20px] text-center font-bold text-base sm:text-lg">{count}</span>
+        <span className="min-w-[20px] text-center font-bold text-base sm:text-lg">{amount}</span>
         <button
           onClick={increment}
           className="p-2 bg-gray-300/30 rounded-full hover:bg-gray-300/50 touch-manipulation"

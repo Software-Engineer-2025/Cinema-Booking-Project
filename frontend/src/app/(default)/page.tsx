@@ -10,16 +10,19 @@ import { Movie } from "@/client";
 export default function Home() {
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
 
+  // Sets first 4 movies from all movie, will be updated when featured is added to DB and seed data is updated.
   const featuredMovies = useMemo(
     () => allMovies?.slice(0, 4) || null,
     [allMovies]
   );
 
+  // An array filtered from all movies to those that are released.
   const releasedMovies = useMemo(
     () => allMovies?.filter((movie) => movie.released === true) || [],
     [allMovies]
   );
 
+  // An array filtered from all movies to those that are unreleased.
   const unreleasedMovies = useMemo(
     () => allMovies?.filter((movie) => movie.released === false) || [],
     [allMovies]
@@ -33,7 +36,7 @@ export default function Home() {
     >
       <Slideshow movies={featuredMovies}></Slideshow>
       <section className={"w-[90dvw] flex flex-col gap-4"}>
-        <h2>Playing Now</h2>
+        <h2>Currently Running</h2>
         <Carousel carouselType={"playing-now"} movies={releasedMovies} />
       </section>
       <section className={"w-[90dvw] flex flex-col gap-4"}>

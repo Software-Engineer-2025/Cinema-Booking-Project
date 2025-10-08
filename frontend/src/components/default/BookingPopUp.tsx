@@ -77,6 +77,10 @@ function PreBookForm({ bookableMovies }: {bookableMovies: Movie[]}) {
     const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
     const [totals, setTotals] = useState<{ [key: string]: number }>({});
 
+    const [adultTickets, setAdultTickets] = useState<number>(0);
+    const [childTickets, setChildTickets] = useState<number>(0);
+    const [seniorTickets, setSeniorTickets] = useState<number>(0);
+
     const handleChange = useCallback((label: string, subtotal: number) => {
         setTotals((prev) => ({ ...prev, [label]: subtotal }));
     }, []);
@@ -86,7 +90,8 @@ function PreBookForm({ bookableMovies }: {bookableMovies: Movie[]}) {
         if (selectedMovie === null || selectedShowtime === null) {
 
         } else {
-            router.push(`/book?movieId=${selectedMovie?.movie_id}&showtime=${encodeURIComponent(selectedShowtime)}`);
+            router.push(`/book?movieId=${selectedMovie?.movie_id}&showtime=${encodeURIComponent(selectedShowtime)}`
+                        + `&adultTickets=${adultTickets}&childTickets=${childTickets}&seniorTickets=${seniorTickets}`);
         }
     }
     
@@ -120,9 +125,9 @@ function PreBookForm({ bookableMovies }: {bookableMovies: Movie[]}) {
 
             <h2>Select Tickets</h2>
             <div className="flex flex-col gap-4">
-                <TicketCounter label="Adult" price={12} onChange={handleChange}/>
-                <TicketCounter label="Child" price={8} onChange={handleChange}/>
-                <TicketCounter label="Senior" price={10} onChange={handleChange}/>
+                <TicketCounter label="Adult" price={12} amount={adultTickets} setAmount={setAdultTickets} onChange={handleChange}/>
+                <TicketCounter label="Child" price={8} amount={childTickets} setAmount={setChildTickets} onChange={handleChange}/>
+                <TicketCounter label="Senior" price={10} amount={seniorTickets} setAmount={setSeniorTickets} onChange={handleChange}/>
             </div>
 
             <div className="flex justify-between items-center px-3">

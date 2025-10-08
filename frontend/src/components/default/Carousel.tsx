@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { Movie } from "@/client";
 import MovieCard from "@/components/ui/MovieCard";
 
+/*
+  Displays Movies in a scrollable horizontal view. It can also be moved through the use of arrows on the side.
+ */
 export default function Carousel({
   carouselType,
   movies: moviesProp,
@@ -12,16 +15,20 @@ export default function Carousel({
   carouselType: string;
   movies: Movie[] | null;
 }) {
-  // clear the movies when the new data is brought in
   const CAROUSEL_NAME = `scrollable-carousel-${carouselType}`;
   const [movies, setMovies] = useState<Movie[]>(Array(8).fill(null));
 
+  /*
+   Sets the movies to the passed movie array if the array isn't null or empty.
+   Allows for a skeleton carousel to be shown otherwise.
+   */
   useEffect(() => {
     if (moviesProp && moviesProp.length != 0) {
       setMovies(moviesProp);
     }
   }, [moviesProp]);
 
+  // scrolls the carousel in either direction when a button is clicked. Direction is 1 for right, -1 for left.
   const scrolling = (direction: number) => {
     const elem = document.getElementById(CAROUSEL_NAME);
     if (elem) {
