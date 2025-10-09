@@ -59,10 +59,13 @@ enabled = true
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 # Array specifies the order of seeding
 sql_paths = [
-	"./seeds/seed_movies.sql",
-    "./seeds/seed_users.sql",
-	"./seeds/seed_theater_sections.sql",
-	"./seeds/seed_tickets.sql",
+"./seeds/seed_genres.sql",
+"./seeds/seed_movies.sql",
+"./seeds/seed_users.sql",
+"./seeds/seed_showrooms.sql",
+"./seeds/seed_seats.sql",
+"./seeds/seed_shows.sql",
+"./seeds/seed_tickets.sql",
 ]
 
 [db.network_restrictions]

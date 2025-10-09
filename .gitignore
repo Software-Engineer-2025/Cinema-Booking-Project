@@ -4,6 +4,6 @@ node_modules/
 .env.local
 .vscode/
 .idea/
-
+yark.lock
 **/venv/
 **/.venv/

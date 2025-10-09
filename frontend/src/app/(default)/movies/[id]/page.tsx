@@ -3,7 +3,8 @@
 import { StarFilledIcon, StarIcon } from "@radix-ui/react-icons";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { allMoviesQuery } from "@/lib/utils/queries";
+// Import the specific query for a single movie
+import { movieDetailsQuery } from "@/lib/utils/queries";
 import { Movie } from "@/client";
 import Showtimes from "@/components/default/Showtimes";
 import formatShowtime from "@/lib/utils/format_showtimes";
@@ -11,12 +12,11 @@ import { useState } from "react";
 
 export default function MoviePage() {
   const { id } = useParams();
-  const { data: allMovies = [], isLoading } = useQuery(allMoviesQuery());
-  const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
+  const movieId = Number(id);
 
-  const movieData: Movie | undefined = allMovies.find(
-    (m) => m.movie_id === Number(id)
-  );
+  // Use the new, more efficient query to fetch only one movie
+  const { data: movieData, isLoading } = useQuery(movieDetailsQuery(movieId));
+  const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
 
   if (isLoading) return <p className="text-white">Loading...</p>;
   if (!movieData) return <p className="text-white">Movie not found</p>;
@@ -34,7 +34,9 @@ export default function MoviePage() {
     ? movieData.cast_list.join(", ")
     : "";
 
-  const genre = movieData.genre ?? "";
+  const genre = Array.isArray(movieData.genre) 
+    ? movieData.genre.join(", ") 
+    : movieData.genre ?? "";
   const mpaa = movieData.mpaa_rating ?? "";
 
   const date =

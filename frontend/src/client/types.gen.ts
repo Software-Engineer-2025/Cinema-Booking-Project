@@ -25,7 +25,7 @@ export type Movie = {
     /**
      * Genre
      */
-    genre?: string;
+    genre?: Array<string>; // FIX: Changed from string to Array<string>
     /**
      * Director
      */
@@ -91,7 +91,7 @@ export type MovieCreate = {
     /**
      * Genre
      */
-    genre?: string;
+    genre?: Array<string>; // FIX: Changed from string to Array<string>
     /**
      * Director
      */

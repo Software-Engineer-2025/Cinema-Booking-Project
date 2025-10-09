@@ -21,4 +21,12 @@ def delete_theater_section(theater_theater_section_id: int):
     response = supabase.table("theatersection").delete().eq("theater_section_id", theater_section_id).execute()
     return response
 
+## Get times of a theater section by joining where date = ? 
+def get_times_by_movie_and_date(movie_id: int, date):
+    response = supabase.table("theatersection").select("time").eq("movie_id", movie_id).eq("date", date).execute()
+    return response.data
+
+### Select time FROM TheaterSection WHERE movie_id = movie_id AND date = date
+
+
 

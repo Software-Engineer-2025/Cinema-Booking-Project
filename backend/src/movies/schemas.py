@@ -1,38 +1,22 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import date, datetime
+from typing import Optional, List
+from datetime import date
 
 
 class MovieBase(BaseModel):
     title: str
-    release_date: date = None
-    genre: str = None
-    director: str = None
-    cast_list: List[str] = []
-    rating: float = None
-    producer: str = None
-    synopsis: str = None
-    reviews: List[str] = []
-    trailer_img: str = None
-    trailer_video: str = None
-    mpaa_rating: str = None
-    show_times: List[datetime] = []
-    released: bool = False
-    rating: float
-    director: str
-    release_date: str
+    release_date: Optional[date] = None
+    director: Optional[str] = None
+    cast_list: Optional[str] = None  # Database stores as comma-separated string
+    rating: Optional[float] = None
     producer: Optional[str] = None
-    reviews: Optional[List[str]] = Field(default_factory=list)
-    showtimes: Optional[List[str]] = Field(default_factory=list)
-    mpaa_rating: Optional[str] = None
-    thumbnail: Optional[str] = None
     synopsis: Optional[str] = None
-    genre: Optional[str] = None
-    cast: Optional[List[str]] = Field(default_factory=list)
+    reviews: Optional[str] = None  # Database stores as comma-separated string
     trailer_img: Optional[str] = None
-    trailer_url: Optional[str] = None
+    trailer_video: Optional[str] = None
+    mpaa_rating: Optional[str] = None
     released: Optional[bool] = False
-
+    featured: Optional[bool] = False
 
 
 class MovieCreate(MovieBase):
@@ -41,6 +25,11 @@ class MovieCreate(MovieBase):
 
 class Movie(MovieBase):
     movie_id: int
+    # Frontend-compatible fields (computed from relationships)
+    genre: Optional[List[str]] = None  # Combined from MovieGenre relationships as array
+    cast_list: Optional[List[str]] = None  # Converted from comma-separated string
+    reviews: Optional[List[str]] = None  # Converted from comma-separated string
+    show_times: Optional[List[str]] = None  # Computed from Show relationships
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Updated from orm_mode for Pydantic v2
