@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from movies import router as movies_router
-# from theater_sections import router as theater_sections_router # Removed this import, as the table is called 'Show'
 from users import router as users_router
 from tickets import router as tickets_router
 from shows import router as shows_router
