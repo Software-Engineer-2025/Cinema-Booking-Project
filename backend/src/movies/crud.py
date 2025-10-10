@@ -23,7 +23,7 @@ def _transform_movie_data(movie: Dict) -> Dict:
             show_times.append(show_time)
     movie['show_times'] = show_times  # <-- This creates the array Showtimes.tsx expects!
     
-    # 3. Clean up list fields (cast_list and reviews)
+    # 3. Conver lists to strings
     if movie.get('cast_list') and isinstance(movie['cast_list'], str):
         movie['cast_list'] = [actor.strip() for actor in movie['cast_list'].split(',')]
     elif not isinstance(movie['cast_list'], list):
@@ -44,7 +44,6 @@ def create_movie(movie: MovieCreate):
     response = supabase.table("movie").insert(movie.model_dump()).execute()
     return response
 
-# MODIFICATION 1: Applies transformation to the entire list of movies
 def get_movies():
     response = supabase.table("movie").select("""
         *,
@@ -62,7 +61,7 @@ def get_movies():
     # Call the helper function on every movie object returned from the DB
     return [_transform_movie_data(movie) for movie in response.data]
 
-# MODIFICATION 2: Applies transformation to the single movie result
+
 def get_movie(movie_id: int):
     response = supabase.table("movie").select("""
         *,
