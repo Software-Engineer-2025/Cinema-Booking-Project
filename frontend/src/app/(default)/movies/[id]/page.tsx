@@ -13,7 +13,6 @@ export default function MoviePage() {
   const { id } = useParams();
   const movieId = Number(id);
 
-  
   const { data: movieData, isLoading } = useQuery(movieDetailsQuery(movieId));
   const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
 

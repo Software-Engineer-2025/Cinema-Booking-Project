@@ -7,3 +7,4 @@ node_modules/
 yarn.lock
 **/venv/
 **/.venv/
+../../frontend/yarn.lock

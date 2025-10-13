@@ -10,10 +10,10 @@ import formatShowtime from "@/lib/utils/format_showtimes";
 export default function MovieCard({ movieData }: { movieData: Movie }) {
     const isLoading = !!!movieData;
     
-    //Get the showtimes array from the movieData object
+    // Get the showtimes array from the movieData object
     const movieTimes = movieData?.show_times || [];
 
-    //future: implement date filtering
+    // (Future: implement date filtering here)
 
     return (
         <Link
@@ -29,10 +29,13 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
                     />
                     {/* shows all of the movie showtimes when the card is hovered over. */}
                     <div className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
-                        {}
+                        
                         {movieTimes.length > 0 ? (
-                            movieTimes.map((movieTime, index) => (
-                                <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
+                            movieTimes.map((timestamp: string, index) => (
+                                <ShowtimeCard key={index}>
+                                    {}
+                                    {formatShowtime(timestamp, { showDate: false, showTime: true })}
+                                </ShowtimeCard>
                             ))
                         ) : (
                              <span className="text-stone-300 text-sm p-1">No times available</span>
