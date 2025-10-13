@@ -3,7 +3,6 @@
 import { StarFilledIcon, StarIcon } from "@radix-ui/react-icons";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-// Import the specific query for a single movie
 import { movieDetailsQuery } from "@/lib/utils/queries";
 import { Movie } from "@/client";
 import Showtimes from "@/components/default/Showtimes";
@@ -14,7 +13,7 @@ export default function MoviePage() {
   const { id } = useParams();
   const movieId = Number(id);
 
-  // Use the new, more efficient query to fetch only one movie
+  
   const { data: movieData, isLoading } = useQuery(movieDetailsQuery(movieId));
   const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
 

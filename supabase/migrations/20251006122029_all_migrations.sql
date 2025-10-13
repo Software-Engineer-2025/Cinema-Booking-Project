@@ -16,8 +16,8 @@ CREATE TABLE Movie (
     featured BOOLEAN DEFAULT FALSE
 );
 
--- UserProfile has no dependencies.
-CREATE TABLE UserProfile (
+-- User had no dependency
+CREATE TABLE User (
     user_id BIGINT PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,

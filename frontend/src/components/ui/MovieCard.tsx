@@ -4,24 +4,16 @@ import { Movie } from "@/client";
 import { Skeleton } from "@radix-ui/themes";
 import Stars from "@/components/ui/Stars";
 import Link from "next/link";
-// Import the helper function used in Showtimes.tsx
 import formatShowtime from "@/lib/utils/format_showtimes"; 
 
-/*
-    Displays the movie and navigates to the movie detail page on click.
-    If the passed movieData is null, a skeleton card is shown.
-*/
+
 export default function MovieCard({ movieData }: { movieData: Movie }) {
     const isLoading = !!!movieData;
     
-    // 1. USE REAL DATA: Get the showtimes array from the movieData object
+    //Get the showtimes array from the movieData object
     const movieTimes = movieData?.show_times || [];
 
-    // 2. Filter out duplicate dates to only show unique times (optional, but cleaner)
-    // We only want the time, so we map the full timestamp string
-    const uniqueTimes = Array.from(new Set(
-        movieTimes.map(timestamp => formatShowtime(timestamp, { showDate: false, showTime: true }))
-    ));
+    //future: implement date filtering
 
     return (
         <Link
@@ -37,9 +29,9 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
                     />
                     {/* shows all of the movie showtimes when the card is hovered over. */}
                     <div className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
-                        {/* 3. MAP OVER THE REAL, FORMATTED SHOWTIMES */}
-                        {uniqueTimes.length > 0 ? (
-                            uniqueTimes.map((movieTime, index) => (
+                        {}
+                        {movieTimes.length > 0 ? (
+                            movieTimes.map((movieTime, index) => (
                                 <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
                             ))
                         ) : (

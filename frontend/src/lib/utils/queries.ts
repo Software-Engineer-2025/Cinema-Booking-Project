@@ -8,7 +8,6 @@ import {
 export const allMoviesQuery = () => ({
   queryKey: ["movies"],
   queryFn: async () => {
-    // Note: The client function for listMoviesApiV1MoviesGet does not accept arguments.
     const response = await listMoviesApiV1MoviesGet();
     return response.data;
   },
@@ -27,7 +26,6 @@ export const allGenresQuery = () => ({
 export const movieDetailsQuery = (movieId: number) => ({
   queryKey: ["shows", movieId],
   queryFn: async () => {
-    // FIX: The generated client expects path parameters to be wrapped in a 'path' object.
     const response = await getMovieApiV1MoviesMovieIdGet({
         path: {
             movie_id: movieId,

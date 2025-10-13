@@ -15,7 +15,7 @@ class Ticket(TicketBase):
     ticket_id: int
 
     class Config:
-        from_attributes = True  # Updated from orm_mode for Pydantic v2
+        from_attributes = True
 
 class TicketUpdate(BaseModel):
     user_id: Optional[int] = None
