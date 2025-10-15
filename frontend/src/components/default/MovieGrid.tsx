@@ -37,7 +37,7 @@ export default function MovieGrid() {
         ],
         threshold: 0.3,
       }),
-    [allMovies],
+    [allMovies]
   );
 
   // Tack on search term and filters
@@ -49,8 +49,8 @@ export default function MovieGrid() {
     if (currentFilters.genres?.length) {
       result = result.filter((m) =>
         currentFilters.genres?.some((g) =>
-          m.genre?.toLowerCase().includes(g.toLowerCase()),
-        ),
+          m.genre?.toLowerCase().includes(g.toLowerCase())
+        )
       );
     }
 

@@ -13,16 +13,14 @@ export default function Showtimes({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-
+  
   // Check if we're on the movie details page (not booking page)
-  const isMovieDetailsPage = pathname.includes("/movies/");
+  const isMovieDetailsPage = pathname.includes('/movies/');
 
   const handleShowtimeClick = (timestamp: string) => {
     if (isMovieDetailsPage) {
       // Navigate to booking page with movie and showtime pre slected
-      router.push(
-        `/book?movieId=${movieData.movie_id}&showtime=${encodeURIComponent(timestamp)}`,
-      );
+      router.push(`/book?movieId=${movieData.movie_id}&showtime=${encodeURIComponent(timestamp)}`);
     } else {
       // We're on booking page, just call the callback
       onSelectShowtime?.(timestamp);
@@ -30,11 +28,7 @@ export default function Showtimes({
   };
 
   // Early return if movieData is not loaded yet
-  if (
-    !movieData ||
-    !movieData.show_times ||
-    !Array.isArray(movieData.show_times)
-  ) {
+  if (!movieData || !movieData.show_times || !Array.isArray(movieData.show_times)) {
     return (
       <div className="flex flex-col w-full lg:w-1/2 gap-4">
         <h2 className="text-white font-medium">Showtimes</h2>

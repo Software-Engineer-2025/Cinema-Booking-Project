@@ -3,11 +3,11 @@ export default function ProfileIcon({ size = 60 }: { size?: number }) {
   return (
     <div
       className="rounded-full overflow-hidden border"
-      style={{
-        width: `${size}px`,
+      style={{ 
+        width: `${size}px`, 
         height: `${size}px`,
         minWidth: `${size}px`,
-        minHeight: `${size}px`,
+        minHeight: `${size}px`
       }}
     >
       <Image
@@ -16,10 +16,10 @@ export default function ProfileIcon({ size = 60 }: { size?: number }) {
         width={size}
         height={size}
         className="object-cover"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          objectFit: 'cover'
         }}
       />
     </div>

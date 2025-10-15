@@ -32,9 +32,9 @@ export default function MoviePage() {
     ? movieData.cast_list.join(", ")
     : "";
 
-  const genre = Array.isArray(movieData.genre)
-    ? movieData.genre.join(", ")
-    : (movieData.genre ?? "");
+  const genre = Array.isArray(movieData.genre) 
+    ? movieData.genre.join(", ") 
+    : movieData.genre ?? "";
   const mpaa = movieData.mpaa_rating ?? "";
 
   const date =
@@ -79,7 +79,7 @@ export default function MoviePage() {
                 <StarFilledIcon key={i} className="w-6 h-6 text-white" />
               ) : (
                 <StarIcon key={i} className="w-6 h-6 text-white" />
-              ),
+              )
             )}
           </div>
         </div>

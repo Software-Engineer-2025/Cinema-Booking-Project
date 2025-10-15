@@ -10,17 +10,17 @@ At the moment, this app is in development. Thank you for understanding.
 
 ## Table of Contents
 
-- <ins>Use Guide</ins>
-  - [Getting Started](#getting-started)
-  - [How To Start Up](#start-up)
-  - [How To Use The App](#use-app)
-  - [How to Close Down the App](#close-app)
-  - [Things To Be Aware Of](#aware-of)
-  - [Ideas for Further Work](#further-work)
-  - [Other Dependencies](#other-dependencies)
-  - [Contributors & Acknowledgements](#contrib-acknow)
-  - [Contribution Guidelines](#contrib-guidelines)
-  - [License](#license)
+* <ins>Use Guide</ins>
+    * [Getting Started](#getting-started)
+    * [How To Start Up](#start-up)
+    * [How To Use The App](#use-app)
+    * [How to Close Down the App](#close-app)
+    * [Things To Be Aware Of](#aware-of)
+    * [Ideas for Further Work](#further-work)
+    * [Other Dependencies](#other-dependencies)
+    * [Contributors & Acknowledgements](#contrib-acknow)
+    * [Contribution Guidelines](#contrib-guidelines)
+    * [License](#license)
 
 # <ins>Use Guide</ins>
 
@@ -29,25 +29,21 @@ At the moment, this app is in development. Thank you for understanding.
 Do a pull request on the dev branch.
 
 Go into the Backend directory and use the following command in the terminal
-
 ```
 pip install -r requirements.txt
 ```
 
 Go into the front end directory and run the following command
-
 ```
 npm install
 ```
 
 Go into the root directory and use the following command in the terminal
-
 ```
 npm install supabase --save-dev
 ```
 
 Have Docker desktop open and run the following in the root directory
-
 ```
 npx supabase start
 ```
@@ -55,7 +51,6 @@ npx supabase start
 Make a copy of the .env.example as .env, add the API URL and the access key to the env
 
 To run the FastAPI server run the following command from backend/src
-
 ```
 uvicorn main:app
 
@@ -65,18 +60,15 @@ python -m uvicorn main:app --reload
 ```
 
 Once that is ran and you open the hosted 172 link provided by the following command
-
 ```
 npm run dev
 ```
-
 you can add /docs to the end of the link to see the API docs
 
 ## <a name="#start-up">How To Start Up</a>
 
-After following the start up, anytime you want to run the dev environment,
+After following the start up, anytime you want to run the dev environment, 
 use the following commands in separate terminals.
-
 ```
 npx supabase start
 
@@ -94,7 +86,6 @@ Its a booking app similar to fandango. Have fun and explore the page.
 ## <a name="#close-app">How to Close Down the App</a>
 
 In the terminal that run the supabase command to start, run the following:
-
 ```
 npx supabase stop
 ```
@@ -131,3 +122,5 @@ and implement them in this version after checking them out.
 For this project I am using the AGPL-3.0 license. Please respect this.
 
 If you want further information regarding the license go to the LICENSE file.
+
+
