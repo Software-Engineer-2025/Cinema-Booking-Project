@@ -21,7 +21,7 @@ def _transform_movie_data(movie: Dict) -> Dict:
             # Combines date and time into the expected timestamp string format: "YYYY-MM-DD HH:MM:SS"
             show_time = f"{show_item['date']} {show_item['time']}"
             show_times.append(show_time)
-    movie['show_times'] = show_times
+    movie['show_times'] = show_times  # <-- This creates the array Showtimes.tsx expects!
     
     # 3. Conver lists to strings
     if movie.get('cast_list') and isinstance(movie['cast_list'], str):
@@ -83,6 +83,7 @@ def get_movie(movie_id: int):
     return _transform_movie_data(response.data)
 
 def delete_movie(movie_id: int):
+    # Note: Using 'MovieGenre' for delete on the join table, as PostgREST sometimes requires the original casing for specific delete/update operations outside of SELECT joins.
     supabase.table("MovieGenre").delete().eq("movie_id", movie_id).execute()
     response = supabase.table("movie").delete().eq("movie_id", movie_id).execute()
     return response
