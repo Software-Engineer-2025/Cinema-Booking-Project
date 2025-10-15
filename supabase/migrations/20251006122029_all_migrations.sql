@@ -71,3 +71,5 @@ CREATE TABLE MovieGenre (
     genre_id BIGINT REFERENCES Genre(genre_id),
     PRIMARY KEY (movie_id, genre_id)
 );
+
+
