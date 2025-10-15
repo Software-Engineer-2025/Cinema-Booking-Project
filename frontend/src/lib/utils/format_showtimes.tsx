@@ -3,7 +3,7 @@ const formatShowtime = (
   opts: { showDate?: boolean; showTime?: boolean } = {
     showDate: true,
     showTime: true,
-  }
+  },
 ) => {
   try {
     const date = new Date(timestamp);
@@ -15,7 +15,7 @@ const formatShowtime = (
         date.toLocaleDateString("en-US", {
           month: "numeric",
           day: "numeric",
-        })
+        }),
       );
     }
 
@@ -24,7 +24,7 @@ const formatShowtime = (
         date.toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
-        })
+        }),
       );
     }
 

@@ -26,10 +26,11 @@ export default function Navbar() {
           {/* Desktop Nav Buttons */}
           <div className="hidden md:flex space-x-4">
             <Link href="/movies">
-                <Button children="movies" />
+              <Button children="movies" />
             </Link>
-            <Link href="/book"><Button children="book" /></Link>
-            
+            <Link href="/book">
+              <Button children="book" />
+            </Link>
           </div>
         </div>
 

@@ -27,12 +27,10 @@ export const movieDetailsQuery = (movieId: number) => ({
   queryKey: ["shows", movieId],
   queryFn: async () => {
     const response = await getMovieApiV1MoviesMovieIdGet({
-        path: {
-            movie_id: movieId,
-        }
+      path: {
+        movie_id: movieId,
+      },
     });
     return response.data;
   },
 });
-
-

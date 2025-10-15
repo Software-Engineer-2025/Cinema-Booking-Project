@@ -12,17 +12,17 @@ export default function Home() {
 
   const featuredMovies = useMemo(
     () => allMovies?.slice(0, 4) || null,
-    [allMovies]
+    [allMovies],
   );
 
   const releasedMovies = useMemo(
     () => allMovies?.filter((movie) => movie.released === true) || [],
-    [allMovies]
+    [allMovies],
   );
 
   const unreleasedMovies = useMemo(
     () => allMovies?.filter((movie) => movie.released === false) || [],
-    [allMovies]
+    [allMovies],
   );
 
   return (

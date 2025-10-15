@@ -11,7 +11,6 @@
   }
 }
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -33,7 +32,6 @@
   color: var(--foreground);
 } */
 
-
 /* FONT CONFIGURATION, going with global definitions for now */
 h1 {
   font-family: var(--font-anton), sans-serif;
@@ -42,7 +40,7 @@ h1 {
 }
 
 h2 {
-  font-family: var(--font-anton), sans-serif; 
+  font-family: var(--font-anton), sans-serif;
   font-size: 1.7rem;
   font-weight: 550;
 }
@@ -55,6 +53,12 @@ button {
   cursor: pointer;
 }
 
-.font-special { font-family: var(--font-annapurna), sans-serif; }
-.font-heading { font-family: var(--font-anton), sans-serif; }
-.font-body { font-family: var(--font-hind), sans-serif; }
+.font-special {
+  font-family: var(--font-annapurna), sans-serif;
+}
+.font-heading {
+  font-family: var(--font-anton), sans-serif;
+}
+.font-body {
+  font-family: var(--font-hind), sans-serif;
+}
