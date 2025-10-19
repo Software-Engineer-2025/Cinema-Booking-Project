@@ -87,21 +87,40 @@ export default function Navbar() {
           >
             Book a Ticket
           </a>
-          <a
-            href="/dashboard"
-            className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/settings"
-            className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-          >
-            Settings
-          </a>
-          <button className="w-full text-left hover:text-gray-400 cursor-pointer" onClick={handleSignOut}>
-            LOG OUT
-          </button>
+          {user ? (
+              <>
+                <a
+                    href="/dashboard"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Dashboard
+                </a>
+                <a
+                    href="/settings"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Settings
+                </a>
+                <button className="w-full text-left hover:text-gray-400 cursor-pointer" onClick={handleSignOut}>
+                  LOG OUT
+                </button>
+              </>
+          ) : (
+              <>
+                <a
+                    href="/"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Login
+                </a>
+                <a
+                    href="/"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Sign Up
+                </a>
+              </>
+          )}
         </div>
       )}
 
