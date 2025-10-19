@@ -7,14 +7,15 @@ import Link from "next/link";
     Displays the movie and navigates to the movie detail page on click.
     If the passed movieData is null, a skeleton card is shown.
  */
-export default function MovieCard({ movieData }: { movieData: Movie }) {
+export default function MovieCard({ movieData, showShowtimes = true }: { movieData: Movie, showShowtimes?: boolean }) {
     const isLoading = !!!movieData;
     const movieTimes = ["1:00pm", "4:30pm", "6:00pm", "7:30pm", "9:00pm", "10:30pm"]
 
     return (
         <Link
             href={`/movies/${movieData?.movie_id}`}
-             className={"min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1 hover:opacity-60 hover:scale-107 flex-shrink-0 group"}
+             className={`min-w-[120px] max-w-[180px] flex flex-col justify-center items-center gap-1` +
+                `${showShowtimes ? "" : "hover:opacity-60"} hover:scale-107 flex-shrink-0 group`}
         >
             {movieData?.trailer_img ? (
                 <div className="w-full relative aspect-[2/3] overflow-hidden rounded hover-trigger">
@@ -24,11 +25,16 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
                         className={"h-full w-full object-cover"}
                     />
                     {/* shows all of the movie showtimes when the card is hovered over. */}
-                    <div className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
-                        {movieTimes.map((movieTime, index) => (
-                            <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
-                        ))}
-                    </div>
+                    {showShowtimes ? (<></>) : (
+                        <>
+                            <div
+                                className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
+                                {movieTimes.map((movieTime, index) => (
+                                    <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
                 <Skeleton loading={isLoading}>
