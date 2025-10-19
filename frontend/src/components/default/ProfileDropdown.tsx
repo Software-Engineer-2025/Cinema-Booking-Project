@@ -2,10 +2,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import ProfileIcon from "../ui/ProfileIcon";
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const { user, logOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await logOut();
+  }
 
   // Close when clicking outside
   useEffect(() => {
@@ -53,7 +60,7 @@ export default function ProfileDropdown() {
           >
             Settings
           </a>
-          <button className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400">
+          <button className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400" onClick={handleSignOut}>
             LOG OUT
           </button>
         </div>
