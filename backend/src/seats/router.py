@@ -3,7 +3,7 @@ from typing import List
 
 from .schemas import Seat, SeatCreate
 
-from . import crud
+from .crud import get_all_seats, get_seat_by_id, create_seat, delete_seat
 
 # Initialize the FastAPI router for seats
 router = APIRouter()
