@@ -48,17 +48,24 @@ export default function MovieGrid() {
 
     if (currentFilters.genres?.length) {
       result = result.filter((m) =>
-        currentFilters.genres?.some((g) =>
-          m.genre?.toLowerCase().includes(g.toLowerCase())
-        )
+        currentFilters.genres?.some((filterGenre) => {
+          // We must iterate over m.genre and check if it includes the filterGenre.
+          const movieGenres: string[] = Array.isArray(m.genre) ? m.genre : [];
+
+          return movieGenres.some(mg => 
+              mg.toLowerCase().includes(filterGenre.toLowerCase())
+          );
+        })
       );
     }
 
     return result;
   }, [allMovies, fuse, searchTerm, currentFilters]);
 
+  
   const totalPages = Math.ceil(filteredMovies.length / pageSize);
 
+  
   const paginatedMovies = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return filteredMovies.slice(start, start + pageSize);
