@@ -14,7 +14,7 @@ def create_show(show: ShowCreate):
 
 @router.get("/", response_model=list[Show])
 def list_shows():
-    return crud.get_shows()
+    return crud.get_all_shows()
 
 @router.get("/{show_id}", response_model=Show)
 def get_show(show_id: int):

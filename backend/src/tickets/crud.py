@@ -2,28 +2,28 @@ from .schemas import TicketCreate, TicketUpdate
 from db.supabase import supabase
 
 def create_ticket(ticket: TicketCreate):
-    response = supabase.table("Ticket").insert(ticket.model_dump()).execute()
+    response = supabase.table("ticket").insert(ticket.model_dump()).execute()
     return response
 
 def get_tickets():
     # Get tickets with related data
-    response = supabase.table("Ticket").select("""
+    response = supabase.table("ticket").select("""
         *,
-        UserProfile (
+        userprofile (
             first_name,
             last_name
         ),
-        Seat (
+        seat (
             row_letter,
             column_number,
-            Showroom (
+            showroom (
                 showroom_id
             )
         ),
-        Show (
+        show (
             date,
             time,
-            Movie (
+            movie (
                 title
             )
         )
@@ -32,23 +32,23 @@ def get_tickets():
 
 def get_ticket(ticket_id: int):
     # Get single ticket with related data
-    response = supabase.table("Ticket").select("""
+    response = supabase.table("ticket").select("""
         *,
-        UserProfile (
+        userprofile (
             first_name,
             last_name
         ),
-        Seat (
+        seat (
             row_letter,
             column_number,
-            Showroom (
+            showroom (
                 showroom_id
             )
         ),
-        Show (
+        show (
             date,
             time,
-            Movie (
+            movie (
                 title
             )
         )
@@ -58,28 +58,28 @@ def get_ticket(ticket_id: int):
 def update_ticket(ticket_id: int, ticket: TicketUpdate):
     # Only update fields that are not None
     update_data = {k: v for k, v in ticket.model_dump().items() if v is not None}
-    response = supabase.table("Ticket").update(update_data).eq("ticket_id", ticket_id).execute()
+    response = supabase.table("ticket").update(update_data).eq("ticket_id", ticket_id).execute()
     return response 
 
 def delete_ticket(ticket_id: int):
-    response = supabase.table("Ticket").delete().eq("ticket_id", ticket_id).execute()
+    response = supabase.table("ticket").delete().eq("ticket_id", ticket_id).execute()
     return response
 
 def get_tickets_by_user(user_id: int):
     # Get all tickets for a specific user
-    response = supabase.table("Ticket").select("""
+    response = supabase.table("ticket").select("""
         *,
-        Seat (
+        seat (
             row_letter,
             column_number,
-            Showroom (
+            showroom (
                 showroom_id
             )
         ),
-        Show (
+        show (
             date,
             time,
-            Movie (
+            movie (
                 title
             )
         )
