@@ -1,7 +1,11 @@
+"use client";
+
 import { Movie } from "@/client";
 import { Skeleton } from "@radix-ui/themes";
 import Stars from "@/components/ui/Stars";
 import Link from "next/link";
+import formatShowtime from "@/lib/utils/format_showtimes"; 
+
 
 /*
     Displays the movie and navigates to the movie detail page on click.
@@ -9,7 +13,11 @@ import Link from "next/link";
  */
 export default function MovieCard({ movieData }: { movieData: Movie }) {
     const isLoading = !!!movieData;
-    const movieTimes = ["1:00pm", "4:30pm", "6:00pm", "7:30pm", "9:00pm", "10:30pm"]
+    
+    // Get the showtimes array from the movieData object
+    const movieTimes = movieData?.show_times || [];
+
+    // (Future: implement date filtering here)
 
     return (
         <Link
@@ -25,9 +33,17 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
                     />
                     {/* shows all of the movie showtimes when the card is hovered over. */}
                     <div className={"hidden absolute inset-0 bg-stone-900 opacity-80 p-2 flex flex-wrap flex-col flex-start overflow-hidden overflow-y-auto group-hover:block"}>
-                        {movieTimes.map((movieTime, index) => (
-                            <ShowtimeCard key={index}>{movieTime}</ShowtimeCard>
-                        ))}
+                        
+                        {movieTimes.length > 0 ? (
+                            movieTimes.map((timestamp: string, index) => (
+                                <ShowtimeCard key={index}>
+                                    {}
+                                    {formatShowtime(timestamp, { showDate: false, showTime: true })}
+                                </ShowtimeCard>
+                            ))
+                        ) : (
+                             <span className="text-stone-300 text-sm p-1">No times available</span>
+                        )}
                     </div>
                 </div>
             ) : (
@@ -52,7 +68,7 @@ export default function MovieCard({ movieData }: { movieData: Movie }) {
 // The mini element that shows a individual showtime for a movie.
 function ShowtimeCard({ children }) {
     return(
-        <span className={"inline-block bg-stone-700 text-stone-300 rounded-full px-2 py-1 text-lg whitespace-nowrap mr-2 mb-2 no-scrollbar"}>
+        <span className={"inline-block bg-stone-700 text-stone-300 rounded-full px-2 py-1 text-sm whitespace-nowrap mr-2 mb-2 no-scrollbar"}>
             {children}
         </span>
     );

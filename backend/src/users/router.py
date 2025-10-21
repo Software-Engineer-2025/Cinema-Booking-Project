@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from .schemas import UserCreate, UserLogin
+from .schemas import UserProfileCreate, UserLogin
 from . import crud
 
 router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/register")
-def register_user(user: UserCreate):
+def register_user(user: UserProfileCreate):
     result = crud.register_user(user)
     if result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
