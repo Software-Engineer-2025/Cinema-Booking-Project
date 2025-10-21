@@ -1,16 +1,16 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class UserBase(BaseModel):
+class UserProfileBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     is_admin: Optional[bool] = False  
     promotional_list: Optional[bool] = False  
 
-class UserCreate(UserBase):
+class UserProfileCreate(UserProfileBase):
     pass 
 
-class User(UserBase):
+class UserProfile(UserProfileBase):
     user_id: int
 
     class Config:
@@ -20,13 +20,13 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
-class UserInDBBase(UserBase):
+class UserProfileInDBBase(UserProfileBase):
     user_id: int
 
     class Config:
         from_attributes = True  # Updated from orm_mode for Pydantic v2
 
-class UserUpdate(BaseModel):
+class UserProfileUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     is_admin: Optional[bool] = None  # Updated field name
@@ -35,12 +35,12 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None        
 
 __all__ = [
-    "UserBase", 
-    "UserCreate",
-    "User",
+    "UserProfileBase", 
+    "UserProfileCreate",
+    "UserProfile",
     "UserLogin",
-    "UserInDBBase",
-    "UserUpdate",
+    "UserProfileInDBBase",
+    "UserProfileUpdate",
 ]
  
 
