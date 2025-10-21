@@ -8,3 +8,4 @@ yarn.lock
 **/venv/
 **/.venv/
 ../../frontend/yarn.lock
+__pycache__/
