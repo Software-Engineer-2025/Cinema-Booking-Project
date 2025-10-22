@@ -4,16 +4,55 @@ from db.supabase import supabase  # Assumes db.supabase module exists and expose
 from .schemas import SeatCreate
 
 
+def _exists(table: str, pk_col: str, pk_val: int) -> bool:
+    if pk_val is None:
+        return False
+    res = supabase.table(table).select(pk_col).eq(pk_col, pk_val).limit(1).execute()
+    return bool(res.data)
+
+def _seat_exists(showroom_id: int, row_letter: str, column_number: int) -> bool:
+    res = (
+        supabase.table("seat")
+        .select("seat_id")
+        .eq("showroom_id", showroom_id)
+        .eq("row_letter", row_letter)
+        .eq("column_number", column_number)
+        .limit(1)
+        .execute()
+    )
+    return bool(res.data)
+
 def create_seat(seat: SeatCreate):
     """
-    Inserts a new seat into the database.
-    
-    :param seat: The Pydantic model containing the seat details.
-    :return: The response object from the Supabase insert operation.
+    Create a seat and return the created row.
+    Works with clients that return 204/No Content on insert.
     """
-    # Insert seat data, returning the created object
-    response = supabase.table("seat").insert(seat.model_dump()).select().single().execute()
-    return response
+    payload = seat.model_dump()
+
+    # Let DB generate PK if caller didn’t provide one
+    payload.pop("seat_id", None)
+
+    # Insert first (no .select() chain)
+    resp = supabase.table("seat").insert(payload).execute()
+    row = (getattr(resp, "data", None) or [None])[0]
+    if row:
+        return {"data": row, "status_code": 201}
+
+    # Fallback: fetch via near-unique triple
+    fetched = (
+        supabase.table("seat")
+        .select("*")
+        .eq("showroom_id", payload["showroom_id"])
+        .eq("row_letter", payload["row_letter"])
+        .eq("column_number", payload["column_number"])
+        .limit(1)
+        .execute()
+    ).data or []
+
+    if not fetched:
+        return {"error": "Failed to create seat", "status_code": 400}
+
+    return {"data": fetched[0], "status_code": 201}
 
 def get_all_seats() -> List[dict]:
     """
@@ -43,12 +82,22 @@ def get_seat_by_id(seat_id: int) -> Optional[dict]:
         raise e
 
 def delete_seat(seat_id: int):
-    """
-    Deletes a seat by its ID.
-    
-    :param seat_id: The ID of the seat to delete.
-    :return: The response object from the Supabase delete operation.
-    """
-    # Delete the seat where seat_id matches
-    response = supabase.table("seat").delete().eq("seat_id", seat_id).execute()
-    return response
+    exists = supabase.table("seat").select("seat_id").eq("seat_id", seat_id).limit(1).execute()
+    if not (exists.data or []):
+        return {"error": "Seat not found", "status_code": 404}
+
+    try:
+        resp = supabase.table("seat").delete().eq("seat_id", seat_id).execute()
+        status = getattr(resp, "status_code", 204) or 204
+        if 200 <= status < 300:
+            return {"success": True}
+        # Map possible FK violation (seat referenced elsewhere) to 409
+        err = getattr(resp, "error", None)
+        if err and getattr(err, "code", "") == "23503":
+            return {"error": "Cannot delete: seat is referenced", "status_code": 409}
+        return {"error": "Failed to delete seat", "status_code": status}
+    except Exception as e:
+        msg = str(e).lower()
+        if "23503" in msg or "foreign key" in msg:
+            return {"error": "Cannot delete: seat is referenced", "status_code": 409}
+        return {"error": "Could not delete seat", "status_code": 500}
