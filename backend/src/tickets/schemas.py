@@ -1,29 +1,27 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 
 class TicketBase(BaseModel):
-    seat : str
-    is_taken : bool
-    price : float
-    status : Optional[str] = "open"
-    user_id : Optional[int] = None
-    showtime_id : int
+    user_id: Optional[int] = None
+    price: float
+    status: Optional[str] = "reserved"  # Updated default to match database
+    seat_id: int  # Reference to seat table
+    show_id: int  # Reference to show table
 
 class TicketCreate(TicketBase):
     pass
 
 class Ticket(TicketBase):
-    ticket_id : int
+    ticket_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TicketUpdate(BaseModel):
-    seat : Optional[str] = None
-    is_taken : Optional[bool] = None
-    price : Optional[float] = None
-    status : Optional[str] = None
-    user_id : Optional[int] = None
-    theater_section_id : Optional[int] = None
+    user_id: Optional[int] = None
+    price: Optional[float] = None
+    status: Optional[str] = None
+    seat_id: Optional[int] = None
+    show_id: Optional[int] = None
 
     

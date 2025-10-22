@@ -1,8 +1,10 @@
 import {
   getGenresApiV1MoviesGenresGet,
   listMoviesApiV1MoviesGet,
+  getMovieApiV1MoviesMovieIdGet,
 } from "@/client";
 
+// Fetches all movies
 export const allMoviesQuery = () => ({
   queryKey: ["movies"],
   queryFn: async () => {
@@ -11,6 +13,7 @@ export const allMoviesQuery = () => ({
   },
 });
 
+// Fetches all genres
 export const allGenresQuery = () => ({
   queryKey: ["genres"],
   queryFn: async () => {
@@ -18,3 +21,18 @@ export const allGenresQuery = () => ({
     return response.data;
   },
 });
+
+// Fetches a single movie and its shows
+export const movieDetailsQuery = (movieId: number) => ({
+  queryKey: ["shows", movieId],
+  queryFn: async () => {
+    const response = await getMovieApiV1MoviesMovieIdGet({
+        path: {
+            movie_id: movieId,
+        }
+    });
+    return response.data;
+  },
+});
+
+

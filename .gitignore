@@ -4,6 +4,8 @@ node_modules/
 .env.local
 .vscode/
 .idea/
-
+yarn.lock
 **/venv/
 **/.venv/
+../../frontend/yarn.lock
+__pycache__/

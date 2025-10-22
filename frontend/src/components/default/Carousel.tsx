@@ -17,8 +17,7 @@ export default function Carousel({
 }) {
   const CAROUSEL_NAME: string = `scrollable-carousel-${carouselType}`;
   const [movies, setMovies] = useState<Movie[]>(Array(8).fill(null));
-  const showShowTimes: boolean = (carouselType == "coming-soon");
-
+  const showShowTimes: boolean = carouselType == "coming-soon";
 
   /*
    Sets the movies to the passed movie array if the array isn't null or empty.
@@ -52,11 +51,15 @@ export default function Carousel({
         <div
           id={CAROUSEL_NAME}
           className={
-            "w-[80dvw] h-[40dvh] flex flex-row justify-evenly overflow-x-scroll no-scrollbar gap-10"
+            "w-[80dvw] h-[40dvh] flex flex-row justify-evenly overflow-x-scroll no-scrollbar gap-10 overflow-y-hidden"
           }
         >
           {movies.map((movie, index) => (
-            <MovieCard key={index} movieData={movie} showShowtimes={showShowTimes}/>
+            <MovieCard
+              key={index}
+              movieData={movie}
+              showShowtimes={showShowTimes}
+            />
           ))}
         </div>
         <button
