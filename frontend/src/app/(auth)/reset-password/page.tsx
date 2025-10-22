@@ -4,19 +4,19 @@ import BlackButton from "@/components/ui/BlackButton";
 
 import Link from "next/link";
 
-export default function ForgotPassword() {
+export default function ResetPassword() {
   return (
     <div className="flex justify-center items-center">
       <AuthCard className="flex justify-center flex-col gap-6">
         
-        <h2 className="">Forgot your password?</h2>
-        <p>Enter the email address for the associated account.</p>
+        <h2 className="">Reset Your Password</h2>
+        <p>Enter a new secure password for your account.</p>
         <form className="flex flex-col gap-3">
-          <AuthInput type="email" placeholder="example@example.com" className="pb-7" required />
+          <AuthInput type="email" placeholder="Enter a secure password." className="pb-7" required />
           
        
 
-          <BlackButton className="mb-6">Request Reset Password</BlackButton>
+          <BlackButton className="mb-6">Reset Password</BlackButton>
      
              <Link
             href="/login"
