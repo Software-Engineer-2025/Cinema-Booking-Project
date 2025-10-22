@@ -5,9 +5,16 @@ import Button from "../ui/Button";
 import NavbarSearch from "../ui/NavbarSearch";
 import ProfileDropdown from "./ProfileDropdown";
 import Link from "next/link";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { user, logOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await logOut();
+  }
 
   return (
     <div>
@@ -80,21 +87,40 @@ export default function Navbar() {
           >
             Book a Ticket
           </a>
-          <a
-            href="/dashboard"
-            className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/settings"
-            className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-          >
-            Settings
-          </a>
-          <button className="w-full text-left hover:text-gray-400 cursor-pointer">
-            LOG OUT
-          </button>
+          {user ? (
+              <>
+                <a
+                    href="/dashboard"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Dashboard
+                </a>
+                <a
+                    href="/settings"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Settings
+                </a>
+                <button className="w-full text-left hover:text-gray-400 cursor-pointer" onClick={handleSignOut}>
+                  LOG OUT
+                </button>
+              </>
+          ) : (
+              <>
+                <a
+                    href="/"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Login
+                </a>
+                <a
+                    href="/"
+                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                >
+                  Sign Up
+                </a>
+              </>
+          )}
         </div>
       )}
 

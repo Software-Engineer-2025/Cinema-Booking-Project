@@ -2,10 +2,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import ProfileIcon from "../ui/ProfileIcon";
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const { user, logOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await logOut();
+  }
 
   // Close when clicking outside
   useEffect(() => {
@@ -41,21 +48,41 @@ export default function ProfileDropdown() {
             rounded-md shadow-lg z-50
           "
         >
-          <a
-            href="/dashboard"
-            className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
-          >
-            Dashboard
-          </a>
-          <a
-            href="/settings"
-            className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
-          >
-            Settings
-          </a>
-          <button className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400">
-            LOG OUT
-          </button>
+          { user ? (
+              <>
+                <a
+                    href="/dashboard"
+                    className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                >
+                  Dashboard
+                </a>
+                <a
+                    href="/settings"
+                    className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                >
+                  Settings
+                </a>
+                <button className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400"
+                        onClick={handleSignOut}>
+                  LOG OUT
+                </button>
+              </>
+          ) : (
+              <>
+                <a
+                    href="/"
+                    className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                >
+                  Login
+                </a>
+                <a
+                    href="/"
+                    className="block px-4 py-2 hover:text-gray-400 "
+                >
+                  Sign Up
+                </a>
+              </>
+          )}
         </div>
       )}
     </div>
