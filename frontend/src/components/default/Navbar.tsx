@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await logOut();
-  }
+  };
 
   return (
     <div>
@@ -33,10 +33,11 @@ export default function Navbar() {
           {/* Desktop Nav Buttons */}
           <div className="hidden md:flex space-x-4">
             <Link href="/movies">
-                <Button children="movies" />
+              <Button children="movies" />
             </Link>
-            <Link href="/book"><Button children="book" /></Link>
-            
+            <Link href="/book">
+              <Button children="book" />
+            </Link>
           </div>
         </div>
 
@@ -88,38 +89,41 @@ export default function Navbar() {
             Book a Ticket
           </a>
           {user ? (
-              <>
-                <a
-                    href="/dashboard"
-                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                >
-                  Dashboard
-                </a>
-                <a
-                    href="/settings"
-                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                >
-                  Settings
-                </a>
-                <button className="w-full text-left hover:text-gray-400 cursor-pointer" onClick={handleSignOut}>
-                  LOG OUT
-                </button>
-              </>
+            <>
+              <a
+                href="/dashboard"
+                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+              >
+                Dashboard
+              </a>
+              <a
+                href="/settings"
+                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+              >
+                Settings
+              </a>
+              <button
+                className="w-full text-left hover:text-gray-400 cursor-pointer"
+                onClick={handleSignOut}
+              >
+                LOG OUT
+              </button>
+            </>
           ) : (
-              <>
-                <a
-                    href="/"
-                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                >
-                  Login
-                </a>
-                <a
-                    href="/"
-                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                >
-                  Sign Up
-                </a>
-              </>
+            <>
+              <Link
+                href="/login"
+                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+              >
+                Login
+              </Link>
+              <Link
+                href="/create-account"
+                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+              >
+                Sign Up
+              </Link>
+            </>
           )}
         </div>
       )}
