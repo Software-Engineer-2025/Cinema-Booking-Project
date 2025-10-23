@@ -70,13 +70,13 @@ export default function ProfileDropdown() {
           ) : (
               <>
                 <a
-                    href="/"
+                    href="/login"
                     className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
                 >
                   Login
                 </a>
                 <a
-                    href="/"
+                    href="/create-account"
                     className="block px-4 py-2 hover:text-gray-400 "
                 >
                   Sign Up
