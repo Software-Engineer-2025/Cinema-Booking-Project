@@ -17,8 +17,8 @@ def list_shows():
     return crud.get_all_shows()
 
 @router.get("/{show_id}", response_model=Show)
-def get_show(show_id: int):
-    show = crud.get_show(show_id)
+def get_show_by_id(show_id: int):
+    show = crud.get_show_by_id(show_id)
     if not show:
         raise HTTPException(status_code=404, detail="Show not found")
     return show
@@ -30,19 +30,19 @@ def get_shows_by_movie(movie_id: int):
 
 @router.get("/date/{date}", response_model=list[Show])
 def get_shows_by_date(date: str):
-    shows = crud.get_shows_by_date(date)
+    shows = crud.get_show_by_date(date)
     return shows
 
 @router.put("/{show_id}", response_model=Show)
 def update_show(show_id: int, show: ShowUpdate):
     result = crud.update_show(show_id, show)
-    if result.error:
-        raise HTTPException(status_code=400, detail=result.error.message)
-    return result.data[0]
+    if "error" in result:
+        raise HTTPException(status_code=result["status_code"], detail=result["error"])
+    return result["data"]
 
 @router.delete("/{show_id}")
 def delete_show(show_id: int):
     result = crud.delete_show(show_id)
-    if result.error:
-        raise HTTPException(status_code=400, detail=result.error.message)
+    if "error" in result:
+        raise HTTPException(status_code=result.get("status_code", 400), detail=result["error"])
     return {"ok": True}

@@ -5,7 +5,7 @@ from . import crud
 router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/register")
 def register_user(user: UserProfileCreate):
-    result = crud.register_user(user)
+    result = crud.create_user(user)
     if result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
     return {"ok": True}

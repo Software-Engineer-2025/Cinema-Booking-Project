@@ -81,12 +81,7 @@ def get_movie(movie_id: int):
         
     # Call the helper function on the single returned object
     return _transform_movie_data(response.data)
-
-def delete_movie(movie_id: int):
-    # Note: Using 'MovieGenre' for delete on the join table, as PostgREST sometimes requires the original casing for specific delete/update operations outside of SELECT joins.
-    supabase.table("MovieGenre").delete().eq("movie_id", movie_id).execute()
-    response = supabase.table("movie").delete().eq("movie_id", movie_id).execute()
-    return response
+ 
 
 def get_genres():
     response = supabase.table("genre").select("name").execute()

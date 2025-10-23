@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from typing import List
 
 from .schemas import Seat, SeatCreate
@@ -30,25 +30,16 @@ async def read_seat(seat_id: int):
     
     return Seat.model_validate(seat_data)
 
-# POST a new seat
 @router.post("/seats", response_model=Seat, status_code=201, summary="Create New Seat")
 async def add_seat(seat_data: SeatCreate):
-    """
-    Creates a new seat in the database.
-    """
-    try:
-        response = create_seat(seat_data)
-        # Assuming the response.data contains the single inserted record
-        return Seat.model_validate(response.data)
-    except Exception as e:
-        # Catch exceptions (e.g., foreign key violation if showroom_id doesn't exist)
-        raise HTTPException(status_code=400, detail=f"Failed to create seat: {e}")
+    result = create_seat(seat_data)
+    if "error" in result:
+        raise HTTPException(status_code=result["status_code"], detail=result["error"])
+    return Seat.model_validate(result["data"])
 
-# DELETE a seat
 @router.delete("/seats/{seat_id}", status_code=204, summary="Delete Seat by ID")
 async def remove_seat(seat_id: int):
-    """
-    Deletes a specific seat by its unique ID.
-    """
-    delete_seat(seat_id)
-    return {}
+    result = delete_seat(seat_id)
+    if "error" in result:
+        raise HTTPException(status_code=result["status_code"], detail=result["error"])
+    return Response(status_code=204)

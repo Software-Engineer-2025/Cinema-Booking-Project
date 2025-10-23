@@ -2,10 +2,11 @@ from pydantic import BaseModel
 from typing import Optional
 
 class UserProfileBase(BaseModel):
+    user_id: int 
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     is_admin: Optional[bool] = False  
-    promotional_list: Optional[bool] = False  
+    promotional_list: Optional[bool] = False
 
 class UserProfileCreate(UserProfileBase):
     pass 
