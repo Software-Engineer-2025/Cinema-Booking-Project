@@ -1,3 +1,5 @@
+"use client"
+
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
 import BlackButton from "@/components/ui/BlackButton";

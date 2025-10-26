@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
