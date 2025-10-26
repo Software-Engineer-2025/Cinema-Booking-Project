@@ -2,9 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { CreateUserParams} from "@/lib/context/AuthContext";
-import {revalidatePath} from "next/cache";
-
-const phoneRegex = new RegExp("^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})\\s*$");
+import { revalidatePath } from "next/cache";
+import { phoneRegex, emailRegex } from "@/lib/utils/regex";
 
 /*
     Signs up the user and adds them to the Supabase auth.users table.
@@ -52,8 +51,7 @@ export async function logInAction(email: string, password: string) {
             password,
         });
 
-        // re add this when the login page is set up
-        //revalidatePath('/login', 'layout');
+        revalidatePath('/login', 'layout');
 
         return result.error ? result.error : null;
     } catch (unexpectedError) {
@@ -65,11 +63,15 @@ export async function logInAction(email: string, password: string) {
  * Sends the reset password email.
  */
 export async function forgotPasswordAction(email: string) {
+    if (!emailRegex.test(email)) {
+        return { error: "Phone number is not formatted in any valid way." };
+    }
+
     try {
         const supabase = await createClient();
 
         const result = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'auth/update-password',
+            redirectTo: 'auth/reset-password',
         });
 
         return result.error ? result.error : null;

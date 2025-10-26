@@ -70,12 +70,9 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
                 switch (event) {
                     case 'SIGNED_IN':
                         setUser(session?.user ?? null);
-                        // this needs to be set whenever we have the login page set up,
-                        /*
-                        if(window.location.pathname === '/login'){
+                        if(window.location.pathname === '/login' || window.location.pathname === 'verify-email'){
                             window.location.href = '/';
                         }
-                        */
                         break;
                     case 'TOKEN_REFRESHED':
                     case 'USER_UPDATED':
