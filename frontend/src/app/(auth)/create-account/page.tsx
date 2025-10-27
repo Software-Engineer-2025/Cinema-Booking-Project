@@ -1,10 +1,12 @@
 "use client";
+
 import { useState } from "react";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
 import BlackButton from "@/components/ui/BlackButton";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import Link from "next/link";
+import { useAuth, CreateUserParams } from "@/lib/context/AuthContext";
 
 interface Card {
   cardNumber: string;
@@ -23,10 +25,13 @@ interface ShippingAddress {
 }
 
 export default function CreateAccount() {
+  const { signUp } = useAuth();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [phone, setPhone] = useState("");
   
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -39,23 +44,37 @@ export default function CreateAccount() {
   });
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
-    // All data is available here (these variables can be sent to db, just need to be connected)
 
-    // TODO: Send to database
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      shippingAddress,
-      paymentMethods //payment methods is array of methods use like paymentMethods[0].cardNumber (look above for card definition)
-    };
+    if (password!== repeatPassword) {
+      alert("Passwords do not match!");
+      return; // Stop execution if passwords don't match
+    }
+
+    // This is the object your useAuth hook's signUp function should expect
+            const signUpData = {
+              email: email,
+              password: password,
+              repeatPassword: repeatPassword,
+              options: {
+                data: {
+                  first_name: firstName, // Use snake_case to match the trigger
+                  last_name: lastName,   // Use snake_case to match the trigger
+                  // You can add other data here too, like 'phone'
+                }
+              }
+            } as unknown as CreateUserParams;
+        
+            console.log("Data being sent to signUp function:", JSON.stringify(signUpData, null, 2));
+            debugger;
+            // You will need to update your `signUp` function in `AuthContext`
+            // to accept this new structure and pass it to supabase.auth.signUp()
+            const result = await signUp(signUpData);
     
-
+        if (result) {
+          alert(result);
+        }
   };
 
   return (
@@ -103,6 +122,14 @@ export default function CreateAccount() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <AuthInput
+              type="repeat-password"
+              header="Repeat Password"
+              placeholder="Enter Previous Password"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              required
+          />
           <AuthInput 
             type="text" 
             header="Phone Number" 
@@ -125,7 +152,7 @@ export default function CreateAccount() {
             onPaymentChange={setPaymentMethods}
           />
          
-          <BlackButton type="submit">Sign Up</BlackButton> 
+          <BlackButton type="submit" onClick={handleSubmit}>Sign Up</BlackButton>
           <p className="text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="underline cursor-pointer">

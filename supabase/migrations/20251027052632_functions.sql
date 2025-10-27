@@ -2,29 +2,15 @@ ALTER TABLE userprofile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE paymentcards ENABLE ROW LEVEL SECURITY;
 
 -- Policies 
-CREATE OR REPLACE POLICY "Users can view their own profile."
-ON userprofile FOR SELECT
-USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view their own profile." ON public.userprofile;
+CREATE POLICY "Users can view their own profile."
+    ON public.userprofile FOR SELECT
+    USING (auth.uid() = user_id);
 
-CREATE OR REPLACE POLICY "Users can manage their own payment cards."
-ON paymentcards FOR ALL
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can view their own payment cards."
-ON paymentcards FOR SELECT
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can add new payment cards."
-ON paymentcards FOR INSERT
-WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update their own payment cards."
-ON paymentcards FOR UPDATE
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete their own payment cards."
-ON paymentcards FOR DELETE
-USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can manage their own payment cards." ON public.paymentcards;
+CREATE POLICY "Users can manage their own payment cards."
+    ON public.paymentcards FOR ALL
+    USING (auth.uid() = user_id);
 
 -- Create the function to handle new user registration
 CREATE OR REPLACE FUNCTION public.handle_new_user()

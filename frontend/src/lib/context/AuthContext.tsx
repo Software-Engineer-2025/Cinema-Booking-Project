@@ -3,22 +3,42 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/auth-js";
-import { signUpAction, logInAction, forgotPasswordAction, updatePasswordAction,checkUserAction } from "@/lib/actions/auth-actions";
+import {
+    signUpAction,
+    logInAction,
+    forgotPasswordAction,
+    updatePasswordAction,
+    checkUserAction,
+    checkVerificationAction
+} from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
 
 // User params for a user to sign up
 export interface CreateUserParams {
     email: string,
-    phoneNumber: string,
+    //phoneNumber: string,
     password: string,
     repeatPassword: string,
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    // Generic options bag to support passing nested options.data from UI (keeps backwards compatibility)
+    options?: {
+        data?: Record<string, any>
+    }
+}
+
+interface SignUpResult {
+    error?: { message: string };
+    requiresEmailConfirmation?: boolean;
+    message?: string;
 }
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
 
-    signUp: (userData: CreateUserParams) => Promise<void>
+    signUp: (userData: CreateUserParams) => Promise<SignUpResult | null>;
     logIn: (email: string, password: string) => Promise<void>;
     logOut: () => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
@@ -70,12 +90,9 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
                 switch (event) {
                     case 'SIGNED_IN':
                         setUser(session?.user ?? null);
-                        // this needs to be set whenever we have the login page set up,
-                        /*
                         if(window.location.pathname === '/login'){
                             window.location.href = '/';
                         }
-                        */
                         break;
                     case 'TOKEN_REFRESHED':
                     case 'USER_UPDATED':
@@ -102,19 +119,30 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
      * Uses CreateUserParams for now until different interface is set up.
      * Need to set up an interface for the user data type being passed to signUp action.
      */
-    const signUp = async (userData: CreateUserParams) => {
+    const signUp = async (userData: CreateUserParams): Promise<SignUpResult | null> => {
         setIsLoading(true);
-
-        const errorMessage = await signUpAction(userData);
-
-        if (errorMessage) {
-            console.error("Error during sign-up:", errorMessage);
-        } else {
-            // This needs to be updated to a page that states sign up success when it's set up.
+        try {
+            const result = await signUpAction(userData);
+            
+            if (result?.error) {
+                console.error("Error during sign-up:", result.error);
+                return { error: { message: result.error.toString() } };
+            }
+            
+            if (result?.requiresEmailConfirmation) {
+                window.location.href = "/verify-email";
+                return { requiresEmailConfirmation: true, message: result.message };
+            }
+            
+            // Success with no verification needed (unlikely with current setup)
             window.location.href = "/";
+            return null;
+        } catch (err) {
+            console.error("Unexpected error during sign-up:", err);
+            return { error: { message: 'An unexpected error occurred during sign up' } };
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false);
     };
 
     /*
@@ -128,7 +156,12 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
         if (errorMessage) {
             console.error("Error during log-in:", errorMessage.message);
         } else {
-            window.location.replace("/");
+            const validated = await checkVerification();
+            if (validated) {
+                window.location.replace("/");
+            } else {
+                window.location.replace("/verify-email");
+            }
         }
 
         setIsLoading(false);
@@ -193,6 +226,17 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
         if (errorMessage) {
             console.error("Error during check user", errorMessage.message);
         }
+    }
+
+    // Checks if a user is validated.
+    const checkVerification = async  () => {
+        const result = await checkVerificationAction();
+
+        if (result === null) {
+            console.error("Error during check verification");
+            return null;
+        }
+        return result;
     }
 
     // The callable methods passed to the component from importing.

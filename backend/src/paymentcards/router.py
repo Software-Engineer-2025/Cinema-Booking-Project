@@ -1,31 +1,41 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from security import get_current_user
-from .crud import add_payment_card_for_user, get_payment_cards_for_user, delete_payment_card_for_user
-from .schemas import PaymentCardCreate, PaymentCardOut
+from typing import List
+import uuid
 
-router = APIRouter()
+# Make sure your imports point to the correct locations in your project
+from auth.security import get_current_user
+from . import crud
+from .schemas import NewCardRequest, CardResponse
 
-@router.post("/cards/create", response_model=dict)
-async def create_card(card_data: PaymentCardCreate, user: dict = Depends(get_current_user)):
-    resp = add_payment_card_for_user(
-        user_uuid=user["id"],
-        card_details=card_data.model_dump(),
-        card_brand=card_data.card_brand,
-        is_default=card_data.is_default or False
-    )
-    if hasattr(resp, 'error') and resp.error:
-        raise HTTPException(status_code=400, detail=resp.error.message)
-    return {"status": "success", "card_id": getattr(resp, 'data', None)}
+router = APIRouter(prefix="/cards", tags=["Payment Cards"])
 
-@router.get("/cards", response_model=list[dict])
-async def list_cards(user: dict = Depends(get_current_user)):
-    cards = get_payment_cards_for_user(user["id"])
-    return cards
+@router.post("/", response_model=List[CardResponse], status_code=status.HTTP_201_CREATED)
+def add_payment_card_endpoint(
+    card_data: NewCardRequest, current_user: dict = Depends(get_current_user)
+):
+    user_id = current_user["id"]
+    data, error = crud.add_payment_card(user_id, card_data)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+    return data
 
-@router.delete("/cards/{card_id}", response_model=dict)
-async def delete_card(card_id: str, user: dict = Depends(get_current_user)):
-    resp = delete_payment_card_for_user(user["id"], card_id)
-    if hasattr(resp, 'error') and resp.error:
-        raise HTTPException(status_code=400, detail=resp.error.message)
-    return {"status": "deleted"}
+@router.get("/", response_model=List[CardResponse])
+def get_payment_cards_endpoint(current_user: dict = Depends(get_current_user)):
+    user_id = current_user["id"]
+    data, error = crud.get_payment_cards(user_id)
+    if error:
+        raise HTTPException(status_code=500, detail=error)
+    return data
 
+@router.delete("/{card_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_payment_card_endpoint(card_id: uuid.UUID, current_user: dict = Depends(get_current_user)):
+    user_id = current_user["id"]
+    data, error = crud.delete_payment_card(user_id, str(card_id))
+    
+    if error:
+        raise HTTPException(status_code=500, detail=error)
+    
+    if not data:
+        raise HTTPException(status_code=404, detail="Card not found or access denied.")
+        
+    return None

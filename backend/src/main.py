@@ -8,7 +8,6 @@ from seats import router as seats_router
 from genres import router as genres_router     
 from db.supabase import supabase
 from fastapi.middleware.cors import CORSMiddleware
-from debug import router as debug_router
 from auth import router as auth_router
 from paymentcards import router as paymentcards_router
 
@@ -23,7 +22,6 @@ app.include_router(showrooms_router.router, prefix="/api/v1", tags=["Showrooms"]
 app.include_router(seats_router.router, prefix="/api/v1", tags=["Seats"])
 app.include_router(genres_router.router, prefix="/api/v1", tags=["Genres"])
 app.include_router(paymentcards_router.router, prefix="/api/v1", tags=["PaymentCards"])
-app.include_router(debug_router, prefix="/internal", tags=["Debug"])
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,26 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from .schemas import UserProfileCreate, UserLogin, UserProfileUpdate, UserProfileResponse, NewCardRequest
 from . import crud
-from security import get_current_user
+from auth.security import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/users", tags=["Users"])
-
-
-@router.post("/register")
-def register_user(user: UserProfileCreate):
-    result = crud.create_user(user)
-    if result.error:
-        raise HTTPException(status_code=400, detail=result.error.message)
-    return {"ok": True}
-
-
-@router.post("/login")
-def login_user(user: UserLogin):
-    result = crud.login_user(user)
-    if result.error:
-        raise HTTPException(status_code=400, detail=result.error.message)
-    return {"token": result.data[0].token}
 
 
 @router.get("/me", response_model=UserProfileResponse)
