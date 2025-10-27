@@ -16,11 +16,13 @@ export async function signUpAction(userData: CreateUserParams) {
             return { error: "Passwords don't match." };
         }
 
+        /*
         if (!phoneRegex.test(userData.phoneNumber)) {
             return { error: "Phone number is not formatted in any valid way." };
         } else {
             userData.phoneNumber = userData.phoneNumber.replace(/\D/g, '');
         }
+         */
 
         const result = await supabase.auth.signUp({
             email: userData.email,
@@ -30,8 +32,8 @@ export async function signUpAction(userData: CreateUserParams) {
             }
         });
 
-        revalidatePath('/', 'layout');
-        //redirect('/')
+
+        revalidatePath('create-account', 'layout');
 
         return result.error ? result.error : null;
     } catch (unexpectedError) {
@@ -110,5 +112,26 @@ export async function checkUserAction() {
         return error ? error : null;
     } catch (unexpectedError) {
         return unexpectedError;
+    }
+}
+
+/*
+ * checks if the user is verified
+ */
+export async function checkVerificationAction() {
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (error) {
+        console.error('Error fetching user:', error.message);
+        return null;
+    }
+
+    if (user) {
+        //console.log("user confirmed?: " + user.email_confirmed_at)
+        return !!user.email_confirmed_at;
+    } else {
+        console.log('no user session in server side');
+        return null;
     }
 }

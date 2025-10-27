@@ -3,13 +3,20 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/auth-js";
-import { signUpAction, logInAction, forgotPasswordAction, updatePasswordAction,checkUserAction } from "@/lib/actions/auth-actions";
+import {
+    signUpAction,
+    logInAction,
+    forgotPasswordAction,
+    updatePasswordAction,
+    checkUserAction,
+    checkVerificationAction
+} from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
 
 // User params for a user to sign up
 export interface CreateUserParams {
     email: string,
-    phoneNumber: string,
+    //phoneNumber: string,
     password: string,
     repeatPassword: string,
 }
@@ -70,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
                 switch (event) {
                     case 'SIGNED_IN':
                         setUser(session?.user ?? null);
-                        if(window.location.pathname === '/login' || window.location.pathname === 'verify-email'){
+                        if(window.location.pathname === '/login'){
                             window.location.href = '/';
                         }
                         break;
@@ -108,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
             console.error("Error during sign-up:", errorMessage);
         } else {
             // This needs to be updated to a page that states sign up success when it's set up.
-            window.location.href = "/";
+            window.location.href = "verify-email";
         }
 
         setIsLoading(false);
@@ -125,7 +132,12 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
         if (errorMessage) {
             console.error("Error during log-in:", errorMessage.message);
         } else {
-            window.location.replace("/");
+            const validated = await checkVerification();
+            if (validated) {
+                window.location.replace("/");
+            } else {
+                window.location.replace("/verify-email");
+            }
         }
 
         setIsLoading(false);
@@ -190,6 +202,17 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
         if (errorMessage) {
             console.error("Error during check user", errorMessage.message);
         }
+    }
+
+    // Checks if a user is validated.
+    const checkVerification = async  () => {
+        const result = await checkVerificationAction();
+
+        if (result === null) {
+            console.error("Error during check verification");
+            return null;
+        }
+        return result;
     }
 
     // The callable methods passed to the component from importing.

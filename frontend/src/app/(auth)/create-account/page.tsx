@@ -6,6 +6,7 @@ import AuthInput from "@/components/auth/AuthInput";
 import BlackButton from "@/components/ui/BlackButton";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import Link from "next/link";
+import { useAuth, CreateUserParams } from "@/lib/context/AuthContext";
 
 interface Card {
   cardNumber: string;
@@ -24,10 +25,13 @@ interface ShippingAddress {
 }
 
 export default function CreateAccount() {
+  const { signUp } = useAuth();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [phone, setPhone] = useState("");
   
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -40,7 +44,7 @@ export default function CreateAccount() {
   });
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
    
     // All data is available here (these variables can be sent to db, just need to be connected)
@@ -55,7 +59,22 @@ export default function CreateAccount() {
       shippingAddress,
       paymentMethods //payment methods is array of methods use like paymentMethods[0].cardNumber (look above for card definition)
     };
-    
+
+    if (password !== repeatPassword) {
+      alert("Passwords do not match!");
+    } else {
+      const data: CreateUserParams = {
+        email: email,
+        password: password,
+        repeatPassword: repeatPassword
+      }
+
+      const result = await signUp(data);
+
+      if (result) {
+        alert(result);
+      }
+    }
 
   };
 
@@ -104,6 +123,14 @@ export default function CreateAccount() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <AuthInput
+              type="repeat-password"
+              header="Repeat Password"
+              placeholder="Enter Previous Password"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              required
+          />
           <AuthInput 
             type="text" 
             header="Phone Number" 
@@ -126,7 +153,7 @@ export default function CreateAccount() {
             onPaymentChange={setPaymentMethods}
           />
          
-          <BlackButton type="submit">Sign Up</BlackButton> 
+          <BlackButton type="submit" onClick={handleSubmit}>Sign Up</BlackButton>
           <p className="text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="underline cursor-pointer">
