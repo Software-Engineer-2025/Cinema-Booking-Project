@@ -21,6 +21,13 @@ max_rows = 1000
 # Enable HTTPS endpoints locally using a self-signed certificate.
 enabled = false
 
+[db.config]
+# Set a custom variable 'app.settings.encryption_key' from an environment variable.
+# This makes the key available to SQL functions via current_setting('app.settings.encryption_key').
+statements = """
+    SET app.settings.encryption_key TO :ENCRYPTION_KEY;
+"""
+
 [db]
 # Port to use for the local database URL.
 port = 54322

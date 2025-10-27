@@ -1,3 +1,7 @@
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+-- CREATE EXTENSION IF NOT EXISTS vault WITH SCHEMA vault;
+
+
 -- Movie has no dependencies, so it's created first.
 CREATE TABLE Movie (
     movie_id BIGINT PRIMARY KEY,
@@ -18,7 +22,7 @@ CREATE TABLE Movie (
 
 -- UserProfile had no dependency
 CREATE TABLE UserProfile (
-    user_id BIGINT PRIMARY KEY,
+    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     first_name TEXT,
     last_name TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
@@ -53,7 +57,7 @@ CREATE TABLE Show(
 -- Ticket depends on UserProfile, Show, and Seat.
 CREATE TABLE Ticket (
     ticket_id BIGINT PRIMARY KEY,
-    user_id BIGINT REFERENCES UserProfile(user_id) DEFAULT NULL,
+    user_id UUID REFERENCES UserProfile(user_id) DEFAULT NULL, 
     price DOUBLE PRECISION NOT NULL,
     status TEXT NOT NULL DEFAULT 'reserved',
     seat_id BIGINT REFERENCES Seat(seat_id),
@@ -72,4 +76,13 @@ CREATE TABLE MovieGenre (
     PRIMARY KEY (movie_id, genre_id)
 );
 
+CREATE TABLE PaymentCards (
+    card_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    card_details BYTEA NOT NULL,
+    card_last_four VARCHAR(4) NOT NULL,
+    card_brand TEXT,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
