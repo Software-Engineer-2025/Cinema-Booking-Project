@@ -26,8 +26,15 @@ CREATE TABLE userprofile (
     first_name TEXT,
     last_name TEXT,
     email TEXT,
+    address_line_1 TEXT,
+    address_line_2 TEXT,
+    city TEXT,
+    state TEXT,
+    zip TEXT,
+    country TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
-    promotional_list BOOLEAN DEFAULT FALSE
+    promotional_list BOOLEAN DEFAULT FALSE,
+    phone TEXT
 );
 
 -- Showroom depends on nothing, so it's created early.

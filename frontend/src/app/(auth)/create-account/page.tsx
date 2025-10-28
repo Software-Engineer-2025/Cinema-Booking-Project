@@ -33,7 +33,6 @@ export default function CreateAccount() {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [phone, setPhone] = useState("");
-  
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     address1: "",
     address2: "",
@@ -47,34 +46,37 @@ export default function CreateAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password!== repeatPassword) {
+    if (password !== repeatPassword) {
       alert("Passwords do not match!");
-      return; // Stop execution if passwords don't match
+      return;
     }
 
-    // This is the object your useAuth hook's signUp function should expect
-            const signUpData = {
-              email: email,
-              password: password,
-              repeatPassword: repeatPassword,
-              options: {
-                data: {
-                  first_name: firstName, // Use snake_case to match the trigger
-                  last_name: lastName,   // Use snake_case to match the trigger
-                  // You can add other data here too, like 'phone'
-                }
-              }
-            } as unknown as CreateUserParams;
-        
-            console.log("Data being sent to signUp function:", JSON.stringify(signUpData, null, 2));
-            debugger;
-            // You will need to update your `signUp` function in `AuthContext`
-            // to accept this new structure and pass it to supabase.auth.signUp()
-            const result = await signUp(signUpData);
-    
-        if (result) {
-          alert(result);
-        }
+    const signUpData: CreateUserParams = {
+      email: email,
+      password: password,
+      repeatPassword: repeatPassword,
+      first_name: firstName,
+      last_name: lastName,
+      phone: phone,
+      address_line_1: shippingAddress.address1,
+      address_line_2: shippingAddress.address2,
+      city: shippingAddress.city,
+      state: shippingAddress.state,
+      zip: shippingAddress.zip,
+      country: shippingAddress.country,
+    };
+
+    console.log(
+      "Data being sent to signUp function:",
+      JSON.stringify(signUpData, null, 2)
+    );
+    // You will need to update your `signUp` function in `AuthContext`
+    // to accept this new structure and pass it to supabase.auth.signUp()
+    const result = await signUp(signUpData);
+
+    if (result) {
+      alert(result);
+    }
   };
 
   return (
@@ -123,36 +125,38 @@ export default function CreateAccount() {
             required
           />
           <AuthInput
-              type="repeat-password"
-              header="Repeat Password"
-              placeholder="Enter Previous Password"
-              value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
-              required
+            type="repeat-password"
+            header="Repeat Password"
+            placeholder="Enter Previous Password"
+            value={repeatPassword}
+            onChange={(e) => setRepeatPassword(e.target.value)}
+            required
           />
-          <AuthInput 
-            type="text" 
-            header="Phone Number" 
+          <AuthInput
+            type="text"
+            header="Phone Number"
             placeholder="+1"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-         
+
           {/* shipping address */}
           <AccountDropdown
             label="Add Shipping Address"
             type="shipping"
             onShippingChange={setShippingAddress}
           />
-         
+
           {/* payment methods Dropdown */}
           <AccountDropdown
             label="Add Payment Method"
             type="payment"
             onPaymentChange={setPaymentMethods}
           />
-         
-          <BlackButton type="submit" onClick={handleSubmit}>Sign Up</BlackButton>
+
+          <BlackButton type="submit" onClick={handleSubmit}>
+            Sign Up
+          </BlackButton>
           <p className="text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="underline cursor-pointer">
