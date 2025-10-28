@@ -2,3 +2,6 @@ fastapi
 uvicorn
 supabase
 python-dotenv
+psycopg2-binary
+pyjwt
+sendgrid
