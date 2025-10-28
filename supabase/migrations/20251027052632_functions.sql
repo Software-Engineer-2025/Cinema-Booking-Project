@@ -25,7 +25,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO userprofile(user_id, first_name, last_name, email, phone, address_line_1, address_line_2, city, state, zip, country)
+  INSERT INTO userprofile(user_id, first_name, last_name, email, phone, promotion, address_line_1, address_line_2, city, state, zip, country)
   VALUES (
     -- Get the UUID from the newly created auth.users row's 'id' column
     NEW.id,
@@ -33,6 +33,7 @@ BEGIN
     NEW.raw_user_meta_data->>'last_name',
     NEW.email,
     NEW.raw_user_meta_data->>'phone',
+    COALESCE((NEW.raw_user_meta_data->>'promotion')::boolean, FALSE),
     NEW.raw_user_meta_data->>'address_line_1',
     NEW.raw_user_meta_data->>'address_line_2',
     NEW.raw_user_meta_data->>'city',

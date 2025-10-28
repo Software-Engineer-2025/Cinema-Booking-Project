@@ -33,7 +33,7 @@ CREATE TABLE userprofile (
     zip TEXT,
     country TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
-    promotional_list BOOLEAN DEFAULT FALSE,
+    promotion BOOLEAN DEFAULT FALSE,
     phone TEXT
 );
 

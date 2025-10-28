@@ -35,6 +35,7 @@ export default function CreateAccount() {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [promotion, setPromotion] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     address1: "",
     address2: "",
@@ -64,14 +65,14 @@ export default function CreateAccount() {
         }
       });
       return
-    } else if (!phoneRegex.test(phone)) {
+    } else if (!phoneRegex.test(phone) && !(phone == "")) {
       toast("Invalid Phone Number", {
         description: "Please ensure a valid phone number format: \n +1 (234) 567 - 8910 \n 2345678910 \n (234) 567 8910",
         action: {
           label: "done"
         }
       });
-    } else if (!zipRegex.test(shippingAddress.zip)) {
+    } else if (!zipRegex.test(shippingAddress.zip) && !(shippingAddress.zip == "")) {
       toast("Invalid ZIP Code", {
         description: "Please ensure a valid 5 digit zip code format: 12345",
         action: {
@@ -87,6 +88,7 @@ export default function CreateAccount() {
       first_name: firstName,
       last_name: lastName,
       phone: phone,
+      promotion: promotion,
       address_line_1: shippingAddress.address1,
       address_line_2: shippingAddress.address2,
       city: shippingAddress.city,
@@ -99,8 +101,7 @@ export default function CreateAccount() {
       "Data being sent to signUp function:",
       JSON.stringify(signUpData, null, 2)
     );
-    // You will need to update your `signUp` function in `AuthContext`
-    // to accept this new structure and pass it to supabase.auth.signUp()
+
     const result = await signUp(signUpData);
 
     if (result) {
@@ -124,81 +125,88 @@ export default function CreateAccount() {
           {/* container for first name and last name */}
           <div className="flex gap-3 w-full">
             <AuthInput
-              className="flex-1"
-              type="text"
-              header="First Name"
-              placeholder="John"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
+                className="flex-1"
+                type="text"
+                header="First Name"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
             />
             <AuthInput
-              className="flex-1"
-              type="text"
-              placeholder="Doe"
-              header="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
+                className="flex-1"
+                type="text"
+                placeholder="Doe"
+                header="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
             />
           </div>
           <AuthInput
-            type="email"
-            header="Email Address"
-            placeholder="example@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+              type="email"
+              header="Email Address"
+              placeholder="example@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
           />
           <AuthInput
-            type="password"
-            header="Password"
-            placeholder="Enter secure password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+              type="password"
+              header="Password"
+              placeholder="Enter secure password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
           />
           <AuthInput
-            type="password"
-            header="Repeat Password"
-            placeholder="Enter previous password"
-            value={repeatPassword}
-            onChange={(e) => setRepeatPassword(e.target.value)}
-            required
+              type="password"
+              header="Repeat Password"
+              placeholder="Enter previous password"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              required
           />
           <AuthInput
-            type="text"
-            header="Phone Number"
-            placeholder="+1"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+              type="text"
+              header="Phone Number"
+              placeholder="+1"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
           />
 
           {/* shipping address */}
           <AccountDropdown
-            label="Add Shipping Address"
-            type="shipping"
-            onShippingChange={setShippingAddress}
+              label="Add Shipping Address"
+              type="shipping"
+              onShippingChange={setShippingAddress}
           />
 
           {/* payment methods Dropdown */}
           <AccountDropdown
-            label="Add Payment Method"
-            type="payment"
-            onPaymentChange={setPaymentMethods}
+              label="Add Payment Method"
+              type="payment"
+              onPaymentChange={setPaymentMethods}
           />
 
-          <BlackButton type="submit" onClick={handleSubmit} isDisabled={isLoading}>
-            {isLoading ? "Loading…" : "Sign Up"}
-          </BlackButton>
-          <p className="text-sm text-center">
-            Already have an account?{" "}
-            <Link href="/login" className={`underline cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}>
-              {isLoading ? "Loading…" : "Sign in here"}
-            </Link>
-          </p>
+            <div className={"flex flex-row gap-1"}>
+              <input type="checkbox" onChange={() => setPromotion(prevState => !prevState)}/>
+              <label className="text-white font-medium">
+                Sign up for promotions
+              </label>
+            </div>
+
+            <BlackButton type="submit" onClick={handleSubmit} isDisabled={isLoading}>
+              {isLoading ? "Loading…" : "Sign Up"}
+            </BlackButton>
+            <p className="text-sm text-center">
+              Already have an account?{" "}
+              <Link href="/login" className={`underline cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}>
+                {isLoading ? "Loading…" : "Sign in here"}
+              </Link>
+            </p>
         </form>
       </AuthCard>
     </div>
-  );
+);
 }

@@ -38,6 +38,7 @@ export async function signUpAction(userData: CreateUserParams) {
             if ((userData as any).first_name) meta.first_name = (userData as any).first_name;
             if ((userData as any).last_name) meta.last_name = (userData as any).last_name;
             if ((userData as any).phone) meta.phone = (userData as any).phone;
+            if ((userData as any).promotion) meta.promotion = (userData as any).promotion;
             if ((userData as any).address_line_1) meta.address_line_1 = (userData as any).address_line_1;
             if ((userData as any).address_line_2) meta.address_line_2 = (userData as any).address_line_2;
             if ((userData as any).city) meta.city = (userData as any).city;

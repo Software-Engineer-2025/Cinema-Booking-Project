@@ -23,12 +23,12 @@ import {error} from "next/dist/build/output/log";
 // User params for a user to sign up
 export interface CreateUserParams {
   email: string;
-  //phoneNumber: string,
   password: string;
   repeatPassword: string;
   first_name?: string;
   last_name?: string;
   phone?: string;
+  promotion: boolean;
   // Shipping/Billing Address
   address_line_1?: string;
   address_line_2?: string;

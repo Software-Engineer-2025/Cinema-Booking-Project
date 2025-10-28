@@ -11,4 +11,4 @@ export const emailRegex = new RegExp("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0
 export const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$@!%&*?])[A-Za-z\\d#$@!%&*?]{8,20}$");
 
 // regular expression for US zip codes
-export const zipRegex = new RegExp("^(?=.5\\d)$");
+export const zipRegex = new RegExp("^\\b\\d{5}\\b$");
