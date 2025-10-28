@@ -8,12 +8,14 @@ import { emailRegex, passwordRegex } from "@/lib/utils/regex";
 import Link from "next/link";
 import {ChangeEvent, useState} from "react";
 import { useAuth } from "@/lib/context/AuthContext";
+import {getRememberCookie, updateRememberCookie} from "@/lib/utils/cookies";
 
 export default function LoginPage() {
 
   const { logIn } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   /*
    * Handles submission of log in form.
@@ -27,7 +29,19 @@ export default function LoginPage() {
     } else if (!passwordRegex.test(password)) {
       alert("Not a valid password to log in with!");
     } else {
+      updateRememberCookie(rememberMe);
+      console.log("remember me?: " + getRememberCookie());
+
+      // clears previous sessions if the remember me is false
+      if (!rememberMe && typeof window !== 'undefined') {
+        const authKeys = Object.keys(localStorage).filter(key =>
+            key.includes('sb-') && key.includes('-auth-')
+        );
+        authKeys.forEach(key => localStorage.removeItem(key));
+      }
+
       const result = await logIn(email, password);
+
       if (result) {
         alert(result);
       }
@@ -87,19 +101,27 @@ export default function LoginPage() {
             }
             required
           />
-          <Link
-            href="/forgot-password"
-            className="underline text-right text-sm cursor-pointer"
-          >
-            Forgot password?
-          </Link>
+          <div className={"flex flex-row justify-center space-between gap-10"}>
+            <div className={"flex flex-row gap-1"}>
+              <input type="checkbox" onChange={() => setRememberMe(prevState => !prevState)}/>
+              <label className="text-white font-medium">
+                Remember Me
+              </label>
+            </div>
+            <Link
+                href="/forgot-password"
+                className="underline text-right text-sm cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
           <BlackButton onClick={handleLogin}>Sign In</BlackButton>
           <p className="text-sm text-center">
             Don't have an account?{" "}
             <Link
-              href="/create-account"
-              className="underline cursor-pointer"
+                href="/create-account"
+                className="underline cursor-pointer"
             >
               Sign up here
             </Link>
