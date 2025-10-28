@@ -26,12 +26,13 @@ def update_current_user_profile(profile_update: UserProfileUpdate, current_user:
     update_data = profile_update.model_dump(exclude_none=True)
     if not update_data:
         raise HTTPException(status_code=400, detail="No update data provided")
-    resp = crud.update_profile_by_user_id(user_id, update_data)
-    if resp.error:
-        raise HTTPException(status_code=400, detail=resp.error.message)
-    # fetch and return the updated profile
-    profile = crud.get_profile_by_user_id(user_id)
-    return profile
+    try:
+        resp = crud.update_profile_by_user_id(user_id, update_data)
+        # fetch and return the updated profile
+        profile = crud.get_profile_by_user_id(user_id)
+        return profile
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 

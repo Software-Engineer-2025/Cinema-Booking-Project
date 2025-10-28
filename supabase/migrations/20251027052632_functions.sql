@@ -12,6 +12,11 @@ CREATE POLICY "Users can update their own profile."
     ON public.userprofile FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own profile." ON public.userprofile;
+CREATE POLICY "Users can insert their own profile."
+    ON public.userprofile FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
 DROP POLICY IF EXISTS "Users can manage their own payment cards." ON public.paymentcards;
 CREATE POLICY "Users can manage their own payment cards."
     ON public.paymentcards FOR ALL
