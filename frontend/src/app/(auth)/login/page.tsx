@@ -22,9 +22,11 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!emailRegex.test(email)){
-      alert("Not a valid email to log in with!");
-    } else if (!passwordRegex.test(password)) {
+    // Temporarily bypass email validation for testing
+    // if(!emailRegex.test(email)){
+    //   alert("Not a valid email to log in with!");
+    // } else 
+    if (!passwordRegex.test(password)) {
       alert("Not a valid password to log in with!");
     } else {
       const result = await logIn(email, password);

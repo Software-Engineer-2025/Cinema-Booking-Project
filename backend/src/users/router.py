@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from .schemas import UserProfileCreate, UserLogin, UserProfileUpdate, UserProfileResponse, NewCardRequest
+from .schemas import UserProfileCreate, UserLogin, UserProfileUpdate, UserProfileResponse
 from . import crud
 from auth.security import get_current_user
 from typing import List
@@ -32,36 +32,6 @@ def update_current_user_profile(profile_update: UserProfileUpdate, current_user:
     # fetch and return the updated profile
     profile = crud.get_profile_by_user_id(user_id)
     return profile
-
-
-@router.post("/cards", response_model=List[dict])
-def add_payment_card(card_data: NewCardRequest, current_user: dict = Depends(get_current_user)):
-    user_id = current_user["id"]
-    resp = crud.add_payment_card_for_user(
-        user_id,
-        card_data.details.model_dump(),
-        card_data.card_brand,
-        bool(card_data.is_default),
-    )
-    if resp.error:
-        raise HTTPException(status_code=400, detail=getattr(resp.error, 'message', 'Failed to add card'))
-    return resp.data
-
-
-@router.get("/cards", response_model=List[dict])
-def get_payment_cards(current_user: dict = Depends(get_current_user)):
-    user_id = current_user["id"]
-    cards = crud.get_payment_cards_for_user(user_id)
-    return cards
-
-
-@router.delete("/cards/{card_id}")
-def delete_payment_card(card_id: str, current_user: dict = Depends(get_current_user)):
-    user_id = current_user["id"]
-    resp = crud.delete_payment_card_for_user(user_id, card_id)
-    if resp.error or not resp.data:
-        raise HTTPException(status_code=404, detail="Card not found or access denied")
-    return {"message": "Card deleted successfully"}
 
 
 

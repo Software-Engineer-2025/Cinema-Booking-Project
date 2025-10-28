@@ -28,17 +28,11 @@ export interface CreateUserParams {
     }
 }
 
-interface SignUpResult {
-    error?: { message: string };
-    requiresEmailConfirmation?: boolean;
-    message?: string;
-}
-
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
 
-    signUp: (userData: CreateUserParams) => Promise<SignUpResult | null>;
+    signUp: (userData: CreateUserParams) => Promise<void>
     logIn: (email: string, password: string) => Promise<void>;
     logOut: () => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
@@ -119,30 +113,19 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
      * Uses CreateUserParams for now until different interface is set up.
      * Need to set up an interface for the user data type being passed to signUp action.
      */
-    const signUp = async (userData: CreateUserParams): Promise<SignUpResult | null> => {
+    const signUp = async (userData: CreateUserParams) => {
         setIsLoading(true);
-        try {
-            const result = await signUpAction(userData);
-            
-            if (result?.error) {
-                console.error("Error during sign-up:", result.error);
-                return { error: { message: result.error.toString() } };
-            }
-            
-            if (result?.requiresEmailConfirmation) {
-                window.location.href = "/verify-email";
-                return { requiresEmailConfirmation: true, message: result.message };
-            }
-            
-            // Success with no verification needed (unlikely with current setup)
-            window.location.href = "/";
-            return null;
-        } catch (err) {
-            console.error("Unexpected error during sign-up:", err);
-            return { error: { message: 'An unexpected error occurred during sign up' } };
-        } finally {
-            setIsLoading(false);
+
+        const errorMessage = await signUpAction(userData);
+
+        if (errorMessage) {
+            console.error("Error during sign-up:", errorMessage);
+        } else {
+            // This needs to be updated to a page that states sign up success when it's set up.
+            window.location.href = "verify-email";
         }
+
+        setIsLoading(false);
     };
 
     /*

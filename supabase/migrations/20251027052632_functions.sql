@@ -7,6 +7,11 @@ CREATE POLICY "Users can view their own profile."
     ON public.userprofile FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own profile." ON public.userprofile;
+CREATE POLICY "Users can update their own profile."
+    ON public.userprofile FOR UPDATE
+    USING (auth.uid() = user_id);
+
 DROP POLICY IF EXISTS "Users can manage their own payment cards." ON public.paymentcards;
 CREATE POLICY "Users can manage their own payment cards."
     ON public.paymentcards FOR ALL
@@ -20,12 +25,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO userprofile(user_id, first_name, last_name)
+  INSERT INTO userprofile(user_id, first_name, last_name, email)
   VALUES (
     -- Get the UUID from the newly created auth.users row's 'id' column
     NEW.id,
     NEW.raw_user_meta_data->>'first_name',
-    NEW.raw_user_meta_data->>'last_name'
+    NEW.raw_user_meta_data->>'last_name',
+    NEW.email
   );
   RETURN NEW;
 END;

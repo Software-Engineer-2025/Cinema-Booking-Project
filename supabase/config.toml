@@ -128,9 +128,9 @@ file_size_limit = "50MiB"
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
+site_url = "http://localhost:3000"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = ["http://localhost:3000", "http://127.0.0.1:3000"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # Path to JWT signing key. DO NOT commit your signing keys file to git.
@@ -193,7 +193,7 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
+# Use a production-ready SMTP server (disabled for local development)
 # [auth.email.smtp]
 # enabled = true
 # host = "smtp.sendgrid.net"
@@ -201,7 +201,8 @@ otp_expiry = 3600
 # user = "apikey"
 # pass = "env(SENDGRID_API_KEY)"
 # admin_email = "admin@email.com"
-# sender_name = "Admin"
+# sender_name = "Cinema Booking Admin"
+
 
 # Uncomment to customize email template
 # [auth.email.template.invite]

@@ -80,7 +80,6 @@ export default function AccountDropdown({
   };
 
   const handleSaveCard = () => {
-    // Build payload expected by backend: NewCardRequest
     // Convert expDate from MM/YY or MM/YYYY to expiry_month and expiry_year (int)
     const exp = cardForm.expDate.split("/").map((s) => s.trim());
     let expiry_month = 0;

@@ -21,10 +21,11 @@ CREATE TABLE Movie (
 );
 
 -- UserProfile had no dependency
-CREATE TABLE UserProfile (
+CREATE TABLE userprofile (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     first_name TEXT,
     last_name TEXT,
+    email TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
     promotional_list BOOLEAN DEFAULT FALSE
 );
@@ -76,7 +77,7 @@ CREATE TABLE MovieGenre (
     PRIMARY KEY (movie_id, genre_id)
 );
 
-CREATE TABLE PaymentCards (
+CREATE TABLE paymentcards (
     card_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     card_details BYTEA NOT NULL,
