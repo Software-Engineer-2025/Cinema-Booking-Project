@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await logInAction(email, password);
 
     if (errorMessage) {
-      console.error("Error during log-in:", errorMessage.message);
+      console.error("Error during log-in:", errorMessage);
     } else {
       const validated = await checkVerification();
       if (validated) {
@@ -192,7 +192,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await forgotPasswordAction(email);
 
     if (errorMessage) {
-      console.error("Error during forgot password:", errorMessage.message);
+      console.error("Error during forgot password:", errorMessage);
     }
     setIsLoading(false);
   };
@@ -207,7 +207,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await updatePasswordAction(password);
 
     if (errorMessage) {
-      console.error("Error during password update", errorMessage.message);
+      console.error("Error during password update:", errorMessage);
     }
     setIsLoading(false);
   };
@@ -217,7 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await checkUserAction();
 
     if (errorMessage) {
-      console.error("Error during check user", errorMessage.message);
+      console.error("Error during check user:", errorMessage);
     }
   };
 
