@@ -26,7 +26,7 @@ interface ShippingAddress {
 }
 
 export default function CreateAccount() {
-  const { signUp } = useAuth();
+  const { signUp, isLoading } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -165,13 +165,13 @@ export default function CreateAccount() {
             onPaymentChange={setPaymentMethods}
           />
 
-          <BlackButton type="submit" onClick={handleSubmit}>
-            Sign Up
+          <BlackButton type="submit" onClick={handleSubmit} isDisabled={isLoading}>
+            {isLoading ? "Loading…" : "Sign Up"}
           </BlackButton>
           <p className="text-sm text-center">
             Already have an account?{" "}
-            <Link href="/login" className="underline cursor-pointer">
-              Sign in here
+            <Link href="/login" className={`underline cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}>
+              {isLoading ? "Loading…" : "Sign in here"}
             </Link>
           </p>
         </form>

@@ -11,7 +11,7 @@ import Link from "next/link";
 import {toast} from "sonner";
 
 export default function ForgotPassword() {
-   const { forgotPassword } = useAuth();
+   const { forgotPassword, isLoading } = useAuth();
    const [email, setEmail] = useState<string>("");
 
    /*
@@ -50,12 +50,14 @@ export default function ForgotPassword() {
               onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               className="pb-7"
               required/>
-          <BlackButton className="mb-6" onClick={handleForgotPassword}>Request Reset Password</BlackButton>
-             <Link
+          <BlackButton className="mb-6" onClick={handleForgotPassword} isDisabled={isLoading}>
+              {isLoading ? "Loading…" : "Request Reset Password"}
+          </BlackButton>
+          <Link
             href="/login"
-            className="underline text-center text-sm cursor-pointer"
+            className={`underline text-center text-sm cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}
           >
-            Return to Login Page
+              {isLoading ? "Loading…" : "Return to Login Page"}
           </Link>
         </form>
       </AuthCard>

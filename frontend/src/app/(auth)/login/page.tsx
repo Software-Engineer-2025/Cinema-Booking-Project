@@ -13,7 +13,7 @@ import {toast} from "sonner";
 
 export default function LoginPage() {
 
-  const { logIn } = useAuth();
+  const { logIn, isLoading } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -126,20 +126,22 @@ export default function LoginPage() {
             </div>
             <Link
                 href="/forgot-password"
-                className="underline text-right text-sm cursor-pointer"
+                className={`underline text-right text-sm cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}
             >
-              Forgot password?
+              {isLoading ? "Loading…" : "Forgot password?"}
             </Link>
           </div>
 
-          <BlackButton onClick={handleLogin}>Sign In</BlackButton>
+          <BlackButton onClick={handleLogin} isDisabled={isLoading}>
+            {isLoading ? "Loading…" : "Sign In"}
+          </BlackButton>
           <p className="text-sm text-center">
             Don't have an account?{" "}
             <Link
                 href="/create-account"
                 className="underline cursor-pointer"
             >
-              Sign up here
+              {isLoading ? "Loading…" : "Sign up here"}
             </Link>
           </p>
         </form>

@@ -11,7 +11,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import {toast} from "sonner";
 
 export default function ResetPassword() {
-    const { updatePassword } = useAuth();
+    const { updatePassword, isLoading } = useAuth();
     const [password, setPassword] = useState("");
 
     const handleResetPassword = async (e: React.FormEvent) => {
@@ -42,7 +42,6 @@ export default function ResetPassword() {
   return (
     <div className="flex justify-center items-center">
       <AuthCard className="flex justify-center flex-col gap-6">
-        
         <h2 className="">Reset Your Password</h2>
         <p>Enter a new secure password for your account.</p>
         <form className="flex flex-col gap-3">
@@ -52,12 +51,14 @@ export default function ResetPassword() {
               onChange={(e: ChangeEvent<HTMLInputElement>)=>setPassword(e.target.value)}
               className="pb-7"
               required />
-          <BlackButton className="mb-6" onClick={handleResetPassword}>Reset Password</BlackButton>
-             <Link
+          <BlackButton className="mb-6" onClick={handleResetPassword} isDisabled={isLoading}>
+              {isLoading ? "Loading…" : "Reset Password"}
+          </BlackButton>
+          <Link
             href="/login"
-            className="underline text-center text-sm cursor-pointer"
+            className={`underline text-center text-sm cursor-pointer ${isLoading ? "pointer-events-none" : ""}`}
           >
-            Return to Login Page
+            {isLoading ? "Loading…" : "Return to Login Page"}
           </Link>
         </form>
       </AuthCard>
