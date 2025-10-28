@@ -41,25 +41,25 @@ export default function LoginPage() {
       });
     } else {
       updateRememberCookie(rememberMe);
-      //console.log("remember me?: " + getRememberCookie());
-
-      // clears previous sessions if the remember me is false
-      /*if (!rememberMe && typeof window !== 'undefined') {
-        const authKeys = Object.keys(localStorage).filter(key =>
-            key.includes('sb-') && key.includes('-auth-')
-        );
-        authKeys.forEach(key => localStorage.removeItem(key));
-      }*/
 
       const result = await logIn(email, password);
 
       if (result) {
-        toast("An error occurred while logging in.", {
-          description: result,
-          action: {
-            label: "done"
-          }
-        });
+        if (result === "Email not confirmed") {
+          toast(result, {
+            description: "Please check your email for a verification email!",
+            action: {
+              label: "done"
+            }
+          });
+        } else {
+          toast("An error occurred while logging in.", {
+            description: result,
+            action: {
+              label: "done"
+            }
+          });
+        }
       }
     }
   }

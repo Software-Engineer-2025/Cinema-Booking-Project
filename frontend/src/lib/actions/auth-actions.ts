@@ -55,6 +55,8 @@ export async function signUpAction(userData: CreateUserParams) {
         });
 
 
+
+
         revalidatePath('create-account', 'layout');
 
         return result.error ? result.error : null;
