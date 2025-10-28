@@ -35,6 +35,13 @@ export interface CreateUserParams {
   state?: string;
   zip?: string;
   country?: string;
+  // Payment cards
+  payment_cards?: Array<{
+    cardNumber: string;
+    name: string;
+    expDate: string;
+    cvv: string;
+  }>;
 }
 
 interface AuthContextType {
