@@ -1,6 +1,7 @@
 // partially from Supabase template code
 
-import {createBrowserClient} from "@supabase/ssr";
+import { createBrowserClient } from "@supabase/ssr";
+import {getRememberCookie} from "@/lib/utils/cookies";
 
 /*
  * Creates browser client to be able to work with the auth session.
@@ -12,7 +13,7 @@ export const supabaseClient =
     {
         auth: {
             autoRefreshToken: true,
-            persistSession: true,
+            persistSession: typeof window !== 'undefined' ? getRememberCookie() === "true" : false,
             detectSessionInUrl: true,
             storage: typeof window !== 'undefined' ? window.localStorage : undefined,
         }

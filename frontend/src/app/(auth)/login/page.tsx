@@ -1,10 +1,55 @@
+"use client"
+
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
 import BlackButton from "@/components/ui/BlackButton";
+import { emailRegex, passwordRegex } from "@/lib/utils/regex";
 
 import Link from "next/link";
+import {ChangeEvent, useState} from "react";
+import { useAuth } from "@/lib/context/AuthContext";
+import {getRememberCookie, updateRememberCookie} from "@/lib/utils/cookies";
 
 export default function LoginPage() {
+
+  const { logIn } = useAuth();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  /*
+   * Handles submission of log in form.
+   * Alerts user if any improper input information is put in or login fails.
+   */
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Temporarily bypass email validation for testing
+    // if(!emailRegex.test(email)){
+    //   alert("Not a valid email to log in with!");
+    // } else 
+    if (!passwordRegex.test(password)) {
+      alert("Not a valid password to log in with!");
+    } else {
+      updateRememberCookie(rememberMe);
+      console.log("remember me?: " + getRememberCookie());
+
+      // clears previous sessions if the remember me is false
+      if (!rememberMe && typeof window !== 'undefined') {
+        const authKeys = Object.keys(localStorage).filter(key =>
+            key.includes('sb-') && key.includes('-auth-')
+        );
+        authKeys.forEach(key => localStorage.removeItem(key));
+      }
+
+      const result = await logIn(email, password);
+
+      if (result) {
+        alert(result);
+      }
+    }
+  }
+
   return (
     <div className="flex justify-center items-center">
       <AuthCard className="flex justify-center flex-col gap-6">
@@ -29,10 +74,16 @@ export default function LoginPage() {
         <h1 className="mx-auto">Log In</h1>
         <p className="mx-auto">Sign into an existing account.</p>
         <form className="flex flex-col gap-3">
-          <AuthInput type="email" placeholder="Email Address" className="text-gray-500" icon={<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 2C0.447715 2 0 2.44772 0 3V12C0 12.5523 0.447715 13 1 13H14C14.5523 13 15 12.5523 15 12V3C15 2.44772 14.5523 2 14 2H1ZM1 3L14 3V3.92494C13.9174 3.92486 13.8338 3.94751 13.7589 3.99505L7.5 7.96703L1.24112 3.99505C1.16621 3.94751 1.0826 3.92486 1 3.92494V3ZM1 4.90797V12H14V4.90797L7.74112 8.87995C7.59394 8.97335 7.40606 8.97335 7.25888 8.87995L1 4.90797Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>} required />
+          <AuthInput type="email"
+                     placeholder="Email Address"
+                     className="text-gray-500"
+                     onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                     icon={<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 2C0.447715 2 0 2.44772 0 3V12C0 12.5523 0.447715 13 1 13H14C14.5523 13 15 12.5523 15 12V3C15 2.44772 14.5523 2 14 2H1ZM1 3L14 3V3.92494C13.9174 3.92486 13.8338 3.94751 13.7589 3.99505L7.5 7.96703L1.24112 3.99505C1.16621 3.94751 1.0826 3.92486 1 3.92494V3ZM1 4.90797V12H14V4.90797L7.74112 8.87995C7.59394 8.97335 7.40606 8.97335 7.25888 8.87995L1 4.90797Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>}
+                     required />
           <AuthInput
             type="password"
             placeholder="Password"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             icon={
               <svg
                 width="15"
@@ -52,19 +103,27 @@ export default function LoginPage() {
             }
             required
           />
-          <Link
-            href="/forgot-password"
-            className="underline text-right text-sm cursor-pointer"
-          >
-            Forgot password?
-          </Link>
+          <div className={"flex flex-row justify-center space-between gap-10"}>
+            <div className={"flex flex-row gap-1"}>
+              <input type="checkbox" onChange={() => setRememberMe(prevState => !prevState)}/>
+              <label className="text-white font-medium">
+                Remember Me
+              </label>
+            </div>
+            <Link
+                href="/forgot-password"
+                className="underline text-right text-sm cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
-          <BlackButton>Sign In</BlackButton>
+          <BlackButton onClick={handleLogin}>Sign In</BlackButton>
           <p className="text-sm text-center">
             Don't have an account?{" "}
             <Link
-              href="/create-account"
-              className="underline cursor-pointer"
+                href="/create-account"
+                className="underline cursor-pointer"
             >
               Sign up here
             </Link>

@@ -30,6 +30,7 @@ shadow_port = 54320
 # server_version;` on the remote database to check.
 major_version = 17
 
+
 [db.pooler]
 enabled = false
 # Port to use for the local connection pooler.
@@ -42,8 +43,9 @@ default_pool_size = 20
 # Maximum number of client connections allowed.
 max_client_conn = 100
 
-# [db.vault]
+[db.vault]
 # secret_key = "env(SECRET_VALUE)"
+secret_key = "env(APP_ENCRYPTION_KEY)"
 
 [db.migrations]
 # If disabled, migrations will be skipped during a db push or reset.
@@ -126,9 +128,9 @@ file_size_limit = "50MiB"
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
+site_url = "http://localhost:3000"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = ["http://localhost:3000", "http://127.0.0.1:3000"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # Path to JWT signing key. DO NOT commit your signing keys file to git.
@@ -144,6 +146,8 @@ enable_signup = true
 enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
+jwt_secret = "b6103c6f5b13c7b8a03f31194e4ac3059aa88901bdbbe00ff1d1ab8f24cb86db"
+signing_keys_path = "./signing_key.json"
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
 minimum_password_length = 6
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
@@ -179,7 +183,7 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
@@ -190,14 +194,14 @@ otp_length = 6
 otp_expiry = 3600
 
 # Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+[auth.email.smtp]
+enabled = false
+host = "smtp.sendgrid.net"
+port = 587
+user = "apikey"
+pass = "env(SENDGRID_API_KEY)"
+admin_email = "admin@email.com"
+sender_name = "Admin"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]

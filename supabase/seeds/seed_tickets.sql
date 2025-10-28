@@ -1,3 +1,3 @@
-INSERT INTO Ticket (ticket_id, user_id, price, status, seat_id, show_id) 
-VALUES
-(1, 1, 15.00, 'booked', 1, 1);
+-- INSERT INTO Ticket (ticket_id, user_id, price, status, seat_id, show_id) 
+-- VALUES
+-- (1, 'fcfc72ec-cfc2-41c0-baf8-02cab8408087', 15.00, 'booked', 1, 1);

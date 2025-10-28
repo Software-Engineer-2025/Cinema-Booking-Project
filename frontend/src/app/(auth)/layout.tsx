@@ -4,7 +4,7 @@ import "../globals.css";
 
 import AuthNavbar from "@/components/auth/AuthNavbar";
 import Providers from "@/Providers";
-import BookingPopUp from "@/components/default/BookingPopUp";
+import { AuthProvider } from "@/lib/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Cinema",
@@ -23,11 +23,13 @@ export default function RootLayout({
           className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-900`}
           suppressHydrationWarning={true}
         >
-          <header className="sticky top-0 z-50">
-            <AuthNavbar />
-          </header>
-          <main>{children}</main>
-          <footer></footer>
+          <AuthProvider>
+            <header className="sticky top-0 z-50">
+              <AuthNavbar />
+            </header>
+            <main>{children}</main>
+            <footer></footer>
+          </AuthProvider>
         </body>
       </Providers>
     </html>
