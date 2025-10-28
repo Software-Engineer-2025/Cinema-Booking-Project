@@ -125,9 +125,9 @@ export default function CreateAccount() {
             required
           />
           <AuthInput
-            type="repeat-password"
+            type="password"
             header="Repeat Password"
-            placeholder="Enter Previous Password"
+            placeholder="Enter previous password"
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
             required

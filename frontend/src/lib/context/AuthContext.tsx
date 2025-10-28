@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       switch (event) {
         case "SIGNED_IN":
           setUser(session?.user ?? null);
-          if (window.location.pathname === "/login") {
+          if (window.location.pathname === "/login" && !window.location.search.includes('code')) {
             window.location.href = "/";
           }
           break;
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           break;
         case "SIGNED_OUT":
           setUser(null);
-          if (window.location.pathname != "/") {
+          if (window.location.pathname != "/" && !window.location.pathname.startsWith("/login") && !window.location.pathname.startsWith("/create-account")) {
             window.location.href = "/";
           }
           break;

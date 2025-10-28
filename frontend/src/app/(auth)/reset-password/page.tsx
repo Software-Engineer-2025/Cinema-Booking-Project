@@ -22,6 +22,11 @@ export default function ResetPassword() {
                 "1 special character, 1 number, and must be 8-12 characters long");
         } else {
             const result = await updatePassword(password);
+            if (result) {
+                alert(result);
+            } else {
+                window.location.href = "/login"
+            }
         }
     }
 
