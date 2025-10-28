@@ -9,3 +9,6 @@ export const emailRegex = new RegExp("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0
 // regular expression for passwords 8-20 digits longs. Must have 1 upper, 1 lower, 1 number, 1 special character.
 // Gotten off of stack overflow
 export const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$@!%&*?])[A-Za-z\\d#$@!%&*?]{8,20}$");
+
+// regular expression for US zip codes
+export const zipRegex = new RegExp("^(?=.5\\d)$");

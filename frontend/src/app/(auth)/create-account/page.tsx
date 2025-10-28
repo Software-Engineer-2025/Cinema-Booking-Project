@@ -8,6 +8,7 @@ import AccountDropdown from "@/components/ui/AccountDropdown";
 import Link from "next/link";
 import { useAuth, CreateUserParams } from "@/lib/context/AuthContext";
 import { toast } from "sonner"
+import {passwordRegex, phoneRegex, zipRegex} from "@/lib/utils/regex";
 
 interface Card {
   cardNumber: string;
@@ -55,6 +56,28 @@ export default function CreateAccount() {
         }
       });
       return;
+    } else if (!passwordRegex.test(password)) {
+      toast("Invalid Password", {
+        description: "Please ensure password is between 8-20 characters long and has 1 uppercase, 1 lowercase, 1 number, and 1 special character.",
+        action: {
+          label: "done"
+        }
+      });
+      return
+    } else if (!phoneRegex.test(phone)) {
+      toast("Invalid Phone Number", {
+        description: "Please ensure a valid phone number format: \n +1 (234) 567 - 8910 \n 2345678910 \n (234) 567 8910",
+        action: {
+          label: "done"
+        }
+      });
+    } else if (!zipRegex.test(shippingAddress.zip)) {
+      toast("Invalid ZIP Code", {
+        description: "Please ensure a valid 5 digit zip code format: 12345",
+        action: {
+          label: "done"
+        }
+      });
     }
 
     const signUpData: CreateUserParams = {

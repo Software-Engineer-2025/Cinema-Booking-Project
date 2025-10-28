@@ -29,12 +29,21 @@ export default function ForgotPassword() {
            });
        } else {
            const result = await forgotPassword(email);
-           toast("An error occurred while doing forgot password.", {
-               description: result,
-               action: {
-                   label: "done"
-               }
-           });
+           if (result) {
+               toast("An error occurred while doing forgot password.", {
+                   description: result,
+                   action: {
+                       label: "done"
+                   }
+               });
+           } else {
+               toast("Email Sent!", {
+                   description: "Email sent to provided email assuming it has an account.",
+                   action: {
+                       label: "done"
+                   }
+               });
+           }
        }
    }
 
