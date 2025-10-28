@@ -7,6 +7,7 @@ import BlackButton from "@/components/ui/BlackButton";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import Link from "next/link";
 import { useAuth, CreateUserParams } from "@/lib/context/AuthContext";
+import { toast } from "sonner"
 
 interface Card {
   cardNumber: string;
@@ -47,7 +48,12 @@ export default function CreateAccount() {
     e.preventDefault();
 
     if (password !== repeatPassword) {
-      alert("Passwords do not match!");
+      toast("Passwords do not match!", {
+        description: "please ensure password and repeat password match.",
+        action: {
+          label: "done"
+        }
+      });
       return;
     }
 
@@ -75,7 +81,12 @@ export default function CreateAccount() {
     const result = await signUp(signUpData);
 
     if (result) {
-      alert(result);
+      toast("An error occurred while signing up.", {
+        description: result,
+        action: {
+          label: "done"
+        }
+      });
     }
   };
 

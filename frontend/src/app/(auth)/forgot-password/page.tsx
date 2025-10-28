@@ -8,6 +8,7 @@ import {ChangeEvent, useState} from "react";
 import { emailRegex } from "@/lib/utils/regex";
 
 import Link from "next/link";
+import {toast} from "sonner";
 
 export default function ForgotPassword() {
    const { forgotPassword } = useAuth();
@@ -15,17 +16,25 @@ export default function ForgotPassword() {
 
    /*
     * Handles the input for the forgot password form submission.
-    *
-    * Could add a better alert and could make it so that when the email changes,
-    * if its not valid, it shows a mini red alert under the box?
     */
    const handleForgotPassword = async (e: React.FormEvent) => {
        e.preventDefault();
 
        if (!emailRegex.test(email)) {
-           alert("Please insert valid email before submitting!");
+           toast("Please insert valid email before submitting!", {
+               description: "Must have username, @, and domain.",
+               action: {
+                   label: "done"
+               }
+           });
        } else {
            const result = await forgotPassword(email);
+           toast("An error occurred while doing forgot password.", {
+               description: result,
+               action: {
+                   label: "done"
+               }
+           });
        }
    }
 

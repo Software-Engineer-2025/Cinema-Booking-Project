@@ -9,6 +9,7 @@ import Link from "next/link";
 import {ChangeEvent, useState} from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import {getRememberCookie, updateRememberCookie} from "@/lib/utils/cookies";
+import {toast} from "sonner";
 
 export default function LoginPage() {
 
@@ -24,28 +25,41 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Temporarily bypass email validation for testing
-    // if(!emailRegex.test(email)){
-    //   alert("Not a valid email to log in with!");
-    // } else 
-    if (!passwordRegex.test(password)) {
-      alert("Not a valid password to log in with!");
+    if(!emailRegex.test(email)){
+      toast("Please insert valid email before submitting!", {
+        description: "Must have username, @, and domain.",
+        action: {
+          label: "done"
+        }
+      });
+    } else if (!passwordRegex.test(password)) {
+      toast("Invalid Password", {
+        description: "Please ensure password is between 8-20 characters long and has 1 uppercase, 1 lowercase, 1 number, and 1 special character.",
+        action: {
+          label: "done"
+        }
+      });
     } else {
       updateRememberCookie(rememberMe);
-      console.log("remember me?: " + getRememberCookie());
+      //console.log("remember me?: " + getRememberCookie());
 
       // clears previous sessions if the remember me is false
-      if (!rememberMe && typeof window !== 'undefined') {
+      /*if (!rememberMe && typeof window !== 'undefined') {
         const authKeys = Object.keys(localStorage).filter(key =>
             key.includes('sb-') && key.includes('-auth-')
         );
         authKeys.forEach(key => localStorage.removeItem(key));
-      }
+      }*/
 
       const result = await logIn(email, password);
 
       if (result) {
-        alert(result);
+        toast("An error occurred while logging in.", {
+          description: result,
+          action: {
+            label: "done"
+          }
+        });
       }
     }
   }

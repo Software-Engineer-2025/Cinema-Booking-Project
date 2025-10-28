@@ -1,7 +1,7 @@
 [
   {
     "kty": "EC",
-    "kid": "c5f80126-7dcc-4667-8f15-2fbfb2ec557d",
+    "kid": "fb397c65-485b-4dd8-b495-3cd062a41ccf",
     "use": "sig",
     "key_ops": [
       "sign",
@@ -9,9 +9,9 @@
     ],
     "alg": "ES256",
     "ext": true,
-    "d": "-yyicl8Ze_SlMY4IbFfjoVGR8KBUGvWtNmglvzt4l2g",
+    "d": "sJj8XbYne4JDM-nLMOWSe5Ym4JPlEqZa7Ci8dMHB1yE",
     "crv": "P-256",
-    "x": "vgL3oNadi5VBYrI9quQw1ElZGDTpnq0hvqizWT3KCjs",
-    "y": "tlo90glCyug6w_jOW7VNRxx6ZBbWpAfv3QbT-w8SWlA"
+    "x": "UXbpMjW7b7pVy--g1c8My0w1WQpchSnDW3yw-tW6uu8",
+    "y": "IaR8zuvkXM3H2w1qXij38O4nrR4W3PevStzw7xdMy6w"
   }
 ]

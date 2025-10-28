@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/auth-js";
+import { AuthError, User } from "@supabase/auth-js";
 import {
   signUpAction,
   logInAction,
@@ -18,6 +18,7 @@ import {
   checkVerificationAction,
 } from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
+import {error} from "next/dist/build/output/log";
 
 // User params for a user to sign up
 export interface CreateUserParams {
@@ -41,11 +42,11 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
 
-  signUp: (userData: CreateUserParams) => Promise<void>;
-  logIn: (email: string, password: string) => Promise<void>;
-  logOut: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<void>;
-  updatePassword: (password: string) => Promise<void>;
+  signUp: (userData: CreateUserParams) => Promise<any>;
+  logIn: (email: string, password: string) => Promise<any>;
+  logOut: () => Promise<AuthError | null>
+  forgotPassword: (email: string) => Promise<any>;
+  updatePassword: (password: string) => Promise<any>;
   checkUser: () => Promise<void>;
 }
 
@@ -129,13 +130,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await signUpAction(userData);
 
     if (errorMessage) {
-      console.error("Error during sign-up:", errorMessage);
+      setIsLoading(false);
+      return errorMessage.message;
     } else {
-      // This needs to be updated to a page that states sign up success when it's set up.
       window.location.href = "verify-email";
     }
 
     setIsLoading(false);
+    return null;
   };
 
   /*
@@ -147,7 +149,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await logInAction(email, password);
 
     if (errorMessage) {
-      console.error("Error during log-in:", errorMessage);
+      setIsLoading(false);
+      return errorMessage.message;
     } else {
       const validated = await checkVerification();
       if (validated) {
@@ -158,6 +161,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setIsLoading(false);
+    return null;
   };
 
   /*
@@ -169,17 +173,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logOut = async () => {
     setIsLoading(true);
 
-    try {
-      const { error } = await supabaseClient.auth.signOut();
-
-      if (error) {
-        console.error("Error during log-out:", error.message);
-      }
-    } catch (unexpectedError) {
-      console.error("Unexpected error during log-out:", unexpectedError);
-    }
+    const result = await supabaseClient.auth.signOut();
 
     setIsLoading(false);
+
+    return result.error ? result.error : null;
   };
 
   /*
@@ -191,10 +189,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await forgotPasswordAction(email);
 
-    if (errorMessage) {
-      console.error("Error during forgot password:", errorMessage);
-    }
     setIsLoading(false);
+
+    return errorMessage ? errorMessage.message : null;
   };
 
   /*
@@ -206,10 +203,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await updatePasswordAction(password);
 
-    if (errorMessage) {
-      console.error("Error during password update:", errorMessage);
-    }
     setIsLoading(false);
+    return errorMessage ? errorMessage.message : null;
   };
 
   // Checks if a user is in session.

@@ -8,6 +8,7 @@ import { passwordRegex } from "@/lib/utils/regex";
 import Link from "next/link";
 import {ChangeEvent, useState} from "react";
 import { useAuth } from "@/lib/context/AuthContext";
+import {toast} from "sonner";
 
 export default function ResetPassword() {
     const { updatePassword } = useAuth();
@@ -17,13 +18,21 @@ export default function ResetPassword() {
         e.preventDefault();
 
         if (!passwordRegex.test(password)) {
-            alert("Please insert valid password before submitting!\n" +
-                "Must have 1 uppercase letter, 1 lower case letter, " +
-                "1 special character, 1 number, and must be 8-12 characters long");
+            toast("Invalid Password", {
+                description: "Please ensure password is between 8-20 characters long and has 1 uppercase, 1 lowercase, 1 number, and 1 special character.",
+                action: {
+                    label: "done"
+                }
+            });
         } else {
             const result = await updatePassword(password);
             if (result) {
-                alert(result);
+                toast("An error occurred while updating password.", {
+                    description: result,
+                    action: {
+                        label: "done"
+                    }
+                });
             } else {
                 window.location.href = "/login"
             }
