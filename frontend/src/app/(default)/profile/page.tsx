@@ -22,8 +22,8 @@ interface Card {
 }
 
 interface ShippingAddress {
-  address1: string;
-  address2: string;
+  address_line_1: string;
+  address_line_2: string;
   city: string;
   state: string;
   zip: string;
@@ -42,8 +42,8 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
-    address1: "",
-    address2: "",
+    address_line_1: "",
+    address_line_2: "",
     city: "",
     state: "",
     zip: "",
@@ -60,8 +60,8 @@ export default function ProfilePage() {
     setLastName(meta.last_name || "");
     setPhone(meta.phone || "");
     setShippingAddress({
-      address1: meta.address1 || "",
-      address2: meta.address2 || "",
+      address_line_1: meta.address_line_1 || "",
+      address_line_2: meta.address_line_2 || "",
       city: meta.city || "",
       state: meta.state || "",
       zip: meta.zip || "",
@@ -185,13 +185,17 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField
             label="Address Line 1"
-            value={shippingAddress.address1}
-            onChange={(v) => setShippingAddress((s) => ({ ...s, address1: v }))}
+            value={shippingAddress.address_line_1}
+            onChange={(v) =>
+              setShippingAddress((s) => ({ ...s, address_line_1: v }))
+            }
           />
           <InputField
             label="Address Line 2"
-            value={shippingAddress.address2}
-            onChange={(v) => setShippingAddress((s) => ({ ...s, address2: v }))}
+            value={shippingAddress.address_line_2}
+            onChange={(v) =>
+              setShippingAddress((s) => ({ ...s, address_line_2: v }))
+            }
           />
           <InputField
             label="City"

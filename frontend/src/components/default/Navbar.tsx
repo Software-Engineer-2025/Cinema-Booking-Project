@@ -97,10 +97,10 @@ export default function Navbar() {
                 Dashboard
               </a>
               <a
-                href="/settings"
+                href="/profile"
                 className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
               >
-                Settings
+                Profile
               </a>
               <button
                 className="w-full text-left hover:text-gray-400 cursor-pointer"
