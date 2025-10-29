@@ -46,10 +46,18 @@ export default function CreateAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check basic required fields
+    if (!firstName || !lastName || !email || !password || !repeatPassword) {
+      alert("Please complete all required fields");
+      return;
+    }
+
     if (password !== repeatPassword) {
       alert("Passwords do not match!");
       return;
     }
+
+    // Payment methods are optional - no validation needed
 
     const signUpData: CreateUserParams = {
       email: email,
@@ -64,18 +72,17 @@ export default function CreateAccount() {
       state: shippingAddress.state,
       zip: shippingAddress.zip,
       country: shippingAddress.country,
+      payment_cards: paymentMethods, // Array of cards for database trigger
     };
 
-    console.log(
-      "Data being sent to signUp function:",
-      JSON.stringify(signUpData, null, 2)
-    );
-    // You will need to update your `signUp` function in `AuthContext`
-    // to accept this new structure and pass it to supabase.auth.signUp()
-    const result = await signUp(signUpData);
-
-    if (result) {
-      alert(result);
+    try {
+      await signUp(signUpData);
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "An error occurred during signup"
+      );
     }
   };
 
@@ -154,9 +161,7 @@ export default function CreateAccount() {
             onPaymentChange={setPaymentMethods}
           />
 
-          <BlackButton type="submit" onClick={handleSubmit}>
-            Sign Up
-          </BlackButton>
+          <BlackButton type="submit">Sign Up</BlackButton>
           <p className="text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="underline cursor-pointer">

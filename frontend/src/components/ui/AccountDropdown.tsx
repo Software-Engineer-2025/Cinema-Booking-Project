@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import AuthInput from "@/components/auth/AuthInput";
-import { supabaseClient } from "@/lib/supabase/client";
 import BlackButton from "@/components/ui/BlackButton";
 
 interface Card {
@@ -80,98 +79,29 @@ export default function AccountDropdown({
   };
 
   const handleSaveCard = () => {
-    // Convert expDate from MM/YY or MM/YYYY to expiry_month and expiry_year (int)
-    const exp = cardForm.expDate.split("/").map((s) => s.trim());
-    let expiry_month = 0;
-    let expiry_year = 0;
-    if (exp.length === 2) {
-      expiry_month = parseInt(exp[0], 10) || 0;
-      const yearPart = exp[1];
-      expiry_year = yearPart.length === 2 ? 2000 + (parseInt(yearPart, 10) || 0) : parseInt(yearPart, 10) || 0;
+    // Basic validation
+    if (!cardForm.cardNumber || !cardForm.name || !cardForm.expDate || !cardForm.cvv) {
+      alert("Please fill in all card fields.");
+      return;
     }
 
-    // crude brand detection
-    let brand = "Unknown";
-    if (cardForm.cardNumber.startsWith("4")) brand = "Visa";
-    else if (/^5[1-5]/.test(cardForm.cardNumber)) brand = "Mastercard";
+    // Local-only card management for signup flow
+    let updatedCards: Card[];
+    if (isEditing && selectedCardIdx !== null) {
+      updatedCards = [...cards];
+      updatedCards[selectedCardIdx] = cardForm;
+      setIsEditing(false);
+    } else if (cards.length < 3) {
+      updatedCards = [...cards, cardForm];
+    } else {
+      alert("Maximum 3 cards allowed");
+      return;
+    }
 
-    const payload = {
-      details: {
-        cardholder_name: cardForm.name,
-        card_number: cardForm.cardNumber.replace(/\s+/g, ""),
-        expiry_month: expiry_month,
-        expiry_year: expiry_year,
-        cvv: cardForm.cvv,
-      },
-      card_brand: brand,
-      is_default: false,
-    };
-
-    // Send to backend API. Must include Supabase access token for auth.
-    (async () => {
-      try {
-        const sessionRes = await supabaseClient.auth.getSession();
-        const token = sessionRes?.data?.session?.access_token;
-        if (!token) {
-          alert("You must be signed in to save a payment method.");
-          return;
-        }
-
-        const res = await fetch("/api/v1/cards", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({ message: res.statusText }));
-          alert(`Failed to save card: ${err?.detail || err?.message || res.statusText}`);
-          return;
-        }
-
-        const data = await res.json();
-        // Expecting an array of card objects (as returned by the backend). Map to local Card shape.
-        if (Array.isArray(data) && data.length > 0) {
-          const serverCards: Card[] = data.map((c: any) => {
-            const d = c.card_details || {};
-            const mm = d.expiry_month?.toString().padStart(2, "0") || "00";
-            const yy = (d.expiry_year ? d.expiry_year.toString().slice(-2) : "00");
-            return {
-              cardNumber: d.card_number || `****${c.card_last_four}`,
-              name: d.cardholder_name || "",
-              expDate: `${mm}/${yy}`,
-              cvv: d.cvv || "",
-            } as Card;
-          });
-          updateCards(serverCards);
-        } else {
-          // Fallback to optimistic local update
-          let updatedCards: Card[];
-          if (isEditing && selectedCardIdx !== null) {
-            updatedCards = [...cards];
-            updatedCards[selectedCardIdx] = cardForm;
-            setIsEditing(false);
-          } else if (cards.length < 3) {
-            updatedCards = [...cards, cardForm];
-          } else {
-            alert("Maximum 3 cards allowed");
-            return;
-          }
-          updateCards(updatedCards);
-        }
-
-        setSelectedCardIdx(null);
-        setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-        setShowAddNew(false);
-        setOpen(false);
-      } catch (err) {
-        console.error("Error saving card:", err);
-        alert("Unexpected error saving card. Check console for details.");
-      }
-    })();
+    updateCards(updatedCards);
+    setSelectedCardIdx(null);
+    setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+    setShowAddNew(false);
   };
 
   const handleEditCard = (idx: number) => {

@@ -34,7 +34,7 @@ class UserProfileUpdate(BaseModel):
     promotional_list: Optional[bool] = None
 
 class UserProfileResponse(BaseModel):
-    id: uuid.UUID
+    user_id: uuid.UUID
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
@@ -46,6 +46,7 @@ class UserProfileResponse(BaseModel):
     country: Optional[str] = None
     is_admin: bool
     promotional_list: bool
+    phone: Optional[str] = None
 
     class Config:
         from_attributes = True # Allows Pydantic to read data from database models
