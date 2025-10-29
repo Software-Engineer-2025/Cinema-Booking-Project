@@ -11,6 +11,7 @@ import Button from "@/components/ui/Button";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import { useQuery } from "@tanstack/react-query";
 import { cardsQuery } from "@/lib/utils/queries";
+import { Skeleton } from "@radix-ui/themes";
 
 interface Card {
   cardNumber: string;
@@ -31,7 +32,7 @@ interface ShippingAddress {
 }
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
   const { data: userCards } = useQuery(cardsQuery());
 
@@ -124,16 +125,19 @@ export default function ProfilePage() {
             label="First Name"
             value={firstName}
             onChange={setFirstName}
+            isLoading={isLoading}
           />
           <InputField
             label="Last Name"
             value={lastName}
             onChange={setLastName}
+            isLoading={isLoading}
           />
           <InputField
             label="Phone Number"
             value={phone}
             onChange={setPhone}
+            isLoading={isLoading}
             className="md:col-span-2"
           />
         </div>
@@ -189,6 +193,7 @@ export default function ProfilePage() {
             onChange={(v) =>
               setShippingAddress((s) => ({ ...s, address_line_1: v }))
             }
+            isLoading={isLoading}
           />
           <InputField
             label="Address Line 2"
@@ -196,26 +201,31 @@ export default function ProfilePage() {
             onChange={(v) =>
               setShippingAddress((s) => ({ ...s, address_line_2: v }))
             }
+            isLoading={isLoading}
           />
           <InputField
             label="City"
             value={shippingAddress.city}
             onChange={(v) => setShippingAddress((s) => ({ ...s, city: v }))}
+            isLoading={isLoading}
           />
           <InputField
             label="State"
             value={shippingAddress.state}
             onChange={(v) => setShippingAddress((s) => ({ ...s, state: v }))}
+            isLoading={isLoading}
           />
           <InputField
             label="ZIP Code"
             value={shippingAddress.zip}
             onChange={(v) => setShippingAddress((s) => ({ ...s, zip: v }))}
+            isLoading={isLoading}
           />
           <InputField
             label="Country"
             value={shippingAddress.country}
             onChange={(v) => setShippingAddress((s) => ({ ...s, country: v }))}
+            isLoading={isLoading}
           />
         </div>
       </Section>
@@ -265,6 +275,7 @@ function InputField({
   onChange,
   type = "text",
   disabled = false,
+  isLoading,
   className = "",
 }: {
   label: string;
@@ -272,18 +283,23 @@ function InputField({
   onChange?: (val: string) => void;
   type?: string;
   disabled?: boolean;
+  isLoading?: boolean;
   className?: string;
 }) {
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       <label className="text-sm text-white/80">{label}</label>
-      <input
-        type={type}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange?.(e.target.value)}
-        className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:opacity-50"
-      />
+      {isLoading ? (
+        <Skeleton className="h-9 w-full rounded-md animate-pulse bg-white/10" />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange?.(e.target.value)}
+          className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:opacity-50"
+        />
+      )}
     </div>
   );
 }
