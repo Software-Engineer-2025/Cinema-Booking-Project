@@ -15,6 +15,6 @@ export const supabaseClient =
             autoRefreshToken: true,
             persistSession: typeof window !== 'undefined' ? getRememberCookie() === "true" : false,
             detectSessionInUrl: true,
-            storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+            storage: typeof window !== 'undefined' ? window.sessionStorage : undefined,
         }
     });
