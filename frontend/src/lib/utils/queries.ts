@@ -33,31 +33,13 @@ export const movieDetailsQuery = (movieId: number) => ({
   queryKey: ["shows", movieId],
   queryFn: async () => {
     const response = await getMovieApiV1MoviesMovieIdGet({
-        path: {
-            movie_id: movieId,
-        }
+      path: {
+        movie_id: movieId,
+      },
     });
     return response.data;
   },
 });
-
-/*
- * checks current user profile.
- */
-export const currentUserProfileQuery = () => ({
-  queryKey: ["currentUserProfile"],
-  queryFn: async () => {
-    const response = await fetch("http://localhost:8000/api/v1/users/me", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) throw new Error("Not authenticated");
-    return response.json();
-  },
-});
-
-
 
 /*
  * checks current user profile.
@@ -137,4 +119,3 @@ export const useDeletePaymentCard = () => {
     },
   });
 };
-

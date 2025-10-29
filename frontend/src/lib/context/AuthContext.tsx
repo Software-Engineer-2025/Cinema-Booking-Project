@@ -18,8 +18,7 @@ import {
   checkVerificationAction,
 } from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
-import {useQuery} from "@tanstack/react-query";
-import {currentUserProfileQuery} from "@/lib/utils/queries";
+
 
 // User params for a user to sign up
 export interface CreateUserParams {
@@ -115,8 +114,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Unexpected error getting session:", unexpectedError);
       }
 
-      const { data: userProfile } = useQuery(currentUserProfileQuery());
-      setAdmin(userProfile.is_admin)
+      // Only fetch profile if user is authenticated
+      if (user) {
+        try {
+          // Get the session to access the JWT token
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session?.access_token) {
+            const response = await fetch("http://localhost:8000/api/v1/users/me", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`,
+              },
+            });
+            if (response.ok) {
+              const userProfile = await response.json();
+              setAdmin(userProfile.is_admin);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
 
       setIsLoading(false);
     };
@@ -188,14 +207,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await logInAction(email, password);
 
-    const { data: userProfile } = useQuery(currentUserProfileQuery());
-
     if (errorMessage) {
       setIsLoading(false);
       return errorMessage.message;
-    } else if (userProfile.is_admin) {
-      window.location.replace("/admin-dashboard");
     } else {
+      try {
+        // Get the session to access the JWT token
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.access_token) {
+          const response = await fetch("http://localhost:8000/api/v1/users/me", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const userProfile = await response.json();
+            if (userProfile.is_admin) {
+              window.location.replace("/admin-dashboard");
+              setIsLoading(false);
+              return null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
       try {
         // Get the session to access the JWT token
         const { data: { session } } = await supabaseClient.auth.getSession();
