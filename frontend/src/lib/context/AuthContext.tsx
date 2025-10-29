@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/auth-js";
+import { AuthError, User } from "@supabase/auth-js";
 import {
   signUpAction,
   logInAction,
@@ -22,12 +22,12 @@ import { supabaseClient } from "@/lib/supabase/client";
 // User params for a user to sign up
 export interface CreateUserParams {
   email: string;
-  //phoneNumber: string,
   password: string;
   repeatPassword: string;
   first_name?: string;
   last_name?: string;
   phone?: string;
+  promotion: boolean;
   // Shipping/Billing Address
   address_line_1?: string;
   address_line_2?: string;
@@ -46,13 +46,14 @@ export interface CreateUserParams {
 
 interface AuthContextType {
   user: User | null;
+  admin: boolean;
   isLoading: boolean;
 
-  signUp: (userData: CreateUserParams) => Promise<void>;
-  logIn: (email: string, password: string) => Promise<void>;
-  logOut: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<void>;
-  updatePassword: (password: string) => Promise<void>;
+  signUp: (userData: CreateUserParams) => Promise<any>;
+  logIn: (email: string, password: string) => Promise<any>;
+  logOut: () => Promise<AuthError | null>;
+  forgotPassword: (email: string) => Promise<any>;
+  updatePassword: (password: string) => Promise<any>;
   checkUser: () => Promise<void>;
 }
 
@@ -65,6 +66,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [admin, setAdmin] = useState<boolean>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -83,6 +85,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error getting session:", error);
         } else {
           setUser(user);
+          
+          // Only fetch profile if user is authenticated
+          if (user) {
+            try {
+              // Get the session to access the JWT token
+              const { data: { session } } = await supabaseClient.auth.getSession();
+              if (session?.access_token) {
+                const response = await fetch("http://localhost:8000/api/v1/users/me", {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                  },
+                });
+                if (response.ok) {
+                  const userProfile = await response.json();
+                  setAdmin(userProfile.is_admin);
+                }
+              }
+            } catch (error) {
+              console.error("Error fetching user profile:", error);
+            }
+          }
         }
       } catch (unexpectedError) {
         console.error("Unexpected error getting session:", unexpectedError);
@@ -102,8 +127,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       switch (event) {
         case "SIGNED_IN":
           setUser(session?.user ?? null);
-          if (window.location.pathname === "/login") {
+          if (window.location.pathname === "/login" && !window.location.search.includes('code')) {
             window.location.href = "/";
+          }
+          // admins can only be on admin dashboard
+          if(admin) {
+            window.location.href = "admin-dashboard";
           }
           break;
         case "TOKEN_REFRESHED":
@@ -112,7 +141,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           break;
         case "SIGNED_OUT":
           setUser(null);
-          if (window.location.pathname != "/") {
+          if (
+            window.location.pathname != "/" &&
+            !window.location.pathname.startsWith("/login") &&
+            !window.location.pathname.startsWith("/create-account")
+          ) {
             window.location.href = "/";
           }
           break;
@@ -136,13 +169,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await signUpAction(userData);
 
     if (errorMessage) {
-      console.error("Error during sign-up:", errorMessage);
+      setIsLoading(false);
+      return errorMessage.message;
     } else {
-      // This needs to be updated to a page that states sign up success when it's set up.
       window.location.href = "verify-email";
     }
 
     setIsLoading(false);
+    return null;
   };
 
   /*
@@ -154,8 +188,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const errorMessage = await logInAction(email, password);
 
     if (errorMessage) {
-      console.error("Error during log-in:", errorMessage);
+      setIsLoading(false);
+      return errorMessage.message;
     } else {
+      try {
+        // Get the session to access the JWT token
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.access_token) {
+          const response = await fetch("http://localhost:8000/api/v1/users/me", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const userProfile = await response.json();
+            if (userProfile.is_admin) {
+              window.location.replace("/admin-dashboard");
+              setIsLoading(false);
+              return null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
       const validated = await checkVerification();
       if (validated) {
         window.location.replace("/");
@@ -165,6 +223,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setIsLoading(false);
+    return null;
   };
 
   /*
@@ -176,17 +235,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logOut = async () => {
     setIsLoading(true);
 
-    try {
-      const { error } = await supabaseClient.auth.signOut();
-
-      if (error) {
-        console.error("Error during log-out:", error.message);
-      }
-    } catch (unexpectedError) {
-      console.error("Unexpected error during log-out:", unexpectedError);
-    }
+    const result = await supabaseClient.auth.signOut();
 
     setIsLoading(false);
+
+    return result.error ? result.error : null;
   };
 
   /*
@@ -198,10 +251,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await forgotPasswordAction(email);
 
-    if (errorMessage) {
-      console.error("Error during forgot password:", errorMessage);
-    }
     setIsLoading(false);
+
+    return errorMessage ? errorMessage.message : null;
   };
 
   /*
@@ -213,10 +265,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await updatePasswordAction(password);
 
-    if (errorMessage) {
-      console.error("Error during password update:", errorMessage);
-    }
     setIsLoading(false);
+    return errorMessage ? errorMessage.message : null;
   };
 
   // Checks if a user is in session.
@@ -243,6 +293,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value: AuthContextType = {
     // State
     user,
+    admin,
     isLoading,
 
     // Methods

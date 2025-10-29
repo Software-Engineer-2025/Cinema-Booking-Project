@@ -38,6 +38,7 @@ export async function signUpAction(userData: CreateUserParams) {
             if ((userData as any).first_name) meta.first_name = (userData as any).first_name;
             if ((userData as any).last_name) meta.last_name = (userData as any).last_name;
             if ((userData as any).phone) meta.phone = (userData as any).phone;
+            if ((userData as any).promotion) meta.promotion = (userData as any).promotion;
             if ((userData as any).address_line_1) meta.address_line_1 = (userData as any).address_line_1;
             if ((userData as any).address_line_2) meta.address_line_2 = (userData as any).address_line_2;
             if ((userData as any).city) meta.city = (userData as any).city;
@@ -56,6 +57,8 @@ export async function signUpAction(userData: CreateUserParams) {
             password: userData.password,
             options: signUpOptions,
         });
+
+
 
 
         revalidatePath('create-account', 'layout');
@@ -98,7 +101,7 @@ export async function forgotPasswordAction(email: string) {
         const supabase = await createClient();
 
         const result = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'auth/reset-password',
+            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
         });
 
         return result.error ? result.error : null;
@@ -160,3 +163,4 @@ export async function checkVerificationAction() {
         return null;
     }
 }
+
