@@ -52,7 +52,12 @@ export default function CreateAccount() {
 
     // Check basic required fields
     if (!firstName || !lastName || !email || !password || !repeatPassword) {
-      alert("Please complete all required fields");
+        toast("Please complete all required fields!", {
+            description: "They are marked with the astrix in red (*).",
+            action: {
+                label: "done"
+            }
+        });
       return;
     }
 
@@ -87,7 +92,6 @@ export default function CreateAccount() {
         }
       });
     }
-
     // Payment methods are optional - no validation needed
 
     const signUpData: CreateUserParams = {
@@ -220,4 +224,3 @@ export default function CreateAccount() {
     </div>
 );
 }
-
