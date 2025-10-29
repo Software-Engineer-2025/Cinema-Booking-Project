@@ -41,6 +41,23 @@ export const movieDetailsQuery = (movieId: number) => ({
   },
 });
 
+
+/*
+ * checks current user profile.
+ */
+export const currentUserProfileQuery = () => ({
+  queryKey: ["currentUserProfile"],
+  queryFn: async () => {
+    const response = await fetch("http://localhost:8000/api/v1/users/me", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) throw new Error("Not authenticated");
+    return response.json();
+  },
+});
+
 export const cardsQuery = () => ({
   queryKey: ["cards"],
   queryFn: async () => {

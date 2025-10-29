@@ -12,6 +12,7 @@ export default function BlackButton({
   className = "",
   type = "submit",
   onClick,
+  isDisabled = false,
 }: ButtonProps) {
   return (
     <button
@@ -23,6 +24,7 @@ export default function BlackButton({
         transition-colors duration-200
         ${className}
       `}
+      disabled={isDisabled}
     >
       {children}
     </button>

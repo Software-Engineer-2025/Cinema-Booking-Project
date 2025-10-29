@@ -12,6 +12,7 @@ import AccountDropdown from "@/components/ui/AccountDropdown";
 import { useQuery } from "@tanstack/react-query";
 import { cardsQuery } from "@/lib/utils/queries";
 import { Skeleton } from "@radix-ui/themes";
+import { toast } from "sonner";
 
 interface Card {
   cardNumber: string;
@@ -51,7 +52,7 @@ export default function ProfilePage() {
     country: "",
   });
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
-  const [promotions, setPromotions] = useState(false);
+  const [promotion, setPromotion] = useState(false);
 
   // Load user info
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function ProfilePage() {
       zip: meta.zip || "",
       country: meta.country || "",
     });
-    setPromotions(meta.promotions || false);
+    setPromotion(meta.promotion || false);
   }, [user]);
 
   const handleSave = async () => {
@@ -76,23 +77,21 @@ export default function ProfilePage() {
       // Handle password change
       if (currentPassword || newPassword || repeatPassword) {
         if (!currentPassword || !newPassword || !repeatPassword) {
-          return alert("Please fill out all password fields.");
+          return toast.warning("Please fill out all password fields.");
         }
         if (newPassword !== repeatPassword)
-          return alert("New passwords do not match.");
+          return toast.warning("New passwords do not match.");
         const loginError = await logInAction(
           user?.email || "",
           currentPassword
         );
-        if (loginError) return alert("Current password is incorrect.");
+        if (loginError) return toast.warning("Current password is incorrect.");
         await updatePasswordAction(newPassword);
-        alert("Password updated");
+        toast.success("Password updated");
         setCurrentPassword("");
         setNewPassword("");
         setRepeatPassword("");
       }
-
-      console.log("what test", paymentMethods);
 
       // Update profile info
       const { error } = await updateProfileAction({
@@ -100,11 +99,11 @@ export default function ProfilePage() {
         last_name: lastName,
         phone,
         ...shippingAddress,
-        promotions,
+        promotion,
       });
 
-      if (error) return alert(error);
-      alert("Profile updated");
+      if (error) return toast.error(error);
+      toast.success("Profile updated");
     } catch (err: any) {
       console.error(err);
     }
@@ -234,8 +233,8 @@ export default function ProfilePage() {
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
-            checked={promotions}
-            onChange={(e) => setPromotions(e.target.checked)}
+            checked={promotion}
+            onChange={(e) => setPromotion(e.target.checked)}
             className="w-4 h-4 accent-white cursor-pointer"
           />
           <label className="text-sm text-white/80">

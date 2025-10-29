@@ -13,8 +13,16 @@ export default function MoviePage() {
   const { id } = useParams();
   const movieId = Number(id);
 
-  const { data: movieData, isLoading } = useQuery(movieDetailsQuery(movieId));
+  const { data: movieData, isLoading } = useQuery({
+    ...movieDetailsQuery(movieId),
+    enabled: !isNaN(movieId) && movieId > 0,
+  });
   const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
+
+  // Handle invalid movie ID
+  if (isNaN(movieId) || movieId <= 0) {
+    return <p className="text-white">Invalid movie ID</p>;
+  }
 
   if (isLoading) return <p className="text-white">Loading...</p>;
   if (!movieData) return <p className="text-white">Movie not found</p>;
