@@ -18,7 +18,8 @@ import {
   checkVerificationAction,
 } from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
-import {error} from "next/dist/build/output/log";
+import {useQuery} from "@tanstack/react-query";
+import {currentUserProfileQuery} from "@/lib/utils/queries";
 
 // User params for a user to sign up
 export interface CreateUserParams {
@@ -47,6 +48,7 @@ export interface CreateUserParams {
 
 interface AuthContextType {
   user: User | null;
+  admin: boolean;
   isLoading: boolean;
 
   signUp: (userData: CreateUserParams) => Promise<any>;
@@ -66,6 +68,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [admin, setAdmin] = useState<boolean>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -89,6 +92,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Unexpected error getting session:", unexpectedError);
       }
 
+      const { data: userProfile } = useQuery(currentUserProfileQuery());
+      setAdmin(userProfile.is_admin)
+
       setIsLoading(false);
     };
 
@@ -105,6 +111,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(session?.user ?? null);
           if (window.location.pathname === "/login" && !window.location.search.includes('code')) {
             window.location.href = "/";
+          }
+          // admins can only be on admin dashboard
+          if(admin) {
+            window.location.href = "admin-dashboard";
           }
           break;
         case "TOKEN_REFRESHED":
@@ -155,9 +165,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await logInAction(email, password);
 
+    const { data: userProfile } = useQuery(currentUserProfileQuery());
+
     if (errorMessage) {
       setIsLoading(false);
       return errorMessage.message;
+    } else if (userProfile.is_admin) {
+      window.location.replace("/admin-dashboard");
     } else {
       const validated = await checkVerification();
       if (validated) {
@@ -238,6 +252,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value: AuthContextType = {
     // State
     user,
+    admin,
     isLoading,
 
     // Methods
