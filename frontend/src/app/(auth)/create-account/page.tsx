@@ -50,6 +50,12 @@ export default function CreateAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check basic required fields
+    if (!firstName || !lastName || !email || !password || !repeatPassword) {
+      alert("Please complete all required fields");
+      return;
+    }
+
     if (password !== repeatPassword) {
       toast("Passwords do not match!", {
         description: "please ensure password and repeat password match.",
@@ -82,6 +88,8 @@ export default function CreateAccount() {
       });
     }
 
+    // Payment methods are optional - no validation needed
+
     const signUpData: CreateUserParams = {
       email: email,
       password: password,
@@ -96,6 +104,7 @@ export default function CreateAccount() {
       state: shippingAddress.state,
       zip: shippingAddress.zip,
       country: shippingAddress.country,
+      payment_cards: paymentMethods, // Array of cards for database trigger
     };
 
     console.log(
@@ -190,7 +199,6 @@ export default function CreateAccount() {
               type="payment"
               onPaymentChange={setPaymentMethods}
           />
-
             <div className={"flex flex-row gap-1"}>
               <input type="checkbox" onChange={() => setPromotion(prevState => !prevState)}/>
               <label className="text-white font-medium">
@@ -212,3 +220,4 @@ export default function CreateAccount() {
     </div>
 );
 }
+

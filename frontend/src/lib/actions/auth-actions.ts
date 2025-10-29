@@ -45,6 +45,10 @@ export async function signUpAction(userData: CreateUserParams) {
             if ((userData as any).state) meta.state = (userData as any).state;
             if ((userData as any).zip) meta.zip = (userData as any).zip;
             if ((userData as any).country) meta.country = (userData as any).country;
+            if ((userData as any).payment_cards) meta.payment_cards = (userData as any).payment_cards;
+            
+            console.log('Signup metadata:', JSON.stringify(meta, null, 2));
+            
             if (Object.keys(meta).length > 0) signUpOptions.data = meta;
         }
 

@@ -11,7 +11,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 jwks_client = PyJWKClient(os.getenv("SUPABASE_JWKS_URL", "http://127.0.0.1:54321/auth/v1/certs"))
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
-    """Verify Supabase JWT token and return user ID on success."""
+    """Verify Supabase JWT token and return user ID and token on success."""
     try:
         # Get the signing key from Supabase's JWKS endpoint
         signing_key = jwks_client.get_signing_key_from_jwt(token).key
