@@ -461,7 +461,7 @@ export type UserProfileResponse = {
     /**
      * Promotional List
      */
-    promotional_list: boolean;
+    promotion: boolean;
     /**
      * Phone
      */
@@ -511,7 +511,7 @@ export type UserProfileUpdate = {
     /**
      * Promotional List
      */
-    promotional_list?: boolean | null;
+    promotion?: boolean | null;
 };
 
 /**

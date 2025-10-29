@@ -13,7 +13,7 @@ class UserProfileCreate(BaseModel):
     state: Optional[str] = None
     zip: Optional[str] = None
     country: Optional[str] = None
-    promotional_list: Optional[bool] = False
+    promotion: Optional[bool] = False
 
 
 class UserLogin(BaseModel):
@@ -31,7 +31,7 @@ class UserProfileUpdate(BaseModel):
     state: Optional[str] = None
     zip: Optional[str] = None
     country: Optional[str] = None
-    promotional_list: Optional[bool] = None
+    promotion: Optional[bool] = None
 
 class UserProfileResponse(BaseModel):
     user_id: uuid.UUID
@@ -45,7 +45,7 @@ class UserProfileResponse(BaseModel):
     zip: Optional[str] = None
     country: Optional[str] = None
     is_admin: bool
-    promotional_list: bool
+    promotion: bool
     phone: Optional[str] = None
 
     class Config:

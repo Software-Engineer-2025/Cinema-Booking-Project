@@ -165,13 +165,13 @@ export async function updateProfileAction(updates: {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  address1?: string;
-  address2?: string;
+  address_line_1?: string;
+  address_line_2?: string;
   city?: string;
   state?: string;
   zip?: string;
   country?: string;
-  promotions?: boolean;
+  promotion?: boolean;
 }) {
   try {
     const supabase = await createClient();
@@ -181,18 +181,41 @@ export async function updateProfileAction(updates: {
       return { error: "No active user session." };
     }
 
+    // Update Supabase Auth metadata
     const newMetadata = {
       ...user.user_metadata,
       ...updates,
     };
 
-    const { error } = await supabase.auth.updateUser({
+    const { error: authError } = await supabase.auth.updateUser({
       data: newMetadata,
     });
 
+    if (authError) {
+      return { error: authError.message };
+    }
+
+    // Also update the backend database
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      const response = await fetch("http://localhost:8000/api/v1/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { error: `Backend update failed: ${errorText}` };
+      }
+    }
+
     revalidatePath('/profile', 'layout');
 
-    return error ? { error: error.message } : { success: true };
+    return { success: true };
   } catch (err: any) {
     console.error('Profile update error:', err);
     return { error: err.message || "Unexpected error occurred." };

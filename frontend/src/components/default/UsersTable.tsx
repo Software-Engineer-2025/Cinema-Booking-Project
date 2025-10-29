@@ -11,7 +11,7 @@ export default function UsersTable({ users, onUpdate, onDelete }) {
     "payment_method",
     "is_admin",
     "is_suspended",
-    "promotional_list",
+    "promotion",
   ];
 
   return (

@@ -100,7 +100,7 @@ export default function ProfilePage() {
         last_name: lastName,
         phone,
         ...shippingAddress,
-        promotions,
+        promotion: promotions, // Fixed field name to match backend
       });
 
       if (error) return alert(error);
