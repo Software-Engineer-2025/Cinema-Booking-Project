@@ -18,8 +18,6 @@ import {
   checkVerificationAction,
 } from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
-import {useQuery} from "@tanstack/react-query";
-import {currentUserProfileQuery} from "@/lib/utils/queries";
 
 // User params for a user to sign up
 export interface CreateUserParams {
@@ -53,7 +51,7 @@ interface AuthContextType {
 
   signUp: (userData: CreateUserParams) => Promise<any>;
   logIn: (email: string, password: string) => Promise<any>;
-  logOut: () => Promise<AuthError | null>
+  logOut: () => Promise<AuthError | null>;
   forgotPassword: (email: string) => Promise<any>;
   updatePassword: (password: string) => Promise<any>;
   checkUser: () => Promise<void>;
@@ -87,13 +85,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error getting session:", error);
         } else {
           setUser(user);
+          
+          // Only fetch profile if user is authenticated
+          if (user) {
+            try {
+              // Get the session to access the JWT token
+              const { data: { session } } = await supabaseClient.auth.getSession();
+              if (session?.access_token) {
+                const response = await fetch("http://localhost:8000/api/v1/users/me", {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                  },
+                });
+                if (response.ok) {
+                  const userProfile = await response.json();
+                  setAdmin(userProfile.is_admin);
+                }
+              }
+            } catch (error) {
+              console.error("Error fetching user profile:", error);
+            }
+          }
         }
       } catch (unexpectedError) {
         console.error("Unexpected error getting session:", unexpectedError);
       }
-
-      const { data: userProfile } = useQuery(currentUserProfileQuery());
-      setAdmin(userProfile.is_admin)
 
       setIsLoading(false);
     };
@@ -123,7 +141,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           break;
         case "SIGNED_OUT":
           setUser(null);
-          if (window.location.pathname != "/" && !window.location.pathname.startsWith("/login") && !window.location.pathname.startsWith("/create-account")) {
+          if (
+            window.location.pathname != "/" &&
+            !window.location.pathname.startsWith("/login") &&
+            !window.location.pathname.startsWith("/create-account")
+          ) {
             window.location.href = "/";
           }
           break;
@@ -165,14 +187,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await logInAction(email, password);
 
-    const { data: userProfile } = useQuery(currentUserProfileQuery());
-
     if (errorMessage) {
       setIsLoading(false);
       return errorMessage.message;
-    } else if (userProfile.is_admin) {
-      window.location.replace("/admin-dashboard");
     } else {
+      try {
+        // Get the session to access the JWT token
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.access_token) {
+          const response = await fetch("http://localhost:8000/api/v1/users/me", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const userProfile = await response.json();
+            if (userProfile.is_admin) {
+              window.location.replace("/admin-dashboard");
+              setIsLoading(false);
+              return null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
       const validated = await checkVerification();
       if (validated) {
         window.location.replace("/");

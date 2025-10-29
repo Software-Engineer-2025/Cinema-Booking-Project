@@ -1,23 +1,22 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import DashboardTabs from "@/components/default/DashboardTabs";
 import MovieTab from "@/components/default/MovieTab";
 import PriceTab from "@/components/default/PriceTab";
 import UsersTab from "@/components/default/UsersTab";
-import {useQuery} from "@tanstack/react-query";
-import {currentUserProfileQuery} from "@/lib/utils/queries";
-import {useAuth} from "@/lib/context/AuthContext";
+
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function AdminDashboard() {
+  const { user, admin, isLoading } = useAuth();
 
-    const {user, admin} = useAuth();
-
-    useEffect(() => {
-        if (!user && !admin) {
-            window.location.replace("/");
-        }
-    }, [user]);
+  useEffect(() => {
+    // Only redirect if we're not loading and user is definitely not admin
+    if (!isLoading && user && admin === false) {
+      window.location.replace("/");
+    }
+  }, [user, admin, isLoading]);
 
   const [activeTab, setActiveTab] = useState("movies");
 
