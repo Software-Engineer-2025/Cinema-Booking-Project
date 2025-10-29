@@ -9,6 +9,7 @@ import Link from "next/link";
 import {ChangeEvent, useState} from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import {toast} from "sonner";
+import AuthPassCheck from "@/components/auth/AuthPassCheck";
 
 export default function ResetPassword() {
     const { updatePassword, isLoading } = useAuth();
@@ -46,11 +47,12 @@ export default function ResetPassword() {
         <p>Enter a new secure password for your account.</p>
         <form className="flex flex-col gap-3">
           <AuthInput
-              type="email"
+              type="password"
               placeholder="Enter a secure password."
               onChange={(e: ChangeEvent<HTMLInputElement>)=>setPassword(e.target.value)}
               className="pb-7"
               required />
+          <AuthPassCheck password={password}/>
           <BlackButton className="mb-6" onClick={handleResetPassword} isDisabled={isLoading}>
               {isLoading ? "Loading…" : "Reset Password"}
           </BlackButton>

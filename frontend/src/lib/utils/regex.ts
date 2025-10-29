@@ -12,3 +12,11 @@ export const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#
 
 // regular expression for US zip codes
 export const zipRegex = new RegExp("^\\b\\d{5}\\b$");
+
+export const specRegex = new RegExp("^.*[#$@!%&*?].*$");
+
+export const upperRegex = new RegExp("^.*[A-Z].*$");
+
+export const lowerRegex = new RegExp("^.*[a-z].*$");
+
+export const numRegex = new RegExp("^.*[0-9].*$");

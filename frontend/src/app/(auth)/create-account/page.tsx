@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useAuth, CreateUserParams } from "@/lib/context/AuthContext";
 import { toast } from "sonner"
 import {passwordRegex, phoneRegex, zipRegex} from "@/lib/utils/regex";
+import AuthPassCheck from "@/components/auth/AuthPassCheck";
 
 interface Card {
   cardNumber: string;
@@ -159,6 +160,7 @@ export default function CreateAccount() {
               onChange={(e) => setPassword(e.target.value)}
               required
           />
+          <AuthPassCheck password={password}/>
           <AuthInput
               type="password"
               header="Repeat Password"
