@@ -22,15 +22,8 @@ export default function AuthNavbar() {
             />
             <span className="text-4xl uppercase font-special">Cinema</span>
           </Link>
-
-       
         </div>
-
-        
       </nav>
-
-     
-
       {/* BLACK GRADIENT EFFECT */}
       <div className="left-0 w-full h-8 bg-gradient-to-b from-black to-transparent pointer-events-none"></div>
     </div>

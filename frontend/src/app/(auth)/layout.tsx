@@ -5,6 +5,7 @@ import "../globals.css";
 import AuthNavbar from "@/components/auth/AuthNavbar";
 import Providers from "@/Providers";
 import { AuthProvider } from "@/lib/context/AuthContext";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Cinema",
@@ -30,6 +31,7 @@ export default function RootLayout({
             <main>{children}</main>
             <footer></footer>
           </AuthProvider>
+          <Toaster />
         </body>
       </Providers>
     </html>

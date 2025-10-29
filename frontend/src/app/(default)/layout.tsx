@@ -5,7 +5,8 @@ import "../globals.css";
 import Navbar from "@/components/default/Navbar";
 import Providers from "@/Providers";
 import BookingPopUp from "@/components/default/BookingPopUp";
-import {AuthProvider} from "@/lib/context/AuthContext";
+import { AuthProvider } from "@/lib/context/AuthContext";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Cinema",
@@ -32,6 +33,7 @@ export default function RootLayout({
               <footer></footer>
               <BookingPopUp></BookingPopUp>
             </AuthProvider>
+            <Toaster />
           </body>
       </Providers>
     </html>
