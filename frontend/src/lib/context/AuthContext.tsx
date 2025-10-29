@@ -87,6 +87,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error getting session:", error);
         } else {
           setUser(user);
+          
+          // Only fetch profile if user is authenticated
+          if (user) {
+            try {
+              // Get the session to access the JWT token
+              const { data: { session } } = await supabaseClient.auth.getSession();
+              if (session?.access_token) {
+                const response = await fetch("http://localhost:8000/api/v1/users/me", {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                  },
+                });
+                if (response.ok) {
+                  const userProfile = await response.json();
+                  setAdmin(userProfile.is_admin);
+                }
+              }
+            } catch (error) {
+              console.error("Error fetching user profile:", error);
+            }
+          }
         }
       } catch (unexpectedError) {
         console.error("Unexpected error getting session:", unexpectedError);
@@ -173,6 +196,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else if (userProfile.is_admin) {
       window.location.replace("/admin-dashboard");
     } else {
+      try {
+        // Get the session to access the JWT token
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.access_token) {
+          const response = await fetch("http://localhost:8000/api/v1/users/me", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const userProfile = await response.json();
+            if (userProfile.is_admin) {
+              window.location.replace("/admin-dashboard");
+              setIsLoading(false);
+              return null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
       const validated = await checkVerification();
       if (validated) {
         window.location.replace("/");
