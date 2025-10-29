@@ -1,12 +1,16 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 
 type ButtonProps = {
   children?: React.ReactNode;
   className?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
-export default function Button({ children, className = ""}: ButtonProps) {
-
+export default function Button({
+  children,
+  className = "",
+  onClick,
+}: ButtonProps) {
   return (
     <button
       className={`
@@ -15,6 +19,7 @@ export default function Button({ children, className = ""}: ButtonProps) {
         transition-colors duration-200
         ${className}
       `}
+      onClick={onClick}
     >
       {children}
     </button>

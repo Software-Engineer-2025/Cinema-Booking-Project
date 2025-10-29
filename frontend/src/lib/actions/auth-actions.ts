@@ -160,3 +160,41 @@ export async function checkVerificationAction() {
         return null;
     }
 }
+
+export async function updateProfileAction(updates: {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  country?: string;
+  promotions?: boolean;
+}) {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { error: "No active user session." };
+    }
+
+    const newMetadata = {
+      ...user.user_metadata,
+      ...updates,
+    };
+
+    const { error } = await supabase.auth.updateUser({
+      data: newMetadata,
+    });
+
+    revalidatePath('/profile', 'layout');
+
+    return error ? { error: error.message } : { success: true };
+  } catch (err: any) {
+    console.error('Profile update error:', err);
+    return { error: err.message || "Unexpected error occurred." };
+  }
+}
