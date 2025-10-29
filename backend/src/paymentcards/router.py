@@ -39,3 +39,15 @@ def delete_payment_card_endpoint(card_id: uuid.UUID, current_user: dict = Depend
         raise HTTPException(status_code=404, detail="Card not found or access denied.")
         
     return None
+
+@router.patch("/{card_id}", response_model=CardResponse)
+def update_payment_card_endpoint(
+    card_id: uuid.UUID,
+    card_data: NewCardRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    user_id = current_user["id"]
+    data, error = crud.update_payment_card(user_id, str(card_id), card_data)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+    return data

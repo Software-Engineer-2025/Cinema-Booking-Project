@@ -13,7 +13,7 @@ export default function UsersTab() {
       payment_method: "**** **** **** 4242",
       is_admin: false,
       is_suspended: false,
-      promotional_list: true,
+      promotion: true,
     },
     {
       user_id: 2,
@@ -25,7 +25,7 @@ export default function UsersTab() {
       payment_method: "**** **** **** 1234",
       is_admin: true,
       is_suspended: false,
-      promotional_list: false,
+      promotion: false,
     },
   ]);
 

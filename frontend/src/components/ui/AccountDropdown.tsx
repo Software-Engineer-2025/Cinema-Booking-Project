@@ -1,9 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthInput from "@/components/auth/AuthInput";
 import BlackButton from "@/components/ui/BlackButton";
+import {
+  useAddPaymentCard,
+  useDeletePaymentCard,
+  useUpdatePaymentCard,
+} from "@/lib/utils/queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface Card {
+  id?: string;
   cardNumber: string;
   name: string;
   expDate: string;
@@ -24,6 +32,7 @@ interface AccountDropdownProps {
   type: "shipping" | "payment";
   defaultOpen?: boolean;
   className?: string;
+  initialCards?: Card[];
   // Callbacks to expose data to parent
   onShippingChange?: (address: ShippingAddress) => void;
   onPaymentChange?: (cards: Card[]) => void;
@@ -34,10 +43,16 @@ export default function AccountDropdown({
   type,
   defaultOpen = false,
   className = "",
+  initialCards,
   onShippingChange,
   onPaymentChange,
 }: AccountDropdownProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const addPaymentCard = useAddPaymentCard();
+  const updatePaymentCard = useUpdatePaymentCard();
+  const deletePaymentCard = useDeletePaymentCard();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   // shipping state
   const [shipping, setShipping] = useState<ShippingAddress>({
@@ -50,7 +65,7 @@ export default function AccountDropdown({
   });
 
   // payment state
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Card[]>(initialCards || []);
   const [selectedCardIdx, setSelectedCardIdx] = useState<number | null>(null);
   const [cardForm, setCardForm] = useState<Card>({
     cardNumber: "",
@@ -61,47 +76,70 @@ export default function AccountDropdown({
   const [isEditing, setIsEditing] = useState(false);
   const [showAddNew, setShowAddNew] = useState(false);
 
-  // Helper to update shipping and notify parent
+  useEffect(() => {
+    if (initialCards) setCards(initialCards);
+  }, [initialCards]);
+
   const updateShipping = (newShipping: ShippingAddress) => {
     setShipping(newShipping);
     onShippingChange?.(newShipping);
   };
 
-  // Helper to update cards and notify parent
   const updateCards = (newCards: Card[]) => {
     setCards(newCards);
     onPaymentChange?.(newCards);
   };
 
-  // card handlers
   const handleCardFormChange = (field: keyof Card, value: string) => {
     setCardForm({ ...cardForm, [field]: value });
   };
 
+  // Add new card
   const handleSaveCard = () => {
-    // Basic validation
-    if (!cardForm.cardNumber || !cardForm.name || !cardForm.expDate || !cardForm.cvv) {
-      alert("Please fill in all card fields.");
+    if (
+      !cardForm.cardNumber ||
+      !cardForm.name ||
+      !cardForm.expDate ||
+      !cardForm.cvv
+    ) {
+      return alert("Please fill in all card fields.");
+    }
+
+    // Prevent duplicates
+    if (cards.some((c) => c.cardNumber === cardForm.cardNumber)) {
+      return alert("This card is already added.");
+    }
+
+    if (!user) {
+      const updatedCards = [...cards, cardForm];
+      updateCards(updatedCards);
+      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+      setShowAddNew(false);
       return;
     }
 
-    // Local-only card management for signup flow
-    let updatedCards: Card[];
-    if (isEditing && selectedCardIdx !== null) {
-      updatedCards = [...cards];
-      updatedCards[selectedCardIdx] = cardForm;
-      setIsEditing(false);
-    } else if (cards.length < 3) {
-      updatedCards = [...cards, cardForm];
-    } else {
-      alert("Maximum 3 cards allowed");
-      return;
-    }
+    const payload = {
+      details: {
+        name: cardForm.name,
+        cardNumber: cardForm.cardNumber,
+        expDate: cardForm.expDate,
+        cvv: cardForm.cvv,
+      },
+    };
 
-    updateCards(updatedCards);
-    setSelectedCardIdx(null);
-    setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-    setShowAddNew(false);
+    // mutation
+    addPaymentCard.mutate(payload, {
+      onSuccess: (newCard) => {
+        updateCards([...cards, newCard]);
+        setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+        setShowAddNew(false);
+        queryClient.invalidateQueries({ queryKey: ["cards"] });
+      },
+      onError: (err) => {
+        console.error(err);
+        alert("Failed to save card.");
+      },
+    });
   };
 
   const handleEditCard = (idx: number) => {
@@ -111,21 +149,87 @@ export default function AccountDropdown({
     setShowAddNew(true);
   };
 
-  const handleDeleteCard = (idx: number) => {
-    const updated = cards.filter((_, i) => i !== idx);
-    updateCards(updated);
-    if (selectedCardIdx === idx) {
-      setSelectedCardIdx(null);
-      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-      setIsEditing(false);
-    }
-  };
+  const handleConfirmEdit = () => {
+    if (selectedCardIdx === null) return;
 
-  const handleAddNewCard = () => {
-    if (cards.length >= 3) {
-      alert("Maximum 3 cards allowed");
+    if (!user) {
+      const newCards = cards.map((c, i) =>
+        i === selectedCardIdx ? cardForm : c
+      );
+      updateCards(newCards);
+      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+      setSelectedCardIdx(null);
+      setIsEditing(false);
+      setShowAddNew(false);
       return;
     }
+
+    const card = cards[selectedCardIdx];
+    if (!card.id) return alert("Missing card ID for update.");
+
+    const payload = {
+      details: {
+        name: cardForm.name,
+        cardNumber: cardForm.cardNumber,
+        expDate: cardForm.expDate,
+        cvv: cardForm.cvv,
+      },
+    };
+
+    updatePaymentCard.mutate(
+      { cardId: card.id, updatedCard: payload },
+      {
+        onSuccess: (updatedCard) => {
+          const newCards = cards.map((c, i) =>
+            i === selectedCardIdx ? updatedCard : c
+          );
+          updateCards(newCards);
+          setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+          setSelectedCardIdx(null);
+          setIsEditing(false);
+          setShowAddNew(false);
+          queryClient.invalidateQueries({ queryKey: ["cards"] });
+        },
+        onError: (err) => {
+          console.error(err);
+          alert("Failed to update card.");
+        },
+      }
+    );
+  };
+
+  // Cancel edits
+  const handleCancel = () => {
+    setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+    setSelectedCardIdx(null);
+    setIsEditing(false);
+    setShowAddNew(false);
+  };
+
+  // Delete card
+  const handleDeleteCard = (idx: number) => {
+    if (!user) {
+      const updated = cards.filter((_, i) => i !== idx);
+      updateCards(updated);
+      return;
+    }
+
+    const card = cards[idx];
+    if (!card.id) return alert("Card ID missing — cannot delete.");
+
+    deletePaymentCard.mutate(card.id, {
+      onSuccess: () => {
+        updateCards(cards.filter((_, i) => i !== idx));
+        if (selectedCardIdx === idx) handleCancel();
+        queryClient.invalidateQueries({ queryKey: ["cards"] });
+      },
+      onError: (err) => {
+        console.error(err);
+        alert("Failed to delete card.");
+      },
+    });
+  };
+  const handleAddNewCard = () => {
     setShowAddNew(true);
     setIsEditing(false);
     setSelectedCardIdx(null);
@@ -241,9 +345,9 @@ export default function AccountDropdown({
                     key={idx}
                     className="flex justify-between items-center px-2 py-1 rounded"
                   >
-                    <div className="text-left flex-1">
-                      {`Card ending in ${c.cardNumber.slice(-4)}`}
-                    </div>
+                    <div className="text-left flex-1">{`Card ending in ${c?.cardNumber?.slice(
+                      -4
+                    )}`}</div>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -268,6 +372,7 @@ export default function AccountDropdown({
                 <button
                   type="button"
                   onClick={handleAddNewCard}
+                  hidden={cards.length >= 3}
                   className="mt-2 bg-gray-400/60 rounded-lg text-left px-2 py-1 text-white hover:text-gray-700"
                 >
                   + Add New Card
@@ -278,7 +383,9 @@ export default function AccountDropdown({
               {showAddNew && (
                 <div className="mt-2 pt-2 flex flex-col gap-2">
                   <p className="font-bold">
-                    {isEditing ? "Edit Payment Method" : "Add New Payment Method"}
+                    {isEditing
+                      ? "Edit Payment Method"
+                      : "Add New Payment Method"}
                   </p>
                   <AuthInput
                     type="text"
@@ -316,15 +423,29 @@ export default function AccountDropdown({
                       }
                     />
                   </div>
-                  <BlackButton
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveCard();
-                    }}
-                  >
-                    {isEditing ? "Confirm Edits" : "Save Card Info"}
-                  </BlackButton>
+                  <div className="flex gap-2">
+                    <BlackButton
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isEditing ? handleConfirmEdit() : handleSaveCard();
+                      }}
+                    >
+                      {isEditing ? "Confirm Edits" : "Save Card Info"}
+                    </BlackButton>
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCancel();
+                        }}
+                        className="ml-2 text-gray-300 hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

@@ -1,6 +1,6 @@
 from db.supabase import supabase
 from typing import List, Optional, Tuple, Any
-from .schemas import NewCardRequest
+from .schemas import NewCardRequest, CardResponse, CardDetails
 
 
 def add_payment_card(user_id: str, card_data: NewCardRequest) -> Tuple[Optional[List[dict]], Optional[str]]:
@@ -14,7 +14,6 @@ def add_payment_card(user_id: str, card_data: NewCardRequest) -> Tuple[Optional[
     # 1. Call the SQL function to encrypt the card details JSON.
     rpc_params = {"data_to_encrypt": card_data.details.dict()}
     encrypted_details_response = supabase.rpc("encrypt_payment_card", rpc_params).execute()
-
     if encrypted_details_response.data is None:
         return None, "Failed to encrypt card details. Ensure the encryption key is set."
 
@@ -22,43 +21,104 @@ def add_payment_card(user_id: str, card_data: NewCardRequest) -> Tuple[Optional[
     new_card_payload: dict[str, Any] = {
         "user_id": user_id,
         "card_details": encrypted_details_response.data,
-        "card_last_four": card_data.details.card_number[-4:],
+        "card_last_four": card_data.details.cardNumber[-4:],
+        "card_brand": ""
     }
 
     # 3. Insert the new record.
     response = supabase.table("paymentcards").insert(new_card_payload).execute()
 
-    if response.error:
-        return None, getattr(response.error, "message", str(response.error))
-
     # response.data is typically a list of inserted rows. Return minimal info.
     try:
-        inserted = response.data[0]
-        minimal = [{
-            "card_id": inserted.get("card_id"),
-            "card_last_four": inserted.get("card_last_four"),
-        }]
-        return minimal, None
+        inserted = response.data
+        return inserted, None
     except Exception:
         return None, "Unexpected response from DB after inserting card."
 
 def get_payment_cards(user_id: str) -> Tuple[Optional[List[dict]], Optional[str]]:
-    """Return minimal card info for the user (no full decrypted details).
-
-    We intentionally do NOT decrypt card_details here — we only return the
-    stored `card_id` and `card_last_four` so the frontend can display masked cards.
     """
-    response = supabase.table("paymentcards").select("card_id, card_last_four").eq("user_id", user_id).execute()
-    if response.error:
-        return None, getattr(response.error, "message", str(response.error))
+    Return full payment card details for the user.
+    """
+    # Fetch cards for the user
+    response = supabase.table("paymentcards").select(
+        "card_id, card_last_four, card_details, card_brand, is_default"
+    ).eq("user_id", user_id).execute()
 
-    return response.data, None
+    decrypted_cards = []
+
+    for card in response.data:
+        encrypted = card.get("card_details")
+        if not encrypted:
+            continue
+
+        # Call the DB RPC to decrypt
+        decrypt_resp = supabase.rpc(
+            "decrypt_payment_card", {"encrypted_data": encrypted}
+        ).execute()
+
+        decrypted_cards.append(CardResponse(
+            card_id=card["card_id"],
+            card_last_four=card["card_last_four"],
+            card_brand=card.get("card_brand"),
+            is_default=card.get("is_default", False),
+            card_details=CardDetails(
+                name=decrypt_resp.data["name"],
+                cardNumber=decrypt_resp.data["cardNumber"],
+                cvv=decrypt_resp.data["cvv"],
+                expDate=decrypt_resp.data["expDate"],
+            )
+        ))
+
+    return decrypted_cards, None
+
 
 def delete_payment_card(user_id: str, card_id: str):
     """Deletes a specific payment card belonging to a user."""
     response = supabase.table("paymentcards").delete().eq("card_id", card_id).eq("user_id", user_id).execute()
 
-    if response.error:
-        return None, getattr(response.error, "message", str(response.error))
-
     return response.data, None
+
+
+def update_payment_card(user_id: str, card_id: str, card_data: NewCardRequest) -> Tuple[Optional[dict], Optional[str]]:
+    """Updates a specific payment card belonging to a user."""
+    # Encrypt the updated card details
+    rpc_params = {"data_to_encrypt": card_data.details.dict()}
+    encrypted_response = supabase.rpc("encrypt_payment_card", rpc_params).execute()
+
+    if encrypted_response.data is None:
+        return None, "Failed to encrypt updated card details."
+
+    update_payload = {
+        "card_details": encrypted_response.data,
+        "card_last_four": card_data.details.cardNumber[-4:],
+    }
+
+    # Update only this user's card
+    response = (
+        supabase.table("paymentcards")
+        .update(update_payload)
+        .eq("user_id", user_id)
+        .eq("card_id", card_id)
+        .execute()
+    )
+
+    updated = response.data[0] if response.data else None
+    if not updated:
+        return None, "Card not found or not updated."
+
+    # Decrypt again to return
+    decrypt_resp = supabase.rpc("decrypt_payment_card", {"encrypted_data": updated["card_details"]}).execute()
+    decrypted_card = CardResponse(
+        card_id=updated["card_id"],
+        card_last_four=updated["card_last_four"],
+        card_brand=updated.get("card_brand", ""),
+        is_default=updated.get("is_default", False),
+        card_details=CardDetails(
+            name=decrypt_resp.data["name"],
+            cardNumber=decrypt_resp.data["cardNumber"],
+            cvv=decrypt_resp.data["cvv"],
+            expDate=decrypt_resp.data["expDate"],
+        ),
+    )
+
+    return decrypted_card, None
