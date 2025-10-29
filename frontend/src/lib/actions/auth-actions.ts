@@ -16,13 +16,13 @@ export async function signUpAction(userData: CreateUserParams) {
             return { error: "Passwords don't match." };
         }
 
-        /*
-        if (!phoneRegex.test(userData.phoneNumber)) {
-            return { error: "Phone number is not formatted in any valid way." };
-        } else {
-            userData.phoneNumber = userData.phoneNumber.replace(/\D/g, '');
+        if(userData.phone && userData.phone !== "") {
+            if (!phoneRegex.test(userData.phone)) {
+                return { error: "Phone number is not formatted in any valid way." };
+            } else {
+                userData.phone = userData.phone.replace(/\D/g, '');
+            }
         }
-         */
 
         // Build options object and include user metadata (options.data) when present.
         const signUpOptions: any = {
