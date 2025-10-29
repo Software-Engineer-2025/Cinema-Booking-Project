@@ -8,6 +8,7 @@ import {
   useUpdatePaymentCard,
 } from "@/lib/utils/queries";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface Card {
   id?: string;
@@ -51,6 +52,7 @@ export default function AccountDropdown({
   const updatePaymentCard = useUpdatePaymentCard();
   const deletePaymentCard = useDeletePaymentCard();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   // shipping state
   const [shipping, setShipping] = useState<ShippingAddress>({
@@ -108,6 +110,14 @@ export default function AccountDropdown({
       return alert("This card is already added.");
     }
 
+    if (!user) {
+      const updatedCards = [...cards, cardForm];
+      updateCards(updatedCards);
+      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+      setShowAddNew(false);
+      return;
+    }
+
     const payload = {
       details: {
         name: cardForm.name,
@@ -141,6 +151,19 @@ export default function AccountDropdown({
 
   const handleConfirmEdit = () => {
     if (selectedCardIdx === null) return;
+
+    if (!user) {
+      const newCards = cards.map((c, i) =>
+        i === selectedCardIdx ? cardForm : c
+      );
+      updateCards(newCards);
+      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
+      setSelectedCardIdx(null);
+      setIsEditing(false);
+      setShowAddNew(false);
+      return;
+    }
+
     const card = cards[selectedCardIdx];
     if (!card.id) return alert("Missing card ID for update.");
 
@@ -185,6 +208,12 @@ export default function AccountDropdown({
 
   // Delete card
   const handleDeleteCard = (idx: number) => {
+    if (!user) {
+      const updated = cards.filter((_, i) => i !== idx);
+      updateCards(updated);
+      return;
+    }
+
     const card = cards[idx];
     if (!card.id) return alert("Card ID missing — cannot delete.");
 

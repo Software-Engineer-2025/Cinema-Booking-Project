@@ -19,11 +19,10 @@ export const client = createClient(createConfig<ClientOptions2>({
 }));
 
 client.interceptors.request.use(async (request) => {
-  const sessionRes = await supabaseClient.auth.getSession();
+  const sessionRes = await supabaseClient?.auth?.getSession();
   const token = sessionRes?.data?.session?.access_token;
-  if (!token) {
-    throw new Error("User not signed in");
-  }
+  if (token){
   request.headers.set("Authorization", `Bearer ${token}`);
+  }
   return request;
 });
