@@ -18,8 +18,7 @@ import {
   checkVerificationAction,
 } from "@/lib/actions/auth-actions";
 import { supabaseClient } from "@/lib/supabase/client";
-import {useQuery} from "@tanstack/react-query";
-import {currentUserProfileQuery} from "@/lib/utils/queries";
+
 
 // User params for a user to sign up
 export interface CreateUserParams {
@@ -48,7 +47,7 @@ export interface CreateUserParams {
 
 interface AuthContextType {
   user: User | null;
-  admin: boolean;
+  admin: boolean | null;
   isLoading: boolean;
 
   signUp: (userData: CreateUserParams) => Promise<any>;
@@ -68,7 +67,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [admin, setAdmin] = useState<boolean>(null);
+  const [admin, setAdmin] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -104,6 +103,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if (response.ok) {
                   const userProfile = await response.json();
                   setAdmin(userProfile.is_admin);
+                  
+                  // Redirect admin users to admin dashboard if they're on regular pages
+                  if (userProfile.is_admin && 
+                      !window.location.pathname.startsWith('/admin-dashboard') &&
+                      !window.location.pathname.startsWith('/login') &&
+                      !window.location.pathname.startsWith('/create-account')) {
+                    window.location.replace("/admin-dashboard");
+                    return;
+                  }
+                  
+                  // Redirect non-admin users away from admin dashboard
+                  if (!userProfile.is_admin && window.location.pathname.startsWith('/admin-dashboard')) {
+                    window.location.replace("/");
+                    return;
+                  }
                 }
               }
             } catch (error) {
@@ -115,9 +129,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Unexpected error getting session:", unexpectedError);
       }
 
-      const { data: userProfile } = useQuery(currentUserProfileQuery());
-      setAdmin(userProfile.is_admin)
-
       setIsLoading(false);
     };
 
@@ -126,18 +137,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // performs various actions based on the users session condition (signed in or not)
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event, session) => {
+    } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
       setIsLoading(false);
 
       switch (event) {
         case "SIGNED_IN":
           setUser(session?.user ?? null);
-          if (window.location.pathname === "/login" && !window.location.search.includes('code')) {
-            window.location.href = "/";
-          }
-          // admins can only be on admin dashboard
-          if(admin) {
-            window.location.href = "admin-dashboard";
+          
+          // Check admin status and redirect accordingly
+          if (session?.access_token) {
+            try {
+              const response = await fetch("http://localhost:8000/api/v1/users/me", {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${session.access_token}`,
+                },
+              });
+              if (response.ok) {
+                const userProfile = await response.json();
+                setAdmin(userProfile.is_admin);
+                
+                // Handle redirects after sign in
+                if (window.location.pathname === "/login" && !window.location.search.includes('code')) {
+                  if (userProfile.is_admin) {
+                    window.location.href = "/admin-dashboard";
+                  } else {
+                    window.location.href = "/";
+                  }
+                }
+              }
+            } catch (error) {
+              console.error("Error fetching user profile on sign in:", error);
+            }
           }
           break;
         case "TOKEN_REFRESHED":
@@ -146,6 +178,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           break;
         case "SIGNED_OUT":
           setUser(null);
+          setAdmin(null);
           if (window.location.pathname != "/" && !window.location.pathname.startsWith("/login") && !window.location.pathname.startsWith("/create-account")) {
             window.location.href = "/";
           }
@@ -188,37 +221,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const errorMessage = await logInAction(email, password);
 
-    const { data: userProfile } = useQuery(currentUserProfileQuery());
-
     if (errorMessage) {
       setIsLoading(false);
       return errorMessage.message;
-    } else if (userProfile.is_admin) {
-      window.location.replace("/admin-dashboard");
     } else {
-      try {
-        // Get the session to access the JWT token
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session?.access_token) {
-          const response = await fetch("http://localhost:8000/api/v1/users/me", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${session.access_token}`,
-            },
-          });
-          if (response.ok) {
-            const userProfile = await response.json();
-            if (userProfile.is_admin) {
-              window.location.replace("/admin-dashboard");
-              setIsLoading(false);
-              return null;
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
+      // The redirect logic is handled in the onAuthStateChange listener
       const validated = await checkVerification();
       if (validated) {
         window.location.replace("/");

@@ -99,7 +99,7 @@ export default function ProfilePage() {
         last_name: lastName,
         phone,
         ...shippingAddress,
-        promotion: promotions, // Fixed field name to match backend
+        promotion: promotion, // Fixed field name to match backend
       });
 
       if (error) return toast.error(error);
