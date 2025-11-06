@@ -6,6 +6,7 @@ from shows import router as shows_router
 from showrooms import router as showrooms_router 
 from seats import router as seats_router       
 from genres import router as genres_router     
+from promotion import router as promotion_router
 from db.supabase import supabase
 from fastapi.middleware.cors import CORSMiddleware
 from auth import router as auth_router
@@ -21,6 +22,7 @@ app.include_router(shows_router.router, prefix="/api/v1", tags=["Shows"])
 app.include_router(showrooms_router.router, prefix="/api/v1", tags=["Showrooms"])
 app.include_router(seats_router.router, prefix="/api/v1", tags=["Seats"])
 app.include_router(genres_router.router, prefix="/api/v1", tags=["Genres"])
+app.include_router(promotion_router.router, prefix="/api/v1", tags=["Promotions"])
 app.include_router(paymentcards_router.router, prefix="/api/v1", tags=["PaymentCards"])
 
 app.add_middleware(
