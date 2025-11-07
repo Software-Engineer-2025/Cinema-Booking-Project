@@ -14,14 +14,14 @@ from paymentcards import router as paymentcards_router
 app = FastAPI()
 
 app.include_router(auth_router.router, prefix="/api/v1", tags=["Authentication"])
-app.include_router(movies_router.router, prefix="/api/v1", tags=["Movies"])
-app.include_router(tickets_router.router, prefix="/api/v1", tags=["Tickets"])
-app.include_router(users_router.router, prefix="/api/v1", tags=["Users"])
-app.include_router(shows_router.router, prefix="/api/v1", tags=["Shows"])
+app.include_router(movies_router.router, prefix="/api/v1")
+app.include_router(tickets_router.router, prefix="/api/v1")
+app.include_router(users_router.router, prefix="/api/v1")
+app.include_router(shows_router.router, prefix="/api/v1")
 app.include_router(showrooms_router.router, prefix="/api/v1", tags=["Showrooms"])
 app.include_router(seats_router.router, prefix="/api/v1", tags=["Seats"])
 app.include_router(genres_router.router, prefix="/api/v1", tags=["Genres"])
-app.include_router(paymentcards_router.router, prefix="/api/v1", tags=["PaymentCards"])
+app.include_router(paymentcards_router.router, prefix="/api/v1")
 
 app.add_middleware(
     CORSMiddleware,

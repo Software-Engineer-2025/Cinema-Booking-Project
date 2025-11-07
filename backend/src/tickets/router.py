@@ -3,7 +3,7 @@ from .schemas import BookingCreate, BookingWithTickets
 from . import crud
 from uuid import UUID
 
-router = APIRouter(prefix="/tickets", tags=["Tickets"])
+router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
 @router.post("/", response_model=dict)
 def create_booking(booking: BookingCreate):
@@ -48,10 +48,4 @@ def get_show_tickets(show_id: int):
     """Get all tickets for a show (admin)"""
     tickets = crud.get_tickets_by_show(show_id)
     return tickets
-
-@router.get("/show/{show_id}/available-seats")
-def get_available_seats(show_id: int, showroom_id: int):
-    """Get available seats for a show"""
-    seats = crud.get_available_seats(show_id, showroom_id)
-    return seats
 

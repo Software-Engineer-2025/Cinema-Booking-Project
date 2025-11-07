@@ -109,18 +109,3 @@ def get_tickets_by_show(show_id: int):
     """).eq("show_id", show_id).execute()
     return response.data
 
-def get_available_seats(show_id: int, showroom_id: int):
-    """Get seats that are not yet booked for a show"""
-    # Get all booked seat IDs for this show
-    booked_response = supabase.table("ticket").select("seat_id").eq("show_id", show_id).execute()
-    booked_seat_ids = [ticket["seat_id"] for ticket in booked_response.data]
-    
-    # Get all seats in the showroom that are not booked
-    query = supabase.table("seat").select("*").eq("showroom_id", showroom_id)
-    
-    if booked_seat_ids:
-        query = query.not_.in_("seat_id", booked_seat_ids)
-    
-    response = query.execute()
-    return response.data
-

@@ -101,3 +101,25 @@ def delete_seat(seat_id: int):
         if "23503" in msg or "foreign key" in msg:
             return {"error": "Cannot delete: seat is referenced", "status_code": 409}
         return {"error": "Could not delete seat", "status_code": 500}
+
+def get_available_seats(show_id: int):
+    """Get seats that are not yet booked for a show"""
+    # Get the show to find the showroom_id
+    show_response = supabase.table("show").select("showroom_id").eq("show_id", show_id).single().execute()
+    if not show_response.data:
+        return []
+    
+    showroom_id = show_response.data["showroom_id"]
+    
+    # Get all booked seat IDs for this show
+    booked_response = supabase.table("ticket").select("seat_id").eq("show_id", show_id).execute()
+    booked_seat_ids = [ticket["seat_id"] for ticket in booked_response.data]
+    
+    # Get all seats in the showroom that are not booked
+    query = supabase.table("seat").select("*").eq("showroom_id", showroom_id)
+    
+    if booked_seat_ids:
+        query = query.not_.in_("seat_id", booked_seat_ids)
+    
+    response = query.execute()
+    return response.data
