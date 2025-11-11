@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class ShowroomBase(BaseModel):
-    capacity: int
+    capacity: int = Field(..., gt=0, description="The maximum number of seats in the showroom (must be greater than 0)")
 
 class ShowroomCreate(ShowroomBase):
     pass
@@ -14,7 +14,7 @@ class Showroom(ShowroomBase):
         from_attributes = True
 
 class ShowroomUpdate(BaseModel):
-    capacity: Optional[int] = None
+    capacity: Optional[int] = Field(None, gt=0, description="The maximum number of seats in the showroom (must be greater than 0)")
 
 __all__ = [
     "ShowroomBase",

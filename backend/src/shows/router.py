@@ -8,9 +8,15 @@ router = APIRouter(prefix="/shows", tags=["Shows"])
 @router.post("/", response_model=Show)
 def create_show(show: ShowCreate):
     result = crud.create_show(show)
-    if result.error:
+    
+    if isinstance(result, dict) and result.get('error'):
+        raise HTTPException(status_code=400, detail=result['error']['message'])
+    elif hasattr(result, 'error') and result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
-    return result.data[0]
+    elif hasattr(result, 'data') and result.data:
+        return result.data[0]
+    else:
+        raise HTTPException(status_code=500, detail="Unexpected response format")
 
 @router.get("/", response_model=list[Show])
 def list_shows():
@@ -43,6 +49,12 @@ def update_show(show_id: int, show: ShowUpdate):
 @router.delete("/{show_id}")
 def delete_show(show_id: int):
     result = crud.delete_show(show_id)
-    if "error" in result:
-        raise HTTPException(status_code=result.get("status_code", 400), detail=result["error"])
-    return {"ok": True}
+    
+    if isinstance(result, dict) and result.get('error'):
+        raise HTTPException(status_code=404, detail=result['error']['message'])
+    elif hasattr(result, 'error') and result.error:
+        raise HTTPException(status_code=400, detail=result.error.message)
+    elif hasattr(result, 'data') and result.data:
+        return {"message": "Show deleted successfully", "deleted_show": result.data[0]}
+    else:
+        raise HTTPException(status_code=500, detail="Unexpected response format")
