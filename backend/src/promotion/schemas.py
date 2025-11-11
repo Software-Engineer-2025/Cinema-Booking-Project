@@ -18,7 +18,6 @@ class Promotion(PromotionBase):
         from_attributes = True
 
 class PromotionValidationRequest(BaseModel):
-    user_id: str
     promo_code: str
 
 class PromotionValidationResponse(BaseModel):

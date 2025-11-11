@@ -33,7 +33,6 @@ async def delete_promotion(promotion_id: str) -> bool:
 async def validate_promotion_code(promo_code: str) -> Dict:
     """
     Validate a promotion code - check if it exists and is active.
-    User eligibility should be checked separately in booking system.
     """
     try:
         promo_response = supabase.table("promotion").select("*").eq("promo_code", promo_code).execute()
@@ -77,8 +76,7 @@ async def check_user_email_list_status(user_id: str) -> dict:
             "user_id": user_id,
             "email": user["email"],
             "name": f"{user['first_name']} {user['last_name']}",
-            "on_email_list": user["promotion"],
-            "can_use_promotions": user["promotion"]
+            "on_email_list": user["promotion"]
         }
     except Exception as e:
         return {"error": f"Error checking email list status: {str(e)}"}
