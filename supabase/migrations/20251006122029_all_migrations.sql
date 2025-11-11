@@ -62,11 +62,20 @@ CREATE TABLE show(
     UNIQUE (showroom_id, date, time)
 ); 
 
--- Booking is dependent on user and show. It must be made before ticket
+CREATE TABLE promotion (
+    promotion_id BIGINT PRIMARY KEY,
+    promo_code TEXT NOT NULL UNIQUE,
+    discount DECIMAL NOT NULL,
+    start_date DATE,
+    end_date DATE
+);
+
+-- Booking is dependent on user, promotion, and show. It must be made before ticket
 CREATE TABLE booking (
     booking_id BIGSERIAL PRIMARY KEY,
     user_id UUID REFERENCES UserProfile(user_id) ON DELETE CASCADE,
     show_id BIGINT REFERENCES Show(show_id),
+    promotion_id BIGINT REFERENCES promotion(promotion_id),
     booking_date TIMESTAMPTZ DEFAULT NOW(),
     total_amount DOUBLE PRECISION NOT NULL,
     status TEXT NOT NULL DEFAULT 'confirmed',
@@ -105,12 +114,4 @@ CREATE TABLE paymentcards (
     card_brand TEXT,
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE promotion (
-    promotion_id BIGINT PRIMARY KEY,
-    promo_code TEXT NOT NULL UNIQUE,
-    discount DECIMAL NOT NULL,
-    start_date DATE,
-    end_date DATE
 );
