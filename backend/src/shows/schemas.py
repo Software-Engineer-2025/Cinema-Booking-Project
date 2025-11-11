@@ -19,13 +19,13 @@ class Show(ShowBase):
 
 class ShowUpdate(BaseModel):
     movie_id: Optional[int] = None
-    showroom_id: Optional[int] = None
+    showroom_id: Optional[int] = None  
     date: Optional[date] = None
     time: Optional[time] = None
 
 __all__ = [
     "ShowBase",
-    "ShowCreate",
+    "ShowCreate", 
     "Show",
     "ShowUpdate",
 ]

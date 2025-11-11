@@ -107,4 +107,10 @@ CREATE TABLE paymentcards (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
+CREATE TABLE promotion (
+    promotion_id BIGINT PRIMARY KEY,
+    promo_code TEXT NOT NULL UNIQUE,
+    discount DECIMAL NOT NULL,
+    start_date DATE,
+    end_date DATE
+);

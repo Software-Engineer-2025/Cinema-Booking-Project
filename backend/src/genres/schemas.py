@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class GenreBase(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=100, description="Genre name")
 
 class GenreCreate(GenreBase):
     pass
@@ -14,7 +14,7 @@ class Genre(GenreBase):
         from_attributes = True
 
 class GenreUpdate(BaseModel):
-    name: Optional[str] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=100, description="Genre name")
 
 __all__ = [
     "GenreBase",
