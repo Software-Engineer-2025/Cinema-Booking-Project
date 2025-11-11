@@ -3,9 +3,7 @@ from .schemas import (
     Promotion, 
     PromotionCreate, 
     PromotionValidationRequest, 
-    PromotionValidationResponse,
-    PromotionApplicationResponse,
-    PromotionEligibilityResponse
+    PromotionValidationResponse
 )
 from . import crud
 
@@ -37,12 +35,13 @@ async def delete_promotion(promotion_id: str):
     return Response(status_code=204)
 
 @router.post("/validate", response_model=PromotionValidationResponse)
-async def validate_promotion(request: PromotionValidationRequest):
+async def validate_promotion_code(request: PromotionValidationRequest):
     """
-    Validate if a user can use a specific promotion.
-    Only users with promotion=false can use promotions.
+    Validate a promotion code for booking.
+    Only checks if the promo code exists and is active.
+    User eligibility (promotion=true) should be checked in the booking system.
     """
-    result = await crud.validate_promotion_for_user(request.user_id, request.promo_code)
+    result = await crud.validate_promotion_code(request.promo_code)
     
     if not result["valid"]:
         raise HTTPException(status_code=400, detail=result["error"])
@@ -52,36 +51,15 @@ async def validate_promotion(request: PromotionValidationRequest):
         discount=result["discount"]
     )
 
-@router.post("/apply", response_model=PromotionApplicationResponse)
-async def apply_promotion(request: PromotionValidationRequest):
+@router.get("/email-list/{user_id}")
+async def check_email_list_status(user_id: str):
     """
-    Apply a promotion to a user. This marks the user as having used a promotion
-    (sets promotion=true), preventing future promotion usage.
-    Only users with promotion=false can use promotions.
+    Check if a user is on the email list (opted-in for promotions).
+    Returns user's email list status and promotion eligibility.
     """
-    result = await crud.apply_promotion_to_user(request.user_id, request.promo_code)
-    
-    if not result.get("success", False):
-        raise HTTPException(status_code=400, detail=result.get("error", "Failed to apply promotion"))
-    
-    return PromotionApplicationResponse(
-        success=True,
-        message=result["message"],
-        discount=result["discount"]
-    )
-
-@router.get("/eligibility/{user_id}", response_model=PromotionEligibilityResponse)
-async def check_promotion_eligibility(user_id: str):
-    """
-    Check if a user is eligible to use promotions.
-    Users are only eligible if their promotion field is false.
-    """
-    result = await crud.check_user_promotion_eligibility(user_id)
+    result = await crud.check_user_email_list_status(user_id)
     
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     
-    return PromotionEligibilityResponse(
-        eligible=result["eligible"],
-        message=result["message"]
-    )
+    return result

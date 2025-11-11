@@ -12,9 +12,15 @@ def get_genres():
 @router.post("/", response_model=Movie)
 def create_movie(movie: MovieCreate):
     result = crud.create_movie(movie)
-    if result.error:
+    
+    if isinstance(result, dict) and result.get('error'):
+        raise HTTPException(status_code=400, detail=result['error']['message'])
+    elif hasattr(result, 'error') and result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
-    return result.data[0]
+    elif hasattr(result, 'data') and result.data:
+        return result.data[0]
+    else:
+        raise HTTPException(status_code=500, detail="Unexpected response format")
 
 @router.get("/", response_model=list[Movie])
 def list_movies():

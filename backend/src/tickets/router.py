@@ -6,9 +6,15 @@ router = APIRouter(prefix="/tickets", tags=["Tickets"])
 @router.post("/", response_model=Ticket)
 def create_ticket(ticket: TicketCreate):
     result = crud.create_ticket(ticket)
-    if result.error:
+    
+    if isinstance(result, dict) and result.get('error'):
+        raise HTTPException(status_code=400, detail=result['error']['message'])
+    elif hasattr(result, 'error') and result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
-    return result.data[0]
+    elif hasattr(result, 'data') and result.data:
+        return result.data[0]
+    else:
+        raise HTTPException(status_code=500, detail="Unexpected response format")
 
 @router.get("/", response_model=list[Ticket])
 def list_tickets():
@@ -24,7 +30,13 @@ def get_ticket(ticket_id: int):
 @router.delete("/{ticket_id}")
 def delete_ticket(ticket_id: int):
     result = crud.delete_ticket(ticket_id)
-    if result.error:
+    
+    if isinstance(result, dict) and result.get('error'):
+        raise HTTPException(status_code=404, detail=result['error']['message'])
+    elif hasattr(result, 'error') and result.error:
         raise HTTPException(status_code=400, detail=result.error.message)
-    return {"ok": True}
+    elif hasattr(result, 'data') and result.data:
+        return {"message": "Ticket deleted successfully", "deleted_ticket": result.data[0]}
+    else:
+        raise HTTPException(status_code=500, detail="Unexpected response format")
 

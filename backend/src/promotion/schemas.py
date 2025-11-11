@@ -12,7 +12,7 @@ class PromotionCreate(PromotionBase):
     promotion_id: int
 
 class Promotion(PromotionBase):
-    promotion_id: int  # Changed to match database column name
+    promotion_id: int  
 
     class Config:
         from_attributes = True

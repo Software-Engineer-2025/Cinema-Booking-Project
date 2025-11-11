@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class TicketBase(BaseModel):
-    user_id: Optional[int] = None
+    user_id: Optional[str] = None  # UUID string, not int
     price: float
     status: Optional[str] = "reserved"  # Updated default to match database
     seat_id: int  # Reference to seat table
@@ -18,7 +18,7 @@ class Ticket(TicketBase):
         from_attributes = True
 
 class TicketUpdate(BaseModel):
-    user_id: Optional[int] = None
+    user_id: Optional[str] = None  # UUID string, not int
     price: Optional[float] = None
     status: Optional[str] = None
     seat_id: Optional[int] = None

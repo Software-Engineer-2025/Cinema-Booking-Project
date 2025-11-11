@@ -22,7 +22,6 @@ INSERT INTO auth.users (
     raw_user_meta_data,
     is_super_admin,
     last_sign_in_at,
-    confirmed_at,
     email_change_confirm_status,
     banned_until,
     deleted_at
@@ -45,12 +44,11 @@ INSERT INTO auth.users (
         '',                                  
         '{"provider": "email", "providers": ["email"]}',
         '{"first_name": "Admin", "last_name": "User", "email_verified": true}',
-        false,                               -- is_super_admin
-        now(),                               -- last_sign_in_at
-        now(),                               -- confirmed_at: CRITICAL for login
-        0,                                   -- email_change_confirm_status
-        NULL,                                -- banned_until
-        NULL                                 -- deleted_at
+        false,                               
+        now(),                               
+        0,                                   
+        NULL,                                
+        NULL                                 
     ),
     (
         'b7440d39-1a66-4a52-a937-f95582d15027'::uuid,
@@ -71,7 +69,6 @@ INSERT INTO auth.users (
         '{"first_name": "General", "last_name": "User", "email_verified": true}',
         false,                               
         now(),                               
-        now(),                               
         0,                                   
         NULL,                                
         NULL                                 
@@ -80,7 +77,6 @@ ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     encrypted_password = EXCLUDED.encrypted_password,
     email_confirmed_at = EXCLUDED.email_confirmed_at,
-    confirmed_at = EXCLUDED.confirmed_at,
     raw_user_meta_data = EXCLUDED.raw_user_meta_data,
     updated_at = now();
 

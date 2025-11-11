@@ -7,11 +7,9 @@ async def create_promotion(promotion: PromotionCreate) -> Dict:
     try:
         data = promotion.model_dump()
         
-        # Validate discount
         if data.get("discount", 0) <= 0:
             raise ValueError("Discount must be greater than 0")
         
-        # Validate date format (basic check)
         if data.get("start_date") == "string" or data.get("end_date") == "string":
             raise ValueError("Invalid date format. Use YYYY-MM-DD format")
         
@@ -32,29 +30,18 @@ async def delete_promotion(promotion_id: str) -> bool:
     response = supabase_admin.table("promotion").delete().eq("promotion_id", promotion_id).execute()
     return len(response.data) > 0
 
-async def validate_promotion_for_user(user_id: str, promo_code: str) -> Dict:
+async def validate_promotion_code(promo_code: str) -> Dict:
     """
-    Validate if a user can use a specific promotion.
-    Direct validation without database functions.
+    Validate a promotion code - check if it exists and is active.
+    User eligibility should be checked separately in booking system.
     """
     try:
-        # Check if user exists and has promotion = true
-        user_response = supabase_admin.table("userprofile").select("promotion").eq("user_id", user_id).execute()
-        if not user_response.data:
-            return {"valid": False, "error": "User not found"}
-        
-        user = user_response.data[0]
-        if not user["promotion"]:
-            return {"valid": False, "error": "User is not eligible for promotions (promotion must be true)"}
-        
-        # Check if promotion exists and is valid
         promo_response = supabase.table("promotion").select("*").eq("promo_code", promo_code).execute()
         if not promo_response.data:
             return {"valid": False, "error": "Invalid promotion code"}
         
         promo = promo_response.data[0]
         
-        # Check date validity (simplified - you can add date checks here)
         return {
             "valid": True,
             "discount": promo["discount"],
@@ -63,43 +50,36 @@ async def validate_promotion_for_user(user_id: str, promo_code: str) -> Dict:
     except Exception as e:
         return {"valid": False, "error": f"Validation error: {str(e)}"}
 
-async def apply_promotion_to_user(user_id: str, promo_code: str) -> Dict:
+def is_user_on_email_list(user_id: str) -> bool:
     """
-    Apply a promotion to a user (simplified version).
-    """
-    try:
-        # First validate the promotion
-        validation = await validate_promotion_for_user(user_id, promo_code)
-        if not validation["valid"]:
-            return {"success": False, "error": validation["error"]}
-        
-        # For now, just return success without updating user status
-        # You can add actual user update logic here if needed
-        return {
-            "success": True,
-            "message": "Promotion applied successfully",
-            "discount": validation["discount"]
-        }
-    except Exception as e:
-        return {"success": False, "error": f"Application error: {str(e)}"}
-
-async def check_user_promotion_eligibility(user_id: str) -> Dict:
-    """
-    Check if a user is eligible to use promotions.
-    Returns user's promotion status.
+    Check if user opted-in for promotions (is on email list).
+    Returns True if user has promotion=true, False otherwise.
     """
     try:
         user_response = supabase_admin.table("userprofile").select("promotion").eq("user_id", user_id).execute()
-        
         if not user_response.data:
-            return {"eligible": False, "error": "User not found"}
+            return False
+        return user_response.data[0]["promotion"]  
+    except:
+        return False
+
+async def check_user_email_list_status(user_id: str) -> dict:
+    """
+    Get user's email list status for API endpoints.
+    """
+    try:
+        user_response = supabase_admin.table("userprofile").select("promotion, email, first_name, last_name").eq("user_id", user_id).execute()
+        if not user_response.data:
+            return {"error": "User not found"}
         
         user = user_response.data[0]
-        is_eligible = user["promotion"]  # Eligible if promotion is True
-        
         return {
-            "eligible": is_eligible,
-            "message": "User is eligible for promotions" if is_eligible else "User is not eligible for promotions (promotion must be true)"
+            "user_id": user_id,
+            "email": user["email"],
+            "name": f"{user['first_name']} {user['last_name']}",
+            "on_email_list": user["promotion"],
+            "can_use_promotions": user["promotion"]
         }
     except Exception as e:
-        return {"eligible": False, "error": f"Error checking eligibility: {str(e)}"}
+        return {"error": f"Error checking email list status: {str(e)}"}
+
