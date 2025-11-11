@@ -1,27 +1,48 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime
+import uuid
 
+# Ticket schemas
 class TicketBase(BaseModel):
-    user_id: Optional[str] = None  # UUID string, not int
+    seat_id: int
+    show_id: int
+    ticket_type: str = "adult"  # adult, child, or senior
     price: float
-    status: Optional[str] = "reserved"  # Updated default to match database
-    seat_id: int  # Reference to seat table
-    show_id: int  # Reference to show table
 
-class TicketCreate(TicketBase):
-    pass
+class TicketCreate(BaseModel):
+    seat_id: int
+    ticket_type: str = "adult"
+    price: float
 
-class Ticket(TicketBase):
+class Ticket(BaseModel):
     ticket_id: int
+    booking_id: int
+    seat_id: int
+    show_id: int
+    ticket_type: str
+    price: float
 
     class Config:
         from_attributes = True
 
-class TicketUpdate(BaseModel):
-    user_id: Optional[str] = None  # UUID string, not int
-    price: Optional[float] = None
-    status: Optional[str] = None
-    seat_id: Optional[int] = None
-    show_id: Optional[int] = None
+# Booking schemas
+class BookingCreate(BaseModel):
+    user_id: uuid.UUID
+    show_id: int
+    total_amount: float
+    tickets: List[TicketCreate] 
 
-    
+class Booking(BaseModel):
+    booking_id: int
+    user_id: uuid.UUID
+    show_id: int
+    booking_date: datetime
+    total_amount: float
+    status: str
+
+    class Config:
+        from_attributes = True
+
+class BookingWithTickets(Booking):
+    tickets: List[Ticket] = []

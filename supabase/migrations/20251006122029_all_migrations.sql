@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 -- Movie has no dependencies, so it's created first.
-CREATE TABLE Movie (
+CREATE TABLE movie (
     movie_id BIGINT PRIMARY KEY,
     title TEXT NOT NULL,
     release_date DATE,
@@ -38,13 +38,13 @@ CREATE TABLE userprofile (
 );
 
 -- Showroom depends on nothing, so it's created early.
-CREATE TABLE Showroom (
+CREATE TABLE showroom (
     showroom_id BIGINT PRIMARY KEY,
     capacity INT NOT NULL
 );
 
 -- Seat depends on Showroom.
-CREATE TABLE Seat (
+CREATE TABLE seat (
     seat_id BIGINT PRIMARY KEY,
     row_letter CHAR(1) NOT NULL,
     column_number INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE Seat (
 );
 
 -- Show depends on Movie and Showroom.
-CREATE TABLE Show(
+CREATE TABLE show(
     show_id BIGINT PRIMARY KEY,
     movie_id BIGINT REFERENCES Movie(movie_id),
     showroom_id BIGINT REFERENCES Showroom(showroom_id),
@@ -62,23 +62,36 @@ CREATE TABLE Show(
     UNIQUE (showroom_id, date, time)
 ); 
 
--- Ticket depends on UserProfile, Show, and Seat.
-CREATE TABLE Ticket (
-    ticket_id BIGINT PRIMARY KEY,
-    user_id UUID REFERENCES UserProfile(user_id) DEFAULT NULL, 
-    price DOUBLE PRECISION NOT NULL,
-    status TEXT NOT NULL DEFAULT 'reserved',
-    seat_id BIGINT REFERENCES Seat(seat_id),
-    show_id BIGINT REFERENCES Show(show_id)
+-- Booking is dependent on user and show. It must be made before ticket
+CREATE TABLE booking (
+    booking_id BIGSERIAL PRIMARY KEY,
+    user_id UUID REFERENCES UserProfile(user_id) ON DELETE CASCADE,
+    show_id BIGINT REFERENCES Show(show_id),
+    booking_date TIMESTAMPTZ DEFAULT NOW(),
+    total_amount DOUBLE PRECISION NOT NULL,
+    status TEXT NOT NULL DEFAULT 'confirmed',
+    CONSTRAINT valid_status CHECK (status IN ('confirmed', 'cancelled', 'pending'))
 );
 
-CREATE TABLE Genre (
+-- Ticket depends on Booking, Show, and Seat.
+CREATE TABLE ticket (
+    ticket_id BIGSERIAL PRIMARY KEY,
+    booking_id BIGINT NOT NULL REFERENCES booking(booking_id) ON DELETE CASCADE,
+    seat_id BIGINT NOT NULL REFERENCES Seat(seat_id),
+    show_id BIGINT NOT NULL REFERENCES Show(show_id),
+    ticket_type TEXT NOT NULL DEFAULT 'adult',
+    price DOUBLE PRECISION NOT NULL,
+    CONSTRAINT valid_ticket_type CHECK (ticket_type IN ('adult', 'child', 'senior')),
+    UNIQUE (seat_id, show_id)
+);
+
+CREATE TABLE genre (
     genre_id BIGINT PRIMARY KEY,
     name TEXT NOT NULL UNIQUE
 );
 
 -- MovieGenre join table, for many-to-many relationship
-CREATE TABLE MovieGenre (
+CREATE TABLE moviegenre (
     movie_id BIGINT REFERENCES Movie(movie_id),
     genre_id BIGINT REFERENCES Genre(genre_id),
     PRIMARY KEY (movie_id, genre_id)

@@ -4,6 +4,7 @@ from typing import List
 from .schemas import Seat, SeatCreate
 
 from .crud import get_all_seats, get_seat_by_id, create_seat, delete_seat
+from .crud import get_available_seats as get_available_seats_crud
 
 router = APIRouter()
 
@@ -33,3 +34,12 @@ def remove_seat(seat_id: int):
     if "error" in result:
         raise HTTPException(status_code=result["status_code"], detail=result["error"])
     return Response(status_code=204)
+
+@router.get("/seats/show/{show_id}/available", response_model=List[Seat], summary="Get Available Seats for Show")
+async def get_available_seats_for_show(show_id: int):
+    """
+    Get all seats that are not yet booked for a specific show.
+    The showroom is automatically determined from the show.
+    """
+    seats_data = get_available_seats_crud(show_id)
+    return [Seat.model_validate(seat) for seat in seats_data]

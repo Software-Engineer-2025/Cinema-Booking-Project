@@ -1,104 +1,111 @@
-from .schemas import TicketCreate, TicketUpdate
-from db.supabase import supabase, supabase_admin
+from .schemas import BookingCreate, TicketCreate
+from db.supabase import supabase
+from uuid import UUID
 
-def create_ticket(ticket: TicketCreate):
+# Booking operations
+def create_booking_with_tickets(booking_data: BookingCreate):
+    """Create a booking and all associated tickets in a transaction"""
     try:
-        ticket_data = ticket.model_dump()
+        # 1. Create the booking
+        booking_insert = {
+            "user_id": str(booking_data.user_id),
+            "show_id": booking_data.show_id,
+            "total_amount": booking_data.total_amount,
+            "status": "confirmed"
+        }
         
-        max_result = supabase_admin.table("ticket").select("ticket_id").order("ticket_id", desc=True).limit(1).execute()
-        if max_result.data:
-            next_id = max_result.data[0]['ticket_id'] + 1
-        else:
-            next_id = 1
+        booking_response = supabase.table("booking").insert(booking_insert).execute()
         
-        ticket_data['ticket_id'] = next_id
+        if not booking_response.data:
+            return {"error": "Failed to create booking"}
         
-        response = supabase_admin.table("ticket").insert(ticket_data).execute()
-        return response
+        booking_id = booking_response.data[0]["booking_id"]
+        
+        # 2. Create all tickets for this booking
+        tickets_to_insert = [
+            {
+                "booking_id": booking_id,
+                "seat_id": ticket.seat_id,
+                "show_id": booking_data.show_id,
+                "ticket_type": ticket.ticket_type,
+                "price": ticket.price
+            }
+            for ticket in booking_data.tickets
+        ]
+        
+        tickets_response = supabase.table("ticket").insert(tickets_to_insert).execute()
+        
+        if not tickets_response.data:
+            # Rollback: delete the booking if tickets fail
+            supabase.table("booking").delete().eq("booking_id", booking_id).execute()
+            return {"error": "Failed to create tickets"}
+        
+        return {
+            "booking": booking_response.data[0],
+            "tickets": tickets_response.data
+        }
+        
     except Exception as e:
-        return {"error": {"message": str(e)}, "data": None}
+        return {"error": str(e)}
 
-def get_tickets():
-    response = supabase_admin.table("ticket").select("""
+def get_booking(booking_id: int):
+    """Get a booking with all its tickets"""
+    response = supabase.table("booking").select("""
         *,
-        userprofile (
-            first_name,
-            last_name
-        ),
-        seat (
-            row_letter,
-            column_number,
-            showroom (
-                showroom_id
-            )
-        ),
-        show (
-            date,
-            time,
-            movie (
-                title
+        ticket (
+            *,
+            seat (
+                row_letter,
+                column_number
             )
         )
-    """).execute()
+    """).eq("booking_id", booking_id).single().execute()
     return response.data
 
-def get_ticket(ticket_id: int):
-    response = supabase_admin.table("ticket").select("""
+def get_bookings_by_user(user_id: UUID):
+    """Get all bookings for a user"""
+    response = supabase.table("booking").select("""
         *,
-        userprofile (
-            first_name,
-            last_name
-        ),
-        seat (
-            row_letter,
-            column_number,
-            showroom (
-                showroom_id
-            )
-        ),
         show (
             date,
             time,
             movie (
-                title
+                title,
+                trailer_img
+            ),
+            showroom (
+                showroom_id
+            )
+        ),
+        ticket (
+            *,
+            seat (
+                row_letter,
+                column_number
             )
         )
-    """).eq("ticket_id", ticket_id).single().execute()
+    """).eq("user_id", str(user_id)).order("booking_date", desc=True).execute()
     return response.data
 
-def update_ticket(ticket_id: int, ticket: TicketUpdate):
-    update_data = {k: v for k, v in ticket.model_dump().items() if v is not None}
-    response = supabase_admin.table("ticket").update(update_data).eq("ticket_id", ticket_id).execute()
-    return response 
+def cancel_booking(booking_id: int):
+    """Cancel a booking (deletes booking and tickets cascade)"""
+    response = supabase.table("booking").delete().eq("booking_id", booking_id).execute()
+    return response
 
-def delete_ticket(ticket_id: int):
-    try:
-        response = supabase_admin.table("ticket").delete().eq("ticket_id", ticket_id).execute()
-        
-        if not response.data:
-            return {"error": {"message": f"Ticket with ID {ticket_id} not found"}, "data": None}
-            
-        return response
-    except Exception as e:
-        return {"error": {"message": str(e)}, "data": None}
-
-def get_tickets_by_user(user_id: int):
-    response = supabase_admin.table("ticket").select("""
+# Ticket operations (for admin/management)
+def get_tickets_by_show(show_id: int):
+    """Get all tickets for a specific show"""
+    response = supabase.table("ticket").select("""
         *,
+        booking (
+            user_id,
+            booking_date,
+            status
+        ),
         seat (
             row_letter,
-            column_number,
-            showroom (
-                showroom_id
-            )
-        ),
-        show (
-            date,
-            time,
-            movie (
-                title
-            )
+            column_number
         )
-    """).eq("user_id", user_id).execute()
+    """).eq("show_id", show_id).execute()
     return response.data
 
