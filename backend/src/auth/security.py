@@ -1,17 +1,18 @@
 import os
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from jwt import PyJWKClient
 from dotenv import load_dotenv
 
 load_dotenv()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
-jwks_client = PyJWKClient(os.getenv("SUPABASE_JWKS_URL", "http://127.0.0.1:54321/auth/v1/certs"))
+security = HTTPBearer()
+jwks_client = PyJWKClient(os.getenv("SUPABASE_JWKS_URL", "http://127.0.0.1:54321/auth/v1/.well-known/jwks.json"))
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     """Verify Supabase JWT token and return user ID and token on success."""
+    token = credentials.credentials
     try:
         # Get the signing key from Supabase's JWKS endpoint
         signing_key = jwks_client.get_signing_key_from_jwt(token).key

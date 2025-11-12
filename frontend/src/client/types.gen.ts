@@ -134,6 +134,10 @@ export type Movie = {
      */
     mpaa_rating?: string | null;
     /**
+     * Duration
+     */
+    duration: number;
+    /**
      * Released
      */
     released?: boolean | null;
@@ -203,6 +207,10 @@ export type MovieCreate = {
      * Mpaa Rating
      */
     mpaa_rating?: string | null;
+    /**
+     * Duration
+     */
+    duration: number;
     /**
      * Released
      */

@@ -1,4 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
 -- CREATE EXTENSION IF NOT EXISTS vault WITH SCHEMA vault;
 
 
@@ -16,6 +17,7 @@ CREATE TABLE movie (
     trailer_img TEXT,
     trailer_video TEXT,
     mpaa_rating TEXT,
+    duration INT NOT NULL,
     released BOOLEAN DEFAULT FALSE,
     featured BOOLEAN DEFAULT FALSE
 );
@@ -55,12 +57,12 @@ CREATE TABLE seat (
 -- Show depends on Movie and Showroom.
 CREATE TABLE show(
     show_id BIGINT PRIMARY KEY,
-    movie_id BIGINT REFERENCES Movie(movie_id),
+    movie_id BIGINT REFERENCES movie(movie_id) ON DELETE CASCADE,
     showroom_id BIGINT REFERENCES Showroom(showroom_id),
     date DATE NOT NULL,
-    time TIME NOT NULL,
-    UNIQUE (showroom_id, date, time)
-); 
+    time TIME NOT NULL
+);
+
 
 CREATE TABLE promotion (
     promotion_id BIGINT PRIMARY KEY,

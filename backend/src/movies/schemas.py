@@ -15,6 +15,7 @@ class MovieBase(BaseModel):
     trailer_img: Optional[str] = None
     trailer_video: Optional[str] = None
     mpaa_rating: Optional[str] = None
+    duration: int  # Duration in minutes
     released: Optional[bool] = False
     featured: Optional[bool] = False
 
