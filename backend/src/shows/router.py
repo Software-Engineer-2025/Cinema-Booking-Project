@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from .schemas import Show, ShowCreate, ShowUpdate
 from . import crud
+from auth.security import require_admin
 
 router = APIRouter(prefix="/shows", tags=["Shows"])
 
 @router.post("/", response_model=Show)
-def create_show(show: ShowCreate):
+def create_show(show: ShowCreate, _admin: dict = Depends(require_admin)):
     result = crud.create_show(show)
     
     if isinstance(result, dict) and result.get('error'):
@@ -47,7 +48,7 @@ def update_show(show_id: int, show: ShowUpdate):
     return result["data"]
 
 @router.delete("/{show_id}")
-def delete_show(show_id: int):
+def delete_show(show_id: int, _admin: dict = Depends(require_admin)):
     result = crud.delete_show(show_id)
     
     if isinstance(result, dict) and result.get('error'):

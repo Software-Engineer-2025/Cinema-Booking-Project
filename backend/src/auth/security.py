@@ -44,3 +44,27 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+    """Verify that the current user is an admin."""
+    from db.supabase import supabase_admin
+    
+    try:
+        # Check if user is admin
+        response = supabase_admin.table("userprofile").select("is_admin").eq("user_id", current_user["id"]).single().execute()
+        
+        if not response.data or not response.data.get("is_admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin access required"
+            )
+        
+        return current_user
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error checking admin status: {str(e)}"
+        )
+
