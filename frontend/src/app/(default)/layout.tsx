@@ -21,21 +21,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Providers>
-          <body
-            className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-900`}
-            suppressHydrationWarning={true}
-          >
-            <AuthProvider>
-              <header className="sticky top-0 z-50">
-                <Navbar />
-              </header>
-              <main>{children}</main>
-              <footer></footer>
-              <BookingPopUp></BookingPopUp>
-            </AuthProvider>
-            <Toaster />
-          </body>
+        <body
+          className={`${allFontVariables} ${fonts.body.className} antialiased bg-neutral-900`}
+          suppressHydrationWarning={true}
+        >
+          <AuthProvider>
+            <header className="sticky top-0 z-50">
+              <Navbar />
+            </header>
+            <main>{children}</main>
+            <footer></footer>
+            <BookingPopUp></BookingPopUp>
+          </AuthProvider>
+          <Toaster />
+        </body>
       </Providers>
     </html>
   );
-} 
+}
