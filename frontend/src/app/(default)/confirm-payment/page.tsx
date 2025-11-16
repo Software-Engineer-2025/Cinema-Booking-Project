@@ -1,11 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import OrderInfo from "@/components/default/OrderInfo";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import { allMoviesQuery } from "@/lib/utils/queries";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface Card {
   cardNumber: string;
@@ -25,6 +26,8 @@ interface ShippingAddress {
 
 export default function ConfirmPayment() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useAuth();
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
 
   // Get booking details from URL
@@ -35,6 +38,7 @@ export default function ConfirmPayment() {
   const seniorTickets = Number(searchParams.get("seniorTickets")) || 0;
   const seatsParam = searchParams.get("seats");
   const selectedSeats = seatsParam ? seatsParam.split(",") : [];
+  const totalTickets = adultTickets + childTickets + seniorTickets;
 
   // Payment and address states
   const [billingAddress, setBillingAddress] = useState<ShippingAddress>({
@@ -47,6 +51,126 @@ export default function ConfirmPayment() {
   });
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
   const [promoCode, setPromoCode] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleConfirmBooking = async () => {
+    setErrorMsg(null);
+
+    if (!user) {
+      setErrorMsg("You must be logged in to complete booking.");
+      router.push("/login");
+      return;
+    }
+    if (!movieId || !showtime) {
+      setErrorMsg("Missing movie or showtime information.");
+      return;
+    }
+    if (selectedSeats.length !== totalTickets || totalTickets === 0) {
+      setErrorMsg("Please select exactly the number of seats that match your tickets.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // 1) Find matching show_id by movie and showtime
+      const movieIdNum = Number(movieId);
+      const showsResp = await fetch(`http://localhost:8000/api/v1/shows/movie/${movieIdNum}`);
+      if (!showsResp.ok) {
+        throw new Error("Failed to fetch shows for movie.");
+      }
+      const shows = await showsResp.json();
+
+      // Expect showtime in format "YYYY-MM-DD HH:MM:SS"
+      const [datePart, timePart] = showtime.split(" ");
+      const matchedShow = shows.find((s: any) => s.date === datePart && s.time === timePart);
+      if (!matchedShow) {
+        throw new Error("Selected showtime not found.");
+      }
+
+      // 2) Get available seats for the show to map seat labels to seat_id
+      const seatsResp = await fetch(`http://localhost:8000/api/v1/seats/show/${matchedShow.show_id}/available`);
+      if (!seatsResp.ok) {
+        throw new Error("Failed to fetch available seats.");
+      }
+      const availableSeats = await seatsResp.json();
+      const seatLabelToSeatId: Record<string, number> = {};
+      for (const seat of availableSeats) {
+        const label = `${seat.row_letter}${seat.column_number}`;
+        seatLabelToSeatId[label] = seat.seat_id;
+      }
+
+      // Ensure all selected seats are available and mapped
+      const selectedSeatIds: number[] = [];
+      for (const label of selectedSeats) {
+        const seatId = seatLabelToSeatId[label];
+        if (!seatId) {
+          throw new Error(`Seat ${label} is no longer available. Please reselect seats.`);
+        }
+        selectedSeatIds.push(seatId);
+      }
+
+      // 3) Build tickets payload honoring ticket type counts
+      const tickets: Array<{ seat_id: number; ticket_type: string; price: number }> = [];
+      let remainingAdult = adultTickets;
+      let remainingChild = childTickets;
+      let remainingSenior = seniorTickets;
+      const prices = { adult: 12, child: 8, senior: 10 } as const;
+
+      for (const seatId of selectedSeatIds) {
+        let type: "adult" | "child" | "senior" = "adult";
+        if (remainingAdult > 0) {
+          type = "adult";
+          remainingAdult--;
+        } else if (remainingChild > 0) {
+          type = "child";
+          remainingChild--;
+        } else if (remainingSenior > 0) {
+          type = "senior";
+          remainingSenior--;
+        }
+        tickets.push({ seat_id: seatId, ticket_type: type, price: prices[type] });
+      }
+
+      const totalAmount = tickets.reduce((sum, t) => sum + t.price, 0);
+
+      // 4) POST booking
+      const bookingPayload = {
+        user_id: user.id,
+        show_id: matchedShow.show_id,
+        total_amount: totalAmount,
+        tickets,
+      };
+
+      const bookingResp = await fetch("http://localhost:8000/api/v1/bookings/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingPayload),
+      });
+
+      if (!bookingResp.ok) {
+        const errData = await bookingResp.json().catch(() => ({}));
+        throw new Error(errData?.detail || "Failed to create booking.");
+      }
+
+      // 5) Redirect to confirmation page with the same query params for display
+      const params = new URLSearchParams();
+      params.set("movieId", String(movieId));
+      params.set("showtime", String(showtime));
+      params.set("adultTickets", String(adultTickets));
+      params.set("childTickets", String(childTickets));
+      params.set("seniorTickets", String(seniorTickets));
+      params.set("seats", selectedSeats.join(","));
+
+      router.push(`/confirmation?${params.toString()}`);
+    } catch (error: any) {
+      setErrorMsg(error.message || "An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-10">
@@ -94,6 +218,18 @@ export default function ConfirmPayment() {
                 </button>
               </div>
             </div>
+
+            {/* Confirm and Pay Button */}
+            <button
+              onClick={handleConfirmBooking}
+              disabled={isSubmitting || selectedSeats.length !== totalTickets || totalTickets === 0}
+              className="mt-4 w-full px-4 py-3 bg-white text-black rounded-md disabled:opacity-60"
+            >
+              {isSubmitting ? "Processing..." : "Confirm and Pay"}
+            </button>
+            {errorMsg && (
+              <p className="mt-2 text-sm text-red-300">{errorMsg}</p>
+            )}
           </div>
         </div>
 
@@ -105,7 +241,6 @@ export default function ConfirmPayment() {
           childTickets={childTickets}
           seniorTickets={seniorTickets}
           selectedSeats={selectedSeats}
-          isCheckout={true}
         />
       </div>
     </div>
