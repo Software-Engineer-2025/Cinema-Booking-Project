@@ -9,3 +9,5 @@ yarn.lock
 **/.venv/
 ../../frontend/yarn.lock
 __pycache__/
+frontend/frontend-dev.log
+backend/backend-dev.log
