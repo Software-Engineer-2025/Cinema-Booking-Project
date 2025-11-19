@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Depends
 from .schemas import Movie, MovieCreate
 from . import crud
+from auth.security import require_admin
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -10,7 +11,7 @@ def get_genres():
     return genres
 
 @router.post("/", response_model=Movie)
-def create_movie(movie: MovieCreate):
+def create_movie(movie: MovieCreate, _admin: dict = Depends(require_admin)):
     result = crud.create_movie(movie)
     
     if isinstance(result, dict) and result.get('error'):
@@ -34,7 +35,7 @@ def get_movie(movie_id: int):
     return movie
 
 @router.delete("/{movie_id}", status_code=204)
-def delete_movie(movie_id: int):
+def delete_movie(movie_id: int, _admin: dict = Depends(require_admin)):
     result = crud.delete_movie(movie_id)
     if "error" in result:
         raise HTTPException(status_code=result["status_code"], detail=result["error"])

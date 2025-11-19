@@ -1,5 +1,6 @@
 ALTER TABLE userprofile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE paymentcards ENABLE ROW LEVEL SECURITY;
+CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
 
 -- Policies 
 DROP POLICY IF EXISTS "Users can view their own profile." ON public.userprofile;
@@ -98,6 +99,8 @@ END;
 $$;
 
 
+
+
 -- Drop and then Create the trigger to ensure idempotency (no "already exists" error)
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
@@ -160,3 +163,31 @@ END;
 $$;
 
 
+-- Function to get show end time (start time + movie duration)
+CREATE OR REPLACE FUNCTION get_show_timerange(show_date DATE, show_time TIME, movie_id_param BIGINT)
+RETURNS tsrange AS $$
+DECLARE
+    movie_duration INT;
+    start_ts TIMESTAMP;
+    end_ts TIMESTAMP;
+BEGIN
+    -- Get movie duration
+    SELECT duration INTO movie_duration FROM movie WHERE movie_id = movie_id_param;
+    
+    -- Calculate start and end timestamps
+    start_ts := (show_date + show_time)::TIMESTAMP;
+    end_ts := start_ts + (movie_duration || ' minutes')::INTERVAL;
+    
+    RETURN tsrange(start_ts, end_ts);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+
+
+-- Add exclusion constraint to prevent overlapping showtimes
+ALTER TABLE show ADD CONSTRAINT no_overlapping_showtimes 
+EXCLUDE USING gist (
+    showroom_id WITH =,
+    date WITH =,
+    get_show_timerange(date, time, movie_id) WITH &&
+); 
