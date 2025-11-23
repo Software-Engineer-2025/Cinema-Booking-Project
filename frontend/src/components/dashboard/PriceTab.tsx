@@ -1,7 +1,9 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import TicketPricing from "./TicketPricing";
 import PromosTable from "./PromosTable";
 import BlackButton from "../ui/BlackButton";
+import {useQuery} from "@tanstack/react-query";
+import {allMoviesQuery} from "@/lib/utils/queries";
 
 export default function PriceTab() {
   const [pricing, setPricing] = useState({
@@ -23,6 +25,10 @@ export default function PriceTab() {
   const handleUpdatePricing = (field, value) => {
     setPricing((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }));
   };
+
+  const handleSavePricing = () => {
+
+  }
 
   const handleAddPromo = () => {
     const maxId =
@@ -46,9 +52,15 @@ export default function PriceTab() {
     setPromos((prev) => prev.filter((p) => p.promo_id !== id));
   };
 
+  const { data: allPromos = [], refetch: refetchPromos } = useQuery(allPromosQuery());
+
+  useEffect(() => {
+    setPromos(allPromos);
+  }, [allPromos]);
+
   return (
     <div className="space-y-8">
-      <TicketPricing pricing={pricing} onUpdate={handleUpdatePricing} />
+      <TicketPricing pricing={pricing} onUpdate={handleUpdatePricing} onSave={handleSavePricing}/>
 
       <div>
         <div className="flex justify-between items-center mb-4">

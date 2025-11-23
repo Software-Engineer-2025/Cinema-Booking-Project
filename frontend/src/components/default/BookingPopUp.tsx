@@ -8,7 +8,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
 import {allMoviesQuery} from "@/lib/utils/queries";
 import DefaultDropdown from "@/components/ui/DefaultDropdown";
-import Showtimes from "@/components/default/Showtimes";
+import Showtimes from "@/components/dashboard/Showtimes";
 
 /*
     The button in the bottom right hand corner of the page that allows the user to open it and select certain values
