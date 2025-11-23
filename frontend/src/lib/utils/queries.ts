@@ -7,8 +7,11 @@ import {
   getPaymentCardsEndpointApiV1CardsGet,
   updatePaymentCardEndpointApiV1CardsCardIdPatch,
   deletePaymentCardEndpointApiV1CardsCardIdDelete,
+  deleteMovieApiV1MoviesMovieIdDelete,
+  createMovieApiV1MoviesPost,
+  MovieCreate, Movie,
 } from "@/client";
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 // Fetches all movies
 export const allMoviesQuery = () => ({
@@ -40,6 +43,40 @@ export const movieDetailsQuery = (movieId: number) => ({
     return response.data;
   },
 });
+
+export const useDeleteMovieCard = () => {
+  return useMutation({
+    mutationFn: async (movieId: number) => {
+      const result = await deleteMovieApiV1MoviesMovieIdDelete({
+        path: {
+          movie_id: movieId,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddMovieCard = () => {
+  return useMutation({
+    mutationFn: async (movie: MovieCreate) => {
+      const result = await createMovieApiV1MoviesPost({
+        body: movie,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
 
 /*
  * checks current user profile.

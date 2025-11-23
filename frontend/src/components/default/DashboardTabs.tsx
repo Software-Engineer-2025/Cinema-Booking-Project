@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 export default function DashboardTabs({ activeTab, setActiveTab }) {
   const tabs = [
-    { id: "movies", label: "Movies" },
+    { id: "movies", label:  "Movies" },
     { id: "prices", label: "Price & Promos" },
     { id: "users", label: "Users" },
   ];

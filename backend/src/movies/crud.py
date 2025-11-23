@@ -134,9 +134,11 @@ def get_movies_by_genre(genre_name: str):
 
 def delete_movie(movie_id: int):
     try:
+        supabase_admin.table("moviegenre").delete().eq("movie_id", movie_id).execute()
         response = supabase_admin.table("movie").delete().eq("movie_id", movie_id).execute()
         if not response.data:
             return {"error": "Movie not found", "status_code": 404}
         return {"success": True, "data": response.data}
     except Exception as e:
+        print(f"Delete failed: {e}")
         return {"error": str(e), "status_code": 500}

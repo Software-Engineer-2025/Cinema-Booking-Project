@@ -31,7 +31,6 @@ export default function RootLayout({
                 </header>
                 <main>{children}</main>
                 <footer></footer>
-                <BookingPopUp></BookingPopUp>
             </AuthProvider>
             <Toaster />
             </body>
