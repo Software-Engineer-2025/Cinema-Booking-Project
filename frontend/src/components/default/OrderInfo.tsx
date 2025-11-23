@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface OrderInfoProps {
   movieId?: string | null;
@@ -34,6 +35,16 @@ export default function OrderInfo({
     (seniorTickets || 0) * ticketPrices.senior;
 
   const handleContinue = () => {
+    if (totalTickets === 0) {
+      toast.error("Choose at least one ticket to continue.");
+      return;
+    }
+    if (selectedSeats.length !== totalTickets) {
+      toast.error(
+        `Please select exactly ${totalTickets} seat${totalTickets === 1 ? "" : "s"}.`
+      );
+      return;
+    }
     const params = new URLSearchParams();
     if (movieId) params.set("movieId", String(movieId));
     if (showtime) params.set("showtime", String(showtime));
@@ -87,7 +98,6 @@ export default function OrderInfo({
         <Button
           className="text-black bg-gray-300/50 rounded-md py-4 w-full"
           onClick={handleContinue}
-          disabled={selectedSeats.length !== totalTickets || totalTickets === 0}
         >
           Continue
         </Button>

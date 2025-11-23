@@ -7,9 +7,10 @@ import Seat from "./Seat";
 interface SeatGridProps {
   onSeatsChange: (seats: string[]) => void;
   maxSeats?: number;
+  occupiedSeatLabels?: string[];
 }
 
-export default function SeatGrid({ onSeatsChange, maxSeats }: SeatGridProps) {
+export default function SeatGrid({ onSeatsChange, maxSeats, occupiedSeatLabels = [] }: SeatGridProps) {
   const rows = ["A", "B", "C", "D", "E", "F", "G"];
   const cols = [1, 2, 3, 4, 5, 6, 7];
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -20,6 +21,9 @@ export default function SeatGrid({ onSeatsChange, maxSeats }: SeatGridProps) {
   }, [selectedSeats, onSeatsChange]);
 
   const toggleSeat = (seatId: string) => {
+    if (maxSeats === 0) {
+      return;
+    }
     setSelectedSeats((prev) => {
       if (prev.includes(seatId)) {
         // Deselecting a seat
@@ -65,7 +69,7 @@ export default function SeatGrid({ onSeatsChange, maxSeats }: SeatGridProps) {
                 <Seat
                   key={id}
                   selected={selectedSeats.includes(id)}
-                  occupied={false}
+                  occupied={occupiedSeatLabels.includes(id)}
                   onClick={() => toggleSeat(id)}
                 />
               );

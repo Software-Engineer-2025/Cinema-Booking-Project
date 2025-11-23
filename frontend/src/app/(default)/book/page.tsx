@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import DefaultDropdown from "@/components/ui/DefaultDropdown";
 import TicketCounter from "@/components/default/TicketCounter";
@@ -192,11 +193,25 @@ export default function BookPage() {
           <Button
             className="text-black bg-gray-300/50 rounded-md py-4"
             onClick={() => {
+              const totalTickets = adultTickets + childTickets + seniorTickets;
+              if (!selectedMovie) {
+                toast.error("Select a movie before continuing.");
+                return;
+              }
+              if (!selectedShowtime) {
+                toast.error("Select a showtime before continuing.");
+                return;
+              }
+              if (totalTickets <= 0) {
+                toast.error("Choose at least one ticket to continue.");
+                return;
+              }
+
               router.push(
                 `/select-seats?movieId=${
-                  selectedMovie?.movie_id
+                  selectedMovie.movie_id
                 }&showtime=${encodeURIComponent(
-                  selectedShowtime || ""
+                  selectedShowtime
                 )}&adultTickets=${adultTickets}&childTickets=${childTickets}&seniorTickets=${seniorTickets}`
               );
             }}

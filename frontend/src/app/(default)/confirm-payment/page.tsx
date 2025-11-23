@@ -7,6 +7,7 @@ import OrderInfo from "@/components/default/OrderInfo";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import { allMoviesQuery } from "@/lib/utils/queries";
 import { useAuth } from "@/lib/context/AuthContext";
+import { toast } from "sonner";
 
 interface Card {
   cardNumber: string;
@@ -60,15 +61,23 @@ export default function ConfirmPayment() {
 
     if (!user) {
       setErrorMsg("You must be logged in to complete booking.");
+      toast.error("Log in to complete your booking.");
       router.push("/login");
       return;
     }
     if (!movieId || !showtime) {
       setErrorMsg("Missing movie or showtime information.");
+      toast.error("Select a movie and showtime.");
       return;
     }
     if (selectedSeats.length !== totalTickets || totalTickets === 0) {
-      setErrorMsg("Please select exactly the number of seats that match your tickets.");
+      setErrorMsg("Please select seats matching your ticket count.");
+      toast.error("Select seats matching your tickets.");
+      return;
+    }
+    if (paymentMethods.length === 0) {
+      setErrorMsg("Add a payment method to continue.");
+      toast.error("Add a payment method to continue.");
       return;
     }
 
@@ -166,7 +175,9 @@ export default function ConfirmPayment() {
 
       router.push(`/confirmation?${params.toString()}`);
     } catch (error: any) {
-      setErrorMsg(error.message || "An unexpected error occurred.");
+      const msg = error.message || "An unexpected error occurred.";
+      setErrorMsg(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -222,11 +233,14 @@ export default function ConfirmPayment() {
             {/* Confirm and Pay Button */}
             <button
               onClick={handleConfirmBooking}
-              disabled={isSubmitting || selectedSeats.length !== totalTickets || totalTickets === 0}
+              disabled={isSubmitting}
               className="mt-4 w-full px-4 py-3 bg-white text-black rounded-md disabled:opacity-60"
             >
               {isSubmitting ? "Processing..." : "Confirm and Pay"}
             </button>
+            {paymentMethods.length === 0 && (
+              <p className="mt-2 text-xs text-yellow-300">Add a payment method to continue.</p>
+            )}
             {errorMsg && (
               <p className="mt-2 text-sm text-red-300">{errorMsg}</p>
             )}
