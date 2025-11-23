@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import DefaultDropdown from "@/components/ui/DefaultDropdown";
 import TicketCounter from "@/components/default/TicketCounter";
@@ -16,15 +17,15 @@ import { allMoviesQuery } from "@/lib/utils/queries";
 export default function BookPage() {
   const [selectedShowtime, setSelectedShowtime] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const movieIdFromUrl = searchParams.get('movieId');
-  const showtimeFromUrl = searchParams.get('showtime');
+  const movieIdFromUrl = searchParams.get("movieId");
+  const showtimeFromUrl = searchParams.get("showtime");
 
   const [adultTickets, setAdultTickets] = useState<number>(0);
   const [childTickets, setChildTickets] = useState<number>(0);
   const [seniorTickets, setSeniorTickets] = useState<number>(0);
-  const adultTicketsFromUrl = searchParams.get('adultTickets');
-  const childTicketsFromUrl = searchParams.get('childTickets');
-  const seniorTicketsFromUrl = searchParams.get('seniorTickets');
+  const adultTicketsFromUrl = searchParams.get("adultTickets");
+  const childTicketsFromUrl = searchParams.get("childTickets");
+  const seniorTicketsFromUrl = searchParams.get("seniorTickets");
 
   const router = useRouter();
 
@@ -43,7 +44,7 @@ export default function BookPage() {
   useEffect(() => {
     if (movieIdFromUrl && releasedMovies.length > 0) {
       const movieToSelect = releasedMovies.find(
-        movie => movie.movie_id === Number(movieIdFromUrl)
+        (movie) => movie.movie_id === Number(movieIdFromUrl)
       );
       if (movieToSelect) {
         setSelectedMovie(movieToSelect);
@@ -82,7 +83,7 @@ export default function BookPage() {
   const handleChange = useCallback((label: string, subtotal: number) => {
     setTotals((prev) => ({ ...prev, [label]: subtotal }));
   }, []);
-  
+
   const totalPrice = Object.values(totals).reduce((a, b) => a + b, 0);
 
   return (
@@ -141,7 +142,9 @@ export default function BookPage() {
             }}
           >
             {releasedMovies.map((movie: Movie, index) => (
-              <button key={`movie-${movie.movie_id}-${index}`}>{movie.title}</button>
+              <button key={`movie-${movie.movie_id}-${index}`}>
+                {movie.title}
+              </button>
             ))}
           </DefaultDropdown>
 
@@ -161,15 +164,58 @@ export default function BookPage() {
         <div className=" flex flex-col w-full mx-auto gap-5">
           <h2>Select Tickets</h2>
           <div className="flex flex-col gap-4">
-            <TicketCounter label="Adult" price={12} amount={adultTickets} setAmount={setAdultTickets} onChange={handleChange} />
-            <TicketCounter label="Child" price={8} amount={childTickets} setAmount={setChildTickets} onChange={handleChange} />
-            <TicketCounter label="Senior" price={10} amount={seniorTickets} setAmount={setSeniorTickets} onChange={handleChange} />
+            <TicketCounter
+              label="Adult"
+              price={12}
+              amount={adultTickets}
+              setAmount={setAdultTickets}
+              onChange={handleChange}
+            />
+            <TicketCounter
+              label="Child"
+              price={8}
+              amount={childTickets}
+              setAmount={setChildTickets}
+              onChange={handleChange}
+            />
+            <TicketCounter
+              label="Senior"
+              price={10}
+              amount={seniorTickets}
+              setAmount={setSeniorTickets}
+              onChange={handleChange}
+            />
           </div>
           <div className="flex justify-between items-center px-3">
             <span className="font-bold text-lg">Total</span>
             <span className="font-bold text-lg">${totalPrice.toFixed(2)}</span>
           </div>
-          <Button className="text-black bg-gray-300/50 rounded-md py-4">
+          <Button
+            className="text-black bg-gray-300/50 rounded-md py-4"
+            onClick={() => {
+              const totalTickets = adultTickets + childTickets + seniorTickets;
+              if (!selectedMovie) {
+                toast.error("Select a movie before continuing.");
+                return;
+              }
+              if (!selectedShowtime) {
+                toast.error("Select a showtime before continuing.");
+                return;
+              }
+              if (totalTickets <= 0) {
+                toast.error("Choose at least one ticket to continue.");
+                return;
+              }
+
+              router.push(
+                `/select-seats?movieId=${
+                  selectedMovie.movie_id
+                }&showtime=${encodeURIComponent(
+                  selectedShowtime
+                )}&adultTickets=${adultTickets}&childTickets=${childTickets}&seniorTickets=${seniorTickets}`
+              );
+            }}
+          >
             Continue
           </Button>
         </div>

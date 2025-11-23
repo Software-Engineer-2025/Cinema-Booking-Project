@@ -66,7 +66,7 @@ export default function DashNavbar() {
                     {user ? (
                         <>
                             <a
-                                href="/dashboard"
+                                href="/admin-dashboard"
                                 className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
                             >
                                 Dashboard

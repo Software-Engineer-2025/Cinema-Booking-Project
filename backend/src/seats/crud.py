@@ -86,22 +86,26 @@ def delete_seat(seat_id: int):
 
 def get_available_seats(show_id: int):
     """Get seats that are not yet booked for a show"""
-    # Get the show to find the showroom_id
-    show_response = supabase_admin.table("show").select("showroom_id").eq("show_id", show_id).single().execute()
-    if not show_response.data:
+    try:
+        # Get the show to find the showroom_id
+        show_response = supabase_admin.table("show").select("showroom_id").eq("show_id", show_id).limit(1).execute()
+        rows = show_response.data or []
+        if not rows:
+            return []
+        showroom_id = rows[0]["showroom_id"]
+
+        # Get all booked seat IDs for this show
+        booked_response = supabase_admin.table("ticket").select("seat_id").eq("show_id", show_id).execute()
+        booked_seat_ids = [t.get("seat_id") for t in (booked_response.data or []) if t.get("seat_id") is not None]
+
+        # Get all seats in the showroom that are not booked
+        query = supabase_admin.table("seat").select("*").eq("showroom_id", showroom_id)
+        if booked_seat_ids:
+            # Use the supported supabase-py pattern for NOT IN
+            query = query.not_.in_("seat_id", booked_seat_ids)
+        response = query.execute()
+        return response.data
+    except Exception as e:
+        # Avoid 500s by returning an empty list on error; log for debugging
+        print(f"get_available_seats error for show_id {show_id}: {e}")
         return []
-    
-    showroom_id = show_response.data["showroom_id"]
-    
-    # Get all booked seat IDs for this show
-    booked_response = supabase_admin.table("ticket").select("seat_id").eq("show_id", show_id).execute()
-    booked_seat_ids = [ticket["seat_id"] for ticket in booked_response.data]
-    
-    # Get all seats in the showroom that are not booked
-    query = supabase_admin.table("seat").select("*").eq("showroom_id", showroom_id)
-    
-    if booked_seat_ids:
-        query = query.not_.in_("seat_id", booked_seat_ids)
-    
-    response = query.execute()
-    return response.data
