@@ -1,6 +1,6 @@
 import EditableCell from "./EditableCell";
 
-export default function PromosTable({ promos, onUpdate, onDelete }) {
+export default function PromosTable({ promos, onUpdate, onDelete, onSave}) {
   const columns = ["promotion_id", "promo_code", "discount", "start_date", "end_date"];
 
   return (
@@ -8,17 +8,17 @@ export default function PromosTable({ promos, onUpdate, onDelete }) {
       <table className="min-w-full text-sm border-collapse">
         <thead className="bg-black">
         <tr>
-          <th className="text-left p-3 font-semibold text-white border-b w-12"></th>
-          {columns.map((col) => (
-              <th
-                  key={col}
-                  className="text-left p-3 font-semibold text-white border-b capitalize"
-              >
-                {col.replaceAll("_", " ")}
-              </th>
-          ))}
-          <th className="text-left p-3 font-semibold text-white border-b w-30"></th>
-          <th className="text-left p-3 font-semibold text-white border-b w-30"></th>
+            <th className="text-left p-3 font-semibold text-white border-b w-12"></th>
+            {columns.map((col) => (
+                <th
+                    key={col}
+                    className="text-left p-3 font-semibold text-white border-b capitalize"
+                >
+                  {col.replaceAll("_", " ")}
+                </th>
+            ))}
+            <th className="text-left p-3 font-semibold text-white border-b w-30"></th>
+            <th className="text-left p-3 font-semibold text-white border-b w-30"></th>
         </tr>
         </thead>
         <tbody>
@@ -46,11 +46,20 @@ export default function PromosTable({ promos, onUpdate, onDelete }) {
                 </button>
               </td>
               {columns.map((col) => (
-                  <EditableCell
-                      key={col}
-                      value={promo[col]}
-                      onChange={(val) => onUpdate(promo.promotion_id, col, val)}
-                  />
+                  col == "promotion_id" ? (
+                      <EditableCell
+                          key={col}
+                          value={promo[col]}
+                          onChange={(val) => onUpdate(promo.promotion_id, col, val)}
+                          isEditable={false}
+                      />
+                      ) : (
+                      <EditableCell
+                          key={col}
+                          value={promo[col]}
+                          onChange={(val) => onUpdate(promo.promotion_id, col, val)}
+                      />
+                  )
               ))}
               <td className="p-3 border-b bg-white/10">
                 <button
@@ -62,7 +71,7 @@ export default function PromosTable({ promos, onUpdate, onDelete }) {
               </td>
               <td className="p-3 border-b bg-white/10">
                 <button
-                    onClick={() => print()}
+                    onClick={() => onSave(promo)}
                     className="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm"
                 >
                   Save

@@ -233,6 +233,13 @@ export type Promotion = {
     discount: number;
 }
 
+export type PromotionCreate = {
+    promo_code: string;
+    start_date?: string | null;
+    end_date?: string | null;
+    discount: number;
+};
+
 /**
  * NewCardRequest
  */
@@ -1423,3 +1430,58 @@ export type ListPromosApiV1PromosGetResponses = {
 };
 
 export type ListPromosApiV1PromosGetResponse = ListPromosApiV1PromosGetResponses[keyof ListPromosApiV1PromosGetResponses];
+
+export type CreatePromoApiV1PromosPostData = {
+    body: Promotion;
+    path?: never;
+    query?: never;
+    url: '/api/v1/promotions/';
+};
+
+export type CreatePromoApiV1PromosPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreatePromoApiV1PromosPostError = CreatePromoApiV1PromosPostErrors[keyof CreatePromoApiV1PromosPostErrors];
+
+export type CreatePromoApiV1PromosPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: Promotion;
+};
+
+export type CreatePromoApiV1PromosPostResponse = CreatePromoApiV1PromosPostResponses[keyof CreatePromoApiV1PromosPostResponses];
+
+export type DeletePromoApiV1PromoIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Promotion Id
+         */
+        promotion_id: number;
+    };
+    query?: never;
+    url: '/api/v1/promotions/{promotion_id}';
+};
+
+export type DeletePromoApiV1PromoIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeletePromoApiV1PromoIdDeleteError = DeletePromoApiV1PromoIdDeleteErrors[keyof DeletePromoApiV1PromoIdDeleteErrors];
+
+export type DeletePromoApiV1PromoIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeletePromoApiV1PromoIdDeleteResponse = DeletePromoApiV1PromoIdDeleteResponses[keyof DeletePromoApiV1PromoIdDeleteResponses];

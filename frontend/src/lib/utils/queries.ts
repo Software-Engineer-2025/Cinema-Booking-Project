@@ -9,7 +9,11 @@ import {
   deletePaymentCardEndpointApiV1CardsCardIdDelete,
   deleteMovieApiV1MoviesMovieIdDelete,
   createMovieApiV1MoviesPost,
-  MovieCreate, listPromosApiV1PromosGet,
+  MovieCreate,
+  listPromosApiV1PromosGet,
+  createPromoApiV1PromosPost,
+  deletePromoApiV1PromoIdDelete,
+  PromotionCreate,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -164,3 +168,37 @@ export const allPromosQuery = () => ({
     return response.data;
   },
 });
+
+export const useDeletePromoCard = () => {
+  return useMutation({
+    mutationFn: async (promoID: number) => {
+      const result = await deletePromoApiV1PromoIdDelete({
+        path: {
+          promotion_id: promoID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddPromoCard = () => {
+  return useMutation({
+    mutationFn: async (promo: PromotionCreate) => {
+      const result = await createPromoApiV1PromosPost({
+        body: promo,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};

@@ -18,6 +18,9 @@ import type {
     CreateMovieApiV1MoviesPostData,
     CreateMovieApiV1MoviesPostErrors,
     CreateMovieApiV1MoviesPostResponses,
+    CreatePromoApiV1PromosPostData,
+    CreatePromoApiV1PromosPostErrors,
+    CreatePromoApiV1PromosPostResponses,
     CreateShowApiV1ShowsPostData,
     CreateShowApiV1ShowsPostErrors,
     CreateShowApiV1ShowsPostResponses,
@@ -30,6 +33,9 @@ import type {
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteData,
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteErrors,
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteResponses,
+    DeletePromoApiV1PromoIdDeleteData,
+    DeletePromoApiV1PromoIdDeleteErrors,
+    DeletePromoApiV1PromoIdDeleteResponses,
     DeleteShowApiV1ShowsShowIdDeleteData,
     DeleteShowApiV1ShowsShowIdDeleteErrors,
     DeleteShowApiV1ShowsShowIdDeleteResponses,
@@ -570,11 +576,35 @@ export const healthCheckHealthGet = <ThrowOnError extends boolean = false>(optio
 
 
 /**
- * List Movies
+ * List Promos
  */
 export const listPromosApiV1PromosGet = <ThrowOnError extends boolean = false>(options?: Options<ListPromosApiV1PromosGetData, ThrowOnError>) => {
     return (options?.client ?? client).get<ListPromosApiV1PromosGetResponses, unknown, ThrowOnError>({
         url: '/api/v1/promotions/',
         ...options
+    });
+};
+
+/**
+ * Delete Promos
+ */
+export const deletePromoApiV1PromoIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeletePromoApiV1PromoIdDeleteData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeletePromoApiV1PromoIdDeleteResponses, DeletePromoApiV1PromoIdDeleteErrors, ThrowOnError>({
+        url: '/api/v1/promotions/{promotion_id}',
+        ...options
+    });
+};
+
+/**
+ * Create Movie
+ */
+export const createPromoApiV1PromosPost = <ThrowOnError extends boolean = false>(options: Options<CreatePromoApiV1PromosPostData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreatePromoApiV1PromosPostResponses, CreatePromoApiV1PromosPostErrors, ThrowOnError>({
+        url: '/api/v1/promotions/',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };

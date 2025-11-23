@@ -9,7 +9,7 @@ class PromotionBase(BaseModel):
     discount: float
 
 class PromotionCreate(PromotionBase):
-    promotion_id: int
+    pass
 
 class Promotion(PromotionBase):
     promotion_id: int  

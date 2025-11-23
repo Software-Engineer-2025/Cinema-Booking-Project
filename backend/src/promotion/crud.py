@@ -6,6 +6,15 @@ from datetime import date
 async def create_promotion(promotion: PromotionCreate) -> Dict:
     try:
         data = promotion.model_dump()
+
+        max_result = supabase_admin.table("promotion").select("promotion_id").order("promotion_id", desc=True).limit(1).execute()
+
+        if max_result.data:
+            next_id = max_result.data[0]['promotion_id'] + 1
+        else:
+            next_id = 1
+
+        data['promotion_id'] = next_id
         
         if data.get("discount", 0) <= 0:
             raise ValueError("Discount must be greater than 0")
