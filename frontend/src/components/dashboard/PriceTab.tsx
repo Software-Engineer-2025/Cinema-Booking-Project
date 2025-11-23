@@ -3,7 +3,8 @@ import TicketPricing from "./TicketPricing";
 import PromosTable from "./PromosTable";
 import BlackButton from "../ui/BlackButton";
 import {useQuery} from "@tanstack/react-query";
-import {allMoviesQuery} from "@/lib/utils/queries";
+import {allPromosQuery} from "@/lib/utils/queries";
+import {Promotion} from "@/client";
 
 export default function PriceTab() {
   const [pricing, setPricing] = useState({
@@ -13,13 +14,16 @@ export default function PriceTab() {
     seniorPrice: 10.0,
   });
 
-  const [promos, setPromos] = useState([
-    {
-      promo_id: 1,
-      promo_code: "SUMMER2024",
-      expiration_date: "2024-12-31",
-      discount: 15,
-    },
+  const basePromotion: Promotion = {
+    discount: 15,
+    end_date: "2024-12-31",
+    promo_code: "SUMMER2024",
+    promotion_id: -1,
+    start_date: "2024-6-21",
+  }
+
+  const [promos, setPromos] = useState<Promotion[]>([
+      basePromotion
   ]);
 
   const handleUpdatePricing = (field, value) => {
@@ -32,11 +36,12 @@ export default function PriceTab() {
 
   const handleAddPromo = () => {
     const maxId =
-      promos.length > 0 ? Math.max(...promos.map((p) => p.promo_id)) : 0;
+      promos.length > 0 ? Math.max(...promos.map((p) => p.promotion_id)) : 0;
     const newPromo = {
-      promo_id: maxId + 1,
+      promotion_id: -(Date.now()),
       promo_code: "",
-      expiration_date: "",
+      start_date: "",
+      end_date: "",
       discount: 0,
     };
     setPromos([...promos, newPromo]);
@@ -44,18 +49,20 @@ export default function PriceTab() {
 
   const handleUpdatePromo = (id, field, value) => {
     setPromos((prev) =>
-      prev.map((p) => (p.promo_id === id ? { ...p, [field]: value } : p))
+      prev.map((p) => (p.promotion_id === id ? { ...p, [field]: value } : p))
     );
   };
 
   const handleDeletePromo = (id) => {
-    setPromos((prev) => prev.filter((p) => p.promo_id !== id));
+    setPromos((prev) => prev.filter((p) => p.promotion_id !== id));
   };
 
   const { data: allPromos = [], refetch: refetchPromos } = useQuery(allPromosQuery());
 
+  console.log(allPromos)
+
   useEffect(() => {
-    setPromos(allPromos);
+    setPromos(allPromos)
   }, [allPromos]);
 
   return (

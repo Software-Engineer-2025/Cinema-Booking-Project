@@ -1,7 +1,7 @@
 import EditableCell from "./EditableCell";
 
 export default function PromosTable({ promos, onUpdate, onDelete }) {
-  const columns = ["promo_id", "promo_code", "discount", "expiration_date"];
+  const columns = ["promotion_id", "promo_code", "discount", "start_date", "end_date"];
 
   return (
     <div className="overflow-x-auto border">
@@ -23,10 +23,10 @@ export default function PromosTable({ promos, onUpdate, onDelete }) {
         </thead>
         <tbody>
         {promos.map((promo) => (
-            <tr key={promo.promo_id} className="hover:bg-gray-50/50">
+            <tr key={promo.promotion_id} className="hover:bg-gray-50/50">
               <td className="p-3 border-b bg-white/10">
                 <button
-                    onClick={() => onDelete(promo.promo_id)}
+                    onClick={() => onDelete(promo.promotion_id)}
                     className="cursor-pointer hover:text-red-600"
                 >
                   <svg
@@ -49,7 +49,7 @@ export default function PromosTable({ promos, onUpdate, onDelete }) {
                   <EditableCell
                       key={col}
                       value={promo[col]}
-                      onChange={(val) => onUpdate(promo.promo_id, col, val)}
+                      onChange={(val) => onUpdate(promo.promotion_id, col, val)}
                   />
               ))}
               <td className="p-3 border-b bg-white/10">

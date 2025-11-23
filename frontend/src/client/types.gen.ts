@@ -225,6 +225,14 @@ export type MovieCreate = {
     genre_names?: Array<string> | null;
 };
 
+export type Promotion = {
+    promotion_id: number;
+    promo_code: string;
+    start_date?: string;
+    end_date?: string;
+    discount: number;
+}
+
 /**
  * NewCardRequest
  */
@@ -1397,3 +1405,21 @@ export type HealthCheckHealthGetResponses = {
      */
     200: unknown;
 };
+
+export type ListPromosApiV1PromosGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/promotions/';
+};
+
+export type ListPromosApiV1PromosGetResponses = {
+    /**
+     * Response List Movies Api V1 Movies  Get
+     *
+     * Successful Response
+     */
+    200: Array<Promotion>;
+};
+
+export type ListPromosApiV1PromosGetResponse = ListPromosApiV1PromosGetResponses[keyof ListPromosApiV1PromosGetResponses];

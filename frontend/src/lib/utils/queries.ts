@@ -9,7 +9,7 @@ import {
   deletePaymentCardEndpointApiV1CardsCardIdDelete,
   deleteMovieApiV1MoviesMovieIdDelete,
   createMovieApiV1MoviesPost,
-  MovieCreate,
+  MovieCreate, listPromosApiV1PromosGet,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -156,3 +156,11 @@ export const useDeletePaymentCard = () => {
     },
   });
 };
+
+export const allPromosQuery = () => ({
+  queryKey: ["promotions"],
+  queryFn: async () => {
+    const response = await listPromosApiV1PromosGet();
+    return response.data;
+  },
+});
