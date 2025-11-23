@@ -18,6 +18,9 @@ import type {
     CreateMovieApiV1MoviesPostData,
     CreateMovieApiV1MoviesPostErrors,
     CreateMovieApiV1MoviesPostResponses,
+    CreatePriceApiV1PricesPostData,
+    CreatePriceApiV1PricesPostErrors,
+    CreatePriceApiV1PricesPostResponses,
     CreatePromoApiV1PromosPostData,
     CreatePromoApiV1PromosPostErrors,
     CreatePromoApiV1PromosPostResponses,
@@ -33,6 +36,9 @@ import type {
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteData,
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteErrors,
     DeletePaymentCardEndpointApiV1CardsCardIdDeleteResponses,
+    DeletePriceApiV1PriceIdDeleteData,
+    DeletePriceApiV1PriceIdDeleteErrors,
+    DeletePriceApiV1PriceIdDeleteResponses,
     DeletePromoApiV1PromoIdDeleteData,
     DeletePromoApiV1PromoIdDeleteErrors,
     DeletePromoApiV1PromoIdDeleteResponses,
@@ -69,6 +75,8 @@ import type {
     HealthCheckHealthGetResponses,
     ListMoviesApiV1MoviesGetData,
     ListMoviesApiV1MoviesGetResponses,
+    ListPricesApiV1PricesGetData,
+    ListPricesApiV1PricesGetResponses,
     ListPromosApiV1PromosGetData,
     ListPromosApiV1PromosGetResponses,
     ListShowsApiV1ShowsGetData,
@@ -596,11 +604,45 @@ export const deletePromoApiV1PromoIdDelete = <ThrowOnError extends boolean = fal
 };
 
 /**
- * Create Movie
+ * Create Promo
  */
 export const createPromoApiV1PromosPost = <ThrowOnError extends boolean = false>(options: Options<CreatePromoApiV1PromosPostData, ThrowOnError>) => {
     return (options.client ?? client).post<CreatePromoApiV1PromosPostResponses, CreatePromoApiV1PromosPostErrors, ThrowOnError>({
         url: '/api/v1/promotions/',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List Price
+ */
+export const listPricesApiV1PricesGet = <ThrowOnError extends boolean = false>(options?: Options<ListPricesApiV1PricesGetData, ThrowOnError>) => {
+    return (options?.client ?? client).get<ListPricesApiV1PricesGetResponses, unknown, ThrowOnError>({
+        url: '/api/v1/prices/',
+        ...options
+    });
+};
+
+/**
+ * Delete Price
+ */
+export const deletePricesApiV1PricesIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeletePriceApiV1PriceIdDeleteData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeletePriceApiV1PriceIdDeleteResponses, DeletePriceApiV1PriceIdDeleteErrors, ThrowOnError>({
+        url: '/api/v1/prices/{price_id}',
+        ...options
+    });
+};
+
+/**
+ * Create Price
+ */
+export const createPriceApiV1PricesPost = <ThrowOnError extends boolean = false>(options: Options<CreatePriceApiV1PricesPostData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreatePriceApiV1PricesPostResponses, CreatePriceApiV1PricesPostErrors, ThrowOnError>({
+        url: '/api/v1/prices/',
         ...options,
         headers: {
             'Content-Type': 'application/json',

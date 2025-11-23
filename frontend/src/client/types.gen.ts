@@ -225,6 +225,10 @@ export type MovieCreate = {
     genre_names?: Array<string> | null;
 };
 
+
+/**
+ * Promotion
+ */
 export type Promotion = {
     promotion_id: number;
     promo_code: string;
@@ -233,11 +237,31 @@ export type Promotion = {
     discount: number;
 }
 
+/**
+ * PromotionCreate
+ */
 export type PromotionCreate = {
     promo_code: string;
     start_date?: string | null;
     end_date?: string | null;
     discount: number;
+};
+
+/**
+ * Price
+ */
+export type Price = {
+    price_id: number;
+    price_name: string;
+    amount: number;
+}
+
+/**
+ * PriceCreate
+ */
+export type PriceCreate = {
+    price_name: string;
+    amount: number;
 };
 
 /**
@@ -1485,3 +1509,78 @@ export type DeletePromoApiV1PromoIdDeleteResponses = {
 };
 
 export type DeletePromoApiV1PromoIdDeleteResponse = DeletePromoApiV1PromoIdDeleteResponses[keyof DeletePromoApiV1PromoIdDeleteResponses];
+
+
+
+export type ListPricesApiV1PricesGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/prices/';
+};
+
+export type ListPricesApiV1PricesGetResponses = {
+    /**
+     * Response List Prices Api V1 Prices  Get
+     *
+     * Successful Response
+     */
+    200: Array<Movie>;
+};
+
+export type ListPricesApiV1MoviesGetResponse = ListMoviesApiV1MoviesGetResponses[keyof ListMoviesApiV1MoviesGetResponses];
+
+export type CreatePriceApiV1PricesPostData = {
+    body: PriceCreate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/movies/';
+};
+
+export type CreatePriceApiV1PricesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreatePriceApiV1PricesPostError = CreatePriceApiV1PricesPostErrors[keyof CreatePriceApiV1PricesPostErrors];
+
+export type CreatePriceApiV1PricesPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: Movie;
+};
+
+export type CreatePriceApiV1PricesPostResponse = CreatePriceApiV1PricesPostResponses[keyof CreatePriceApiV1PricesPostResponses];
+
+export type DeletePriceApiV1PriceIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Price Id
+         */
+        price_id: number;
+    };
+    query?: never;
+    url: '/api/v1/movies/{price_id}';
+};
+
+export type DeletePriceApiV1PriceIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeletePriceApiV1PriceIdDeleteError = DeletePriceApiV1PriceIdDeleteErrors[keyof DeletePriceApiV1PriceIdDeleteErrors];
+
+export type DeletePriceApiV1PriceIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeletePriceApiV1PriceIdDeleteResponse = DeletePriceApiV1PriceIdDeleteResponses[keyof DeletePriceApiV1PriceIdDeleteResponses];

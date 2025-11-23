@@ -22,6 +22,13 @@ CREATE TABLE movie (
     featured BOOLEAN DEFAULT FALSE
 );
 
+-- Price has no dependencies
+CREATE TABLE price (
+    price_id BIGINT PRIMARY KEY,
+    price_name TEXT NOT NULL,
+    amount DECIMAL
+);
+
 -- UserProfile had no dependency
 CREATE TABLE userprofile (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,

@@ -13,7 +13,7 @@ import {
   listPromosApiV1PromosGet,
   createPromoApiV1PromosPost,
   deletePromoApiV1PromoIdDelete,
-  PromotionCreate,
+  PromotionCreate, listPricesApiV1PricesGet, deletePricesApiV1PricesIdDelete, PriceCreate,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -192,6 +192,50 @@ export const useAddPromoCard = () => {
     mutationFn: async (promo: PromotionCreate) => {
       const result = await createPromoApiV1PromosPost({
         body: promo,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+
+
+export const allpricesQuery = () => ({
+  queryKey: ["prices"],
+  queryFn: async () => {
+    const response = await listPricesApiV1PricesGet();
+    return response.data;
+  },
+});
+
+export const useDeletePriceCard = () => {
+  return useMutation({
+    mutationFn: async (priceID: number) => {
+      const result = await deletePricesApiV1PricesIdDelete({
+        path: {
+          price_id: priceID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddPriceCard = () => {
+  return useMutation({
+    mutationFn: async (price: PriceCreate) => {
+      const result = await createPromoApiV1PromosPost({
+        body: price,
       });
 
       if (result.error) {

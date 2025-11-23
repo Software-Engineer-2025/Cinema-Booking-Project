@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional
 from .schemas import PromotionCreate
 from db.supabase import supabase, supabase_admin
-from datetime import date
 
 async def create_promotion(promotion: PromotionCreate) -> Dict:
     try:
