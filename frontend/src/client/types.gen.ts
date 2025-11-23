@@ -219,6 +219,10 @@ export type MovieCreate = {
      * Featured
      */
     featured?: boolean | null;
+    /**
+     * Genres
+     */
+    genre_names?: Array<string> | null;
 };
 
 /**

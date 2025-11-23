@@ -48,9 +48,11 @@ def _transform_response_for_api(movie_data: Dict) -> Dict:
         
     return movie_data
 
-def create_movie(movie: MovieCreate):
+def create_movie(movie: MovieCreate, genre_names: Optional[List[str]] = None):
     try:
         movie_data = movie.model_dump()
+
+        movie_data.pop('genre_names', None)
         
         max_result = supabase_admin.table("movie").select("movie_id").order("movie_id", desc=True).limit(1).execute()
         if max_result.data:
@@ -70,7 +72,44 @@ def create_movie(movie: MovieCreate):
             movie_data['reviews'] = ', '.join(movie_data['reviews'])
             
         response = supabase_admin.table("movie").insert(movie_data).execute()
-        
+
+        if not response.data:
+            raise Exception("Failed to create movie")
+
+        movie_id = response.data[0]['movie_id']
+
+        # Handle genres by name
+        if genre_names:
+            genre_ids = []
+
+            for genre_name in genre_names:
+                existing_genre = supabase_admin.table("genre").select("genre_id").eq("name", genre_name).execute()
+
+                if existing_genre.data:
+                    genre_ids.append(existing_genre.data[0]['genre_id'])
+                else:
+                    max_genre_result = supabase_admin.table("genre").select("genre_id").order("genre_id", desc=True).limit(1).execute()
+                    next_genre_id = (max_genre_result.data[0]['genre_id'] + 1) if max_genre_result.data else 1
+
+                    new_genre = supabase_admin.table("genre").insert({
+                        "genre_id": next_genre_id,
+                        "name": genre_name
+                    }).execute()
+
+                    if new_genre.data:
+                        genre_ids.append(new_genre.data[0]['genre_id'])
+
+            # Insert movie-genre relationships
+            if genre_ids:
+                moviegenre_records = [
+                    {
+                        "movie_id": movie_id,
+                        "genre_id": genre_id
+                    }
+                    for genre_id in genre_ids
+                ]
+                supabase_admin.table("moviegenre").insert(moviegenre_records).execute()
+
         if hasattr(response, 'data') and response.data:
             response.data[0] = _transform_response_for_api(response.data[0])
             

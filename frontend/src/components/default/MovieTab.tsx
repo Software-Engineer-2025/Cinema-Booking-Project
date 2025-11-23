@@ -72,7 +72,9 @@ export default function MovieTab() {
     );
   };
   const handleDeleteMovie = (id) => {
-    deleteMovie.mutate(id);
+    if(id < 0) {
+      deleteMovie.mutate(id);
+    }
     setMovies((prev) => prev.filter((m) => m.movie_id !== id));
   };
 
@@ -83,6 +85,9 @@ export default function MovieTab() {
           throw new Error("Need to fill in value: " + key);
         }
       });
+
+      const genreArray = movie.genre ? movie.genre.split(",").map(g => g.trim()) : [];
+
       const passableMovie: MovieCreate = {
         title: movie.title,
         release_date: movie.release_date,
@@ -98,17 +103,23 @@ export default function MovieTab() {
         duration: movie.duration,
         released: movie.released,
         featured: movie.featured,
-      }
+        genre_names: genreArray,
+      };
+
       addMovie.mutate(passableMovie, {
         onSuccess: () => {
-          refetchMovies();
-        },});
-      if (movie.movie_id > 0) {
-        deleteMovie.mutate(movie.movie_id, {
-          onSuccess: () => {
+          if (movie.movie_id > 0) {
+            deleteMovie.mutate(movie.movie_id, {
+              onSuccess: () => {
+                refetchMovies();
+              },
+            });
+          } else {
             refetchMovies();
-            },});
-      }
+          }
+        },
+      });
+
     } catch (error) {
       toast("Please complete all required fields!", {
         description: error.message,
@@ -117,7 +128,7 @@ export default function MovieTab() {
         }
       });
     }
-  }
+  };
 
   return (
     <div>

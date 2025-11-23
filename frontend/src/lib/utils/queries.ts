@@ -9,7 +9,7 @@ import {
   deletePaymentCardEndpointApiV1CardsCardIdDelete,
   deleteMovieApiV1MoviesMovieIdDelete,
   createMovieApiV1MoviesPost,
-  MovieCreate, Movie,
+  MovieCreate,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
