@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardTabs from "@/components/default/DashboardTabs";
-import MovieTab from "@/components/default/MovieTab";
-import PriceTab from "@/components/default/PriceTab";
-import UsersTab from "@/components/default/UsersTab";
+import DashboardTabs from "@/components/dashboard/DashboardTabs";
+import MovieTab from "@/components/dashboard/MovieTab";
+import PriceTab from "@/components/dashboard/PriceTab";
+import UsersTab from "@/components/dashboard/UsersTab";
 
 
 

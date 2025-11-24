@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-export default function EditableCell({ value, onChange }) {
+interface EditableCellProps {
+  value,
+  onChange,
+  isEditable?: boolean
+}
+
+export default function EditableCell({value, onChange, isEditable = true}: EditableCellProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value ?? "");
 
@@ -14,7 +20,7 @@ export default function EditableCell({ value, onChange }) {
       className="p-3 border-b bg-white/10 cursor-pointer"
       onClick={() => setIsEditing(true)}
     >
-      {isEditing ? (
+      {isEditing && isEditable ? (
         <input
           autoFocus
           type="text"

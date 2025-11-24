@@ -2,7 +2,117 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddGenreApiV1GenresPostData, AddGenreApiV1GenresPostErrors, AddGenreApiV1GenresPostResponses, AddPaymentCardEndpointApiV1CardsPostData, AddPaymentCardEndpointApiV1CardsPostErrors, AddPaymentCardEndpointApiV1CardsPostResponses, AddSeatApiV1SeatsPostData, AddSeatApiV1SeatsPostErrors, AddSeatApiV1SeatsPostResponses, AddShowroomApiV1ShowroomsPostData, AddShowroomApiV1ShowroomsPostErrors, AddShowroomApiV1ShowroomsPostResponses, CreateMovieApiV1MoviesPostData, CreateMovieApiV1MoviesPostErrors, CreateMovieApiV1MoviesPostResponses, CreateShowApiV1ShowsPostData, CreateShowApiV1ShowsPostErrors, CreateShowApiV1ShowsPostResponses, CreateTicketApiV1TicketsPostData, CreateTicketApiV1TicketsPostErrors, CreateTicketApiV1TicketsPostResponses, DeleteMovieApiV1MoviesMovieIdDeleteData, DeleteMovieApiV1MoviesMovieIdDeleteErrors, DeleteMovieApiV1MoviesMovieIdDeleteResponses, DeletePaymentCardEndpointApiV1CardsCardIdDeleteData, DeletePaymentCardEndpointApiV1CardsCardIdDeleteErrors, DeletePaymentCardEndpointApiV1CardsCardIdDeleteResponses, DeleteShowApiV1ShowsShowIdDeleteData, DeleteShowApiV1ShowsShowIdDeleteErrors, DeleteShowApiV1ShowsShowIdDeleteResponses, DeleteTicketApiV1TicketsTicketIdDeleteData, DeleteTicketApiV1TicketsTicketIdDeleteErrors, DeleteTicketApiV1TicketsTicketIdDeleteResponses, GetCurrentUserProfileApiV1UsersMeGetData, GetCurrentUserProfileApiV1UsersMeGetResponses, GetGenresApiV1MoviesGenresGetData, GetGenresApiV1MoviesGenresGetResponses, GetMeApiV1MeGetData, GetMeApiV1MeGetResponses, GetMovieApiV1MoviesMovieIdGetData, GetMovieApiV1MoviesMovieIdGetErrors, GetMovieApiV1MoviesMovieIdGetResponses, GetPaymentCardsEndpointApiV1CardsGetData, GetPaymentCardsEndpointApiV1CardsGetResponses, GetShowByIdApiV1ShowsShowIdGetData, GetShowByIdApiV1ShowsShowIdGetErrors, GetShowByIdApiV1ShowsShowIdGetResponses, GetShowsByDateApiV1ShowsDateDateGetData, GetShowsByDateApiV1ShowsDateDateGetErrors, GetShowsByDateApiV1ShowsDateDateGetResponses, GetShowsByMovieApiV1ShowsMovieMovieIdGetData, GetShowsByMovieApiV1ShowsMovieMovieIdGetErrors, GetShowsByMovieApiV1ShowsMovieMovieIdGetResponses, GetTicketApiV1TicketsTicketIdGetData, GetTicketApiV1TicketsTicketIdGetErrors, GetTicketApiV1TicketsTicketIdGetResponses, HealthCheckHealthGetData, HealthCheckHealthGetResponses, ListMoviesApiV1MoviesGetData, ListMoviesApiV1MoviesGetResponses, ListShowsApiV1ShowsGetData, ListShowsApiV1ShowsGetResponses, ListTicketsApiV1TicketsGetData, ListTicketsApiV1TicketsGetResponses, PingGetData, PingGetResponses, ReadGenreApiV1GenresGenreIdGetData, ReadGenreApiV1GenresGenreIdGetErrors, ReadGenreApiV1GenresGenreIdGetResponses, ReadGenresApiV1GenresGetData, ReadGenresApiV1GenresGetResponses, ReadSeatApiV1SeatsSeatIdGetData, ReadSeatApiV1SeatsSeatIdGetErrors, ReadSeatApiV1SeatsSeatIdGetResponses, ReadSeatsApiV1SeatsGetData, ReadSeatsApiV1SeatsGetResponses, ReadShowroomApiV1ShowroomsShowroomIdGetData, ReadShowroomApiV1ShowroomsShowroomIdGetErrors, ReadShowroomApiV1ShowroomsShowroomIdGetResponses, ReadShowroomsApiV1ShowroomsGetData, ReadShowroomsApiV1ShowroomsGetResponses, RemoveSeatApiV1SeatsSeatIdDeleteData, RemoveSeatApiV1SeatsSeatIdDeleteErrors, RemoveSeatApiV1SeatsSeatIdDeleteResponses, UpdateCurrentUserProfileApiV1UsersMePutData, UpdateCurrentUserProfileApiV1UsersMePutErrors, UpdateCurrentUserProfileApiV1UsersMePutResponses, UpdatePaymentCardEndpointApiV1CardsCardIdPatchData, UpdatePaymentCardEndpointApiV1CardsCardIdPatchErrors, UpdatePaymentCardEndpointApiV1CardsCardIdPatchResponses, UpdateShowApiV1ShowsShowIdPutData, UpdateShowApiV1ShowsShowIdPutErrors, UpdateShowApiV1ShowsShowIdPutResponses } from './types.gen';
+import type {
+    AddGenreApiV1GenresPostData,
+    AddGenreApiV1GenresPostErrors,
+    AddGenreApiV1GenresPostResponses,
+    AddPaymentCardEndpointApiV1CardsPostData,
+    AddPaymentCardEndpointApiV1CardsPostErrors,
+    AddPaymentCardEndpointApiV1CardsPostResponses,
+    AddSeatApiV1SeatsPostData,
+    AddSeatApiV1SeatsPostErrors,
+    AddSeatApiV1SeatsPostResponses,
+    AddShowroomApiV1ShowroomsPostData,
+    AddShowroomApiV1ShowroomsPostErrors,
+    AddShowroomApiV1ShowroomsPostResponses,
+    CreateMovieApiV1MoviesPostData,
+    CreateMovieApiV1MoviesPostErrors,
+    CreateMovieApiV1MoviesPostResponses,
+    CreatePriceApiV1PricesPostData,
+    CreatePriceApiV1PricesPostErrors,
+    CreatePriceApiV1PricesPostResponses,
+    CreatePromoApiV1PromosPostData,
+    CreatePromoApiV1PromosPostErrors,
+    CreatePromoApiV1PromosPostResponses,
+    CreateShowApiV1ShowsPostData,
+    CreateShowApiV1ShowsPostErrors,
+    CreateShowApiV1ShowsPostResponses,
+    CreateTicketApiV1TicketsPostData,
+    CreateTicketApiV1TicketsPostErrors,
+    CreateTicketApiV1TicketsPostResponses,
+    DeleteMovieApiV1MoviesMovieIdDeleteData,
+    DeleteMovieApiV1MoviesMovieIdDeleteErrors,
+    DeleteMovieApiV1MoviesMovieIdDeleteResponses,
+    DeletePaymentCardEndpointApiV1CardsCardIdDeleteData,
+    DeletePaymentCardEndpointApiV1CardsCardIdDeleteErrors,
+    DeletePaymentCardEndpointApiV1CardsCardIdDeleteResponses,
+    DeletePriceApiV1PriceIdDeleteData,
+    DeletePriceApiV1PriceIdDeleteErrors,
+    DeletePriceApiV1PriceIdDeleteResponses,
+    DeletePromoApiV1PromoIdDeleteData,
+    DeletePromoApiV1PromoIdDeleteErrors,
+    DeletePromoApiV1PromoIdDeleteResponses,
+    DeleteShowApiV1ShowsShowIdDeleteData,
+    DeleteShowApiV1ShowsShowIdDeleteErrors,
+    DeleteShowApiV1ShowsShowIdDeleteResponses,
+    DeleteTicketApiV1TicketsTicketIdDeleteData,
+    DeleteTicketApiV1TicketsTicketIdDeleteErrors,
+    DeleteTicketApiV1TicketsTicketIdDeleteResponses,
+    GetCurrentUserProfileApiV1UsersMeGetData,
+    GetCurrentUserProfileApiV1UsersMeGetResponses,
+    GetGenresApiV1MoviesGenresGetData,
+    GetGenresApiV1MoviesGenresGetResponses,
+    GetMeApiV1MeGetData,
+    GetMeApiV1MeGetResponses,
+    GetMovieApiV1MoviesMovieIdGetData,
+    GetMovieApiV1MoviesMovieIdGetErrors,
+    GetMovieApiV1MoviesMovieIdGetResponses,
+    GetPaymentCardsEndpointApiV1CardsGetData,
+    GetPaymentCardsEndpointApiV1CardsGetResponses,
+    GetShowByIdApiV1ShowsShowIdGetData,
+    GetShowByIdApiV1ShowsShowIdGetErrors,
+    GetShowByIdApiV1ShowsShowIdGetResponses,
+    GetShowsByDateApiV1ShowsDateDateGetData,
+    GetShowsByDateApiV1ShowsDateDateGetErrors,
+    GetShowsByDateApiV1ShowsDateDateGetResponses,
+    GetShowsByMovieApiV1ShowsMovieMovieIdGetData,
+    GetShowsByMovieApiV1ShowsMovieMovieIdGetErrors,
+    GetShowsByMovieApiV1ShowsMovieMovieIdGetResponses,
+    GetTicketApiV1TicketsTicketIdGetData,
+    GetTicketApiV1TicketsTicketIdGetErrors,
+    GetTicketApiV1TicketsTicketIdGetResponses,
+    HealthCheckHealthGetData,
+    HealthCheckHealthGetResponses,
+    ListMoviesApiV1MoviesGetData,
+    ListMoviesApiV1MoviesGetResponses,
+    ListPricesApiV1PricesGetData,
+    ListPricesApiV1PricesGetResponses,
+    ListPromosApiV1PromosGetData,
+    ListPromosApiV1PromosGetResponses,
+    ListShowsApiV1ShowsGetData,
+    ListShowsApiV1ShowsGetResponses,
+    ListTicketsApiV1TicketsGetData,
+    ListTicketsApiV1TicketsGetResponses,
+    PingGetData,
+    PingGetResponses,
+    ReadGenreApiV1GenresGenreIdGetData,
+    ReadGenreApiV1GenresGenreIdGetErrors,
+    ReadGenreApiV1GenresGenreIdGetResponses,
+    ReadGenresApiV1GenresGetData,
+    ReadGenresApiV1GenresGetResponses,
+    ReadSeatApiV1SeatsSeatIdGetData,
+    ReadSeatApiV1SeatsSeatIdGetErrors,
+    ReadSeatApiV1SeatsSeatIdGetResponses,
+    ReadSeatsApiV1SeatsGetData,
+    ReadSeatsApiV1SeatsGetResponses,
+    ReadShowroomApiV1ShowroomsShowroomIdGetData,
+    ReadShowroomApiV1ShowroomsShowroomIdGetErrors,
+    ReadShowroomApiV1ShowroomsShowroomIdGetResponses,
+    ReadShowroomsApiV1ShowroomsGetData,
+    ReadShowroomsApiV1ShowroomsGetResponses,
+    RemoveSeatApiV1SeatsSeatIdDeleteData,
+    RemoveSeatApiV1SeatsSeatIdDeleteErrors,
+    RemoveSeatApiV1SeatsSeatIdDeleteResponses,
+    UpdateCurrentUserProfileApiV1UsersMePutData,
+    UpdateCurrentUserProfileApiV1UsersMePutErrors,
+    UpdateCurrentUserProfileApiV1UsersMePutResponses,
+    UpdatePaymentCardEndpointApiV1CardsCardIdPatchData,
+    UpdatePaymentCardEndpointApiV1CardsCardIdPatchErrors,
+    UpdatePaymentCardEndpointApiV1CardsCardIdPatchResponses,
+    UpdateShowApiV1ShowsShowIdPutData,
+    UpdateShowApiV1ShowsShowIdPutErrors,
+    UpdateShowApiV1ShowsShowIdPutResponses
+} from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -469,5 +579,74 @@ export const healthCheckHealthGet = <ThrowOnError extends boolean = false>(optio
     return (options?.client ?? client).get<HealthCheckHealthGetResponses, unknown, ThrowOnError>({
         url: '/health',
         ...options
+    });
+};
+
+
+/**
+ * List Promos
+ */
+export const listPromosApiV1PromosGet = <ThrowOnError extends boolean = false>(options?: Options<ListPromosApiV1PromosGetData, ThrowOnError>) => {
+    return (options?.client ?? client).get<ListPromosApiV1PromosGetResponses, unknown, ThrowOnError>({
+        url: '/api/v1/promotions/',
+        ...options
+    });
+};
+
+/**
+ * Delete Promos
+ */
+export const deletePromoApiV1PromoIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeletePromoApiV1PromoIdDeleteData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeletePromoApiV1PromoIdDeleteResponses, DeletePromoApiV1PromoIdDeleteErrors, ThrowOnError>({
+        url: '/api/v1/promotions/{promotion_id}',
+        ...options
+    });
+};
+
+/**
+ * Create Promo
+ */
+export const createPromoApiV1PromosPost = <ThrowOnError extends boolean = false>(options: Options<CreatePromoApiV1PromosPostData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreatePromoApiV1PromosPostResponses, CreatePromoApiV1PromosPostErrors, ThrowOnError>({
+        url: '/api/v1/promotions/',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List Price
+ */
+export const listPricesApiV1PricesGet = <ThrowOnError extends boolean = false>(options?: Options<ListPricesApiV1PricesGetData, ThrowOnError>) => {
+    return (options?.client ?? client).get<ListPricesApiV1PricesGetResponses, unknown, ThrowOnError>({
+        url: '/api/v1/prices/',
+        ...options
+    });
+};
+
+/**
+ * Delete Price
+ */
+export const deletePricesApiV1PricesIdDelete = <ThrowOnError extends boolean = false>(options: Options<DeletePriceApiV1PriceIdDeleteData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeletePriceApiV1PriceIdDeleteResponses, DeletePriceApiV1PriceIdDeleteErrors, ThrowOnError>({
+        url: '/api/v1/prices/{price_id}',
+        ...options
+    });
+};
+
+/**
+ * Create Price
+ */
+export const createPriceApiV1PricesPost = <ThrowOnError extends boolean = false>(options: Options<CreatePriceApiV1PricesPostData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreatePriceApiV1PricesPostResponses, CreatePriceApiV1PricesPostErrors, ThrowOnError>({
+        url: '/api/v1/prices/',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };

@@ -20,3 +20,13 @@ export const upperRegex = new RegExp("^.*[A-Z].*$");
 export const lowerRegex = new RegExp("^.*[a-z].*$");
 
 export const numRegex = new RegExp("^.*[0-9].*$");
+
+export const dateRegex = new RegExp("^\\d{4}-\\d{2}-\\d{2}$");
+
+export const isValidDate = (dateString) => {
+    if (!dateRegex.test(dateString)) {
+        return false;
+    }
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) && date.toISOString().startsWith(dateString);
+};

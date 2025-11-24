@@ -1,16 +1,17 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Depends
 from .schemas import (
     Promotion, 
     PromotionCreate, 
     PromotionValidationRequest, 
     PromotionValidationResponse
 )
+from auth.security import require_admin
 from . import crud
 
 router = APIRouter(prefix="/promotions", tags=["Promotions"])
 
 @router.post("/", response_model=Promotion)
-async def create_promotion(promotion: PromotionCreate):
+async def create_promotion(promotion: PromotionCreate, _admin: dict = Depends(require_admin)):
     result = await crud.create_promotion(promotion)
     if not result or len(result) == 0:
         raise HTTPException(status_code=400, detail="Failed to create promotion")
@@ -28,7 +29,7 @@ async def get_promotion(promotion_id: str):
     return promotion
 
 @router.delete("/{promotion_id}", status_code=204)
-async def delete_promotion(promotion_id: str):  
+async def delete_promotion(promotion_id: str, _admin: dict = Depends(require_admin)):
     success = await crud.delete_promotion(promotion_id)
     if not success:
         raise HTTPException(status_code=404, detail="Promotion not found")

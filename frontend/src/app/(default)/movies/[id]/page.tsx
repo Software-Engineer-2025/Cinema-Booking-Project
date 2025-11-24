@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { movieDetailsQuery } from "@/lib/utils/queries";
 import { Movie } from "@/client";
-import Showtimes from "@/components/default/Showtimes";
+import Showtimes from "@/components/dashboard/Showtimes";
 import formatShowtime from "@/lib/utils/format_showtimes";
 import { useState } from "react";
 

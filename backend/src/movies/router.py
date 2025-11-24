@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, Depends
 from .schemas import Movie, MovieCreate
 from . import crud
 from auth.security import require_admin
+from typing import Optional, List
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -12,7 +13,9 @@ def get_genres():
 
 @router.post("/", response_model=Movie)
 def create_movie(movie: MovieCreate, _admin: dict = Depends(require_admin)):
-    result = crud.create_movie(movie)
+
+    genre_names = movie.genre_names
+    result = crud.create_movie(movie, genre_names=genre_names)
     
     if isinstance(result, dict) and result.get('error'):
         raise HTTPException(status_code=400, detail=result['error']['message'])

@@ -7,8 +7,24 @@ import {
   getPaymentCardsEndpointApiV1CardsGet,
   updatePaymentCardEndpointApiV1CardsCardIdPatch,
   deletePaymentCardEndpointApiV1CardsCardIdDelete,
+  deleteMovieApiV1MoviesMovieIdDelete,
+  createMovieApiV1MoviesPost,
+  MovieCreate,
+  listPromosApiV1PromosGet,
+  createPromoApiV1PromosPost,
+  deletePromoApiV1PromoIdDelete,
+  PromotionCreate,
+  listPricesApiV1PricesGet,
+  deletePricesApiV1PricesIdDelete,
+  PriceCreate,
+  createPriceApiV1PricesPost,
+  readShowroomsApiV1ShowroomsGet,
+  ShowCreate,
+  createShowApiV1ShowsPost,
+  getShowsByMovieApiV1ShowsMovieMovieIdGet,
+  deleteShowApiV1ShowsShowIdDelete,
 } from "@/client";
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 // Fetches all movies
 export const allMoviesQuery = () => ({
@@ -40,6 +56,40 @@ export const movieDetailsQuery = (movieId: number) => ({
     return response.data;
   },
 });
+
+export const useDeleteMovieCard = () => {
+  return useMutation({
+    mutationFn: async (movieId: number) => {
+      const result = await deleteMovieApiV1MoviesMovieIdDelete({
+        path: {
+          movie_id: movieId,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddMovieCard = () => {
+  return useMutation({
+    mutationFn: async (movie: MovieCreate) => {
+      const result = await createMovieApiV1MoviesPost({
+        body: movie,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
 
 /*
  * checks current user profile.
@@ -116,6 +166,151 @@ export const useDeletePaymentCard = () => {
       }
 
       return result.data;
+    },
+  });
+};
+
+export const allPromosQuery = () => ({
+  queryKey: ["promotions"],
+  queryFn: async () => {
+    const response = await listPromosApiV1PromosGet();
+    return response.data;
+  },
+});
+
+export const useDeletePromoCard = () => {
+  return useMutation({
+    mutationFn: async (promoID: number) => {
+      const result = await deletePromoApiV1PromoIdDelete({
+        path: {
+          promotion_id: promoID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddPromoCard = () => {
+  return useMutation({
+    mutationFn: async (promo: PromotionCreate) => {
+      const result = await createPromoApiV1PromosPost({
+        body: promo,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+
+
+export const allPricesQuery = () => ({
+  queryKey: ["prices"],
+  queryFn: async () => {
+    const response = await listPricesApiV1PricesGet();
+    return response.data || [];
+  },
+});
+
+export const useDeletePriceCard = () => {
+  return useMutation({
+    mutationFn: async (priceID: number) => {
+      const result = await deletePricesApiV1PricesIdDelete({
+        path: {
+          price_id: priceID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const useAddPriceCard = () => {
+  return useMutation({
+    mutationFn: async (price: PriceCreate) => {
+      const result = await createPriceApiV1PricesPost({
+        body: price,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const allShowroomsQuery = () => ({
+  queryKey: ["showrooms"],
+      queryFn: async () => {
+    const response = await readShowroomsApiV1ShowroomsGet();
+    return response.data || [];
+  },
+});
+
+export const useAddShowCard = () => {
+  return useMutation({
+    mutationFn: async (show: ShowCreate) => {
+      const result = await createShowApiV1ShowsPost({
+        body: show,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const getShowsByMovieIDQuery = (movieID: number) => ({
+  queryKey: ["shows", movieID],
+  queryFn: async () => {
+    const result = await getShowsByMovieApiV1ShowsMovieMovieIdGet({
+      path: {
+        movie_id: movieID,
+      },
+    });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result.data || [];
+  },
+});
+
+export const useDeleteShowByIdCard = () => {
+  return useMutation({
+    mutationFn: async (showID: number) => {
+      const result = await deleteShowApiV1ShowsShowIdDelete({
+        path: {
+          show_id: showID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
     },
   });
 };

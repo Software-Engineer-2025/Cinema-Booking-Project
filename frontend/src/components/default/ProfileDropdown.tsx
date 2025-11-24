@@ -8,7 +8,7 @@ export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const { user, logOut } = useAuth();
+  const { user, admin, logOut } = useAuth();
 
   const handleSignOut = async () => {
     await logOut();
@@ -50,34 +50,38 @@ export default function ProfileDropdown() {
         >
           {user ? (
             <>
-              <a
-                href="/dashboard"
-                className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
-              >
-                Dashboard
-              </a>
-              <a
-                href="/profile"
-                className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
-              >
-                Profile
-              </a>
+              { admin ?
+                  <></> : <>
+                    <a
+                        href="/dashboard"
+                        className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                    >
+                      Dashboard
+                    </a>
+                    <a
+                        href="/profile"
+                        className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                    >
+                      Profile
+                    </a>
+                  </>
+              }
               <button
-                className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400"
-                onClick={handleSignOut}
+                  className="w-full text-left px-4 py-2 cursor-pointer hover:text-gray-400"
+                  onClick={handleSignOut}
               >
                 LOG OUT
               </button>
             </>
           ) : (
-            <>
-              <a
-                href="/login"
-                className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
-              >
-                Login
-              </a>
-              <a
+              <>
+                <a
+                    href="/login"
+                    className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
+                >
+                  Login
+                </a>
+                <a
                 href="/create-account"
                 className="block px-4 py-2 hover:text-gray-400 "
               >

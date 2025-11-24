@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 export default function DashNavbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const { user, logOut } = useAuth();
+    const { user, admin, logOut } = useAuth();
 
     const handleSignOut = async () => {
         await logOut();
@@ -62,23 +62,26 @@ export default function DashNavbar() {
 
             {/* Mobile Menu Dropdown */}
             {mobileMenuOpen && (
-                <div className="md:hidden bg-black text-white px-6 py-4 space-y-2 font-special uppercase tracking-wider shadow-lg">
+                <div className={`md:hidden bg-black text-white px-6 py-4 space-y-2 font-special uppercase tracking-wider shadow-lg`}>
                     {user ? (
                         <>
-                            <a
-                                href="/admin-dashboard"
-                                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                            >
-                                Dashboard
-                            </a>
-                            <a
-                                href="/settings"
-                                className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
-                            >
-                                Settings
-                            </a>
+                        { admin ?
+                            <></> : <>
+                                <a
+                                    href="/dashboard"
+                                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                                >
+                                    Dashboard
+                                </a>
+                                <a
+                                    href="/settings"
+                                    className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
+                                >
+                                    Settings
+                                </a>
+                            </> }
                             <button
-                                className="w-full text-left hover:text-gray-400 cursor-pointer"
+                                className={`w-full hover:text-gray-400 cursor-pointer ${admin ? "text-center" : "text-left"}`}
                                 onClick={handleSignOut}
                             >
                                 LOG OUT

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from movies import router as movies_router
 from users import router as users_router
+from prices import router as prices_router
 from tickets import router as tickets_router
 from shows import router as shows_router
 from showrooms import router as showrooms_router 
@@ -18,6 +19,7 @@ app.include_router(auth_router.router, prefix="/api/v1", tags=["Authentication"]
 app.include_router(movies_router.router, prefix="/api/v1")
 app.include_router(tickets_router.router, prefix="/api/v1")
 app.include_router(users_router.router, prefix="/api/v1")
+app.include_router(prices_router.router, prefix="/api/v1")
 app.include_router(shows_router.router, prefix="/api/v1")
 app.include_router(showrooms_router.router, prefix="/api/v1", tags=["Showrooms"])
 app.include_router(seats_router.router, prefix="/api/v1", tags=["Seats"])

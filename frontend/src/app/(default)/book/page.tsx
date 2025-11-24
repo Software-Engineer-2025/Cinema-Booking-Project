@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import DefaultDropdown from "@/components/ui/DefaultDropdown";
 import TicketCounter from "@/components/default/TicketCounter";
 import Button from "@/components/ui/Button";
-import Showtimes from "@/components/default/Showtimes";
+import Showtimes from "@/components/dashboard/Showtimes";
 
 import { Movie } from "@/client";
 import { allMoviesQuery } from "@/lib/utils/queries";

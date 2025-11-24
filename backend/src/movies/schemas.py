@@ -21,7 +21,7 @@ class MovieBase(BaseModel):
 
 
 class MovieCreate(MovieBase):
-    pass
+    genre_names: Optional[List[str]] = None
 
 
 class Movie(MovieBase):
