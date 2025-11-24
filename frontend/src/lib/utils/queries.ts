@@ -13,7 +13,7 @@ import {
   listPromosApiV1PromosGet,
   createPromoApiV1PromosPost,
   deletePromoApiV1PromoIdDelete,
-  PromotionCreate, listPricesApiV1PricesGet, deletePricesApiV1PricesIdDelete, PriceCreate,
+  PromotionCreate, listPricesApiV1PricesGet, deletePricesApiV1PricesIdDelete, PriceCreate, createPriceApiV1PricesPost,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -205,11 +205,11 @@ export const useAddPromoCard = () => {
 
 
 
-export const allpricesQuery = () => ({
+export const allPricesQuery = () => ({
   queryKey: ["prices"],
   queryFn: async () => {
     const response = await listPricesApiV1PricesGet();
-    return response.data;
+    return response.data || [];
   },
 });
 
@@ -234,7 +234,7 @@ export const useDeletePriceCard = () => {
 export const useAddPriceCard = () => {
   return useMutation({
     mutationFn: async (price: PriceCreate) => {
-      const result = await createPromoApiV1PromosPost({
+      const result = await createPriceApiV1PricesPost({
         body: price,
       });
 

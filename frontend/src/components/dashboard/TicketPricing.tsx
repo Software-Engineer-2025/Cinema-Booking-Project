@@ -1,18 +1,11 @@
 import BlackButton from "@/components/ui/BlackButton";
 
-export default function TicketPricing({ pricing, onUpdate, onSave}) {
-  const priceFields = [
-    { key: "bookingFee", label: "Booking Fee" },
-    { key: "childPrice", label: "Child Ticket" },
-    { key: "adultPrice", label: "Adult Ticket" },
-    { key: "seniorPrice", label: "Senior Ticket" },
-  ];
-
+export default function TicketPricing({priceFields, onUpdate, onSave, prices}) {
   return (
       <div>
           <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Ticket Pricing</h2>
-              <BlackButton onClick={()=>onSave} className="text-white">
+              <BlackButton onClick={onSave} className="text-white">
                   Save Pricing
               </BlackButton>
           </div>
@@ -24,7 +17,7 @@ export default function TicketPricing({ pricing, onUpdate, onSave}) {
                           <span className="text-lg">$</span>
                           <input
                               type="text"
-                              value={pricing[key]}
+                              value={prices.find(p => p.price_name === key)?.amount || 0}
                               onChange={(e) => onUpdate(key, e.target.value)}
                               className="border rounded px-3 py-2 w-32 text-right bg-white/50"
                           />

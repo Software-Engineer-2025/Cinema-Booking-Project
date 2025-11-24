@@ -1525,7 +1525,7 @@ export type ListPricesApiV1PricesGetResponses = {
      *
      * Successful Response
      */
-    200: Array<Movie>;
+    200: Array<Price>;
 };
 
 export type ListPricesApiV1MoviesGetResponse = ListMoviesApiV1MoviesGetResponses[keyof ListMoviesApiV1MoviesGetResponses];
@@ -1534,7 +1534,7 @@ export type CreatePriceApiV1PricesPostData = {
     body: PriceCreate;
     path?: never;
     query?: never;
-    url: '/api/v1/movies/';
+    url: '/api/v1/prices/';
 };
 
 export type CreatePriceApiV1PricesPostErrors = {

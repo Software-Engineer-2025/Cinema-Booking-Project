@@ -4,21 +4,46 @@ import PromosTable from "./PromosTable";
 import BlackButton from "../ui/BlackButton";
 import {useQuery} from "@tanstack/react-query";
 import {
-  allPromosQuery,
-  useAddPromoCard,
+  allPricesQuery,
+  allPromosQuery, useAddPriceCard,
+  useAddPromoCard, useDeletePriceCard,
   useDeletePromoCard
 } from "@/lib/utils/queries";
-import {MovieCreate, Promotion, PromotionCreate} from "@/client";
+import {MovieCreate, Price, PriceCreate, Promotion, PromotionCreate} from "@/client";
 import {toast} from "sonner";
 import {dateRegex} from "@/lib/utils/regex";
 
 export default function PriceTab() {
-  const [pricing, setPricing] = useState({
-    bookingFee: 2.5,
-    childPrice: 8.0,
-    adultPrice: 12.0,
-    seniorPrice: 10.0,
-  });
+
+  const priceFields = [
+    { key: "bookingFee", label: "Booking Fee" },
+    { key: "childTicket", label: "Child Ticket" },
+    { key: "adultTicket", label: "Adult Ticket" },
+    { key: "seniorTicket", label: "Senior Ticket" },
+  ];
+
+  const [prices, setPrices] = useState<Price[]>([
+      {
+        price_id: 0,
+        price_name: "bookingFee",
+        amount: 0
+      },
+      {
+        price_id: 1,
+        price_name: "childTicket",
+        amount: 0
+      },
+      { price_id: 2,
+        price_name: "adultTicket",
+        amount: 0
+      },
+      {
+        price_id: 3,
+        price_name: "seniorTicket",
+        amount: 0
+      }
+  ]);
+
 
   const basePromotion: Promotion = {
     discount: 15,
@@ -43,16 +68,71 @@ export default function PriceTab() {
   const { data: allPromos = [], refetch: refetchPromos } = useQuery(allPromosQuery());
 
   useEffect(() => {
-    console.log("called");
     setPromos(allPromos)
   }, [allPromos]);
 
+  const { data: allPrices = [], refetch: refetchPrices } = useQuery(allPricesQuery());
+
+  useEffect(() => {
+    if(allPrices.length > 0) {
+      setPrices(allPrices);
+    }
+  }, [allPrices]);
+
   const handleUpdatePricing = (field, value) => {
-    setPricing((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }));
+    setPrices(prevPrices =>
+        prevPrices.map(price =>
+            price.price_name === field
+                ? { ...price, amount: value }
+                : price
+        )
+    );
+    console.log(prices);
   };
 
-  const handleSavePricing = () => {
+  const deletePrice = useDeletePriceCard();
+  const addPrice = useAddPriceCard();
 
+  const longShot = async (price) => {
+    const currentPrice = prices.find(p => p.price_name === price.key);
+
+    if (!currentPrice) {
+      console.error(`Price not found for ${price.key}`);
+      return;
+    }
+
+    const passablePrice: PriceCreate = {
+      price_name: price.key,
+      amount: currentPrice.amount
+    };
+
+    try {
+      await deletePrice.mutateAsync(currentPrice.price_id);
+
+      await addPrice.mutateAsync(passablePrice);
+
+      console.log(`Updated ${price.key}`);
+    } catch (error) {
+      console.error(`Failed to update ${price.key}:`, error);
+      throw error;
+    }
+  }
+
+  const handleSavePricing = async () => {
+    try {
+      for (const price of priceFields) {
+        await longShot(price);
+      }
+    } catch (error) {
+      refetchPrices();
+      toast("There was an error when trying to save the prices!", {
+        description: error.message,
+        action: {
+          label: "done"
+        }
+      });
+    }
+    refetchPrices();
   }
 
   const handleAddPromo = () => {
@@ -151,7 +231,7 @@ export default function PriceTab() {
 
   return (
     <div className="space-y-8">
-      <TicketPricing pricing={pricing} onUpdate={handleUpdatePricing} onSave={handleSavePricing}/>
+      <TicketPricing priceFields={priceFields} onUpdate={handleUpdatePricing} onSave={handleSavePricing} prices={prices}/>
 
       <div>
         <div className="flex justify-between items-center mb-4">

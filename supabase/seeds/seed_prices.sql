@@ -3,7 +3,7 @@ INSERT INTO price (
     price_name,
     amount
 ) VALUES
-    (1, 'Booking Fee', 2.5),
-    (2, 'Child Ticket', 8.0),
-    (3, 'Adult Ticket', 12.0),
-    (4, 'Senior Ticket', 10.0);
+    (1, 'bookingFee', 2.5),
+    (2, 'childTicket', 8.0),
+    (3, 'adultTicket', 12.0),
+    (4, 'seniorTicket', 10.0);

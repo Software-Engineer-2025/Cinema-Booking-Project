@@ -8,7 +8,7 @@ def create_price(price: PriceCreate):
 
         max_result = supabase_admin.table("price").select("price_id").order("price_id", desc=True).limit(1).execute()
         if max_result.data:
-            next_id = max_result.data[0]['movie_id'] + 1
+            next_id = max_result.data[0]['price_id'] + 1
         else:
             next_id = 1
 
@@ -26,7 +26,7 @@ def create_price(price: PriceCreate):
 def get_prices():
     response = supabase_admin.table("price").select("""*""").execute()
 
-    return response
+    return response.data
 
 def delete_price(price_id: int):
     try:
