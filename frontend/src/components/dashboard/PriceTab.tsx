@@ -69,7 +69,9 @@ export default function PriceTab() {
   const { data: allPromos = [], refetch: refetchPromos } = useQuery(allPromosQuery());
 
   useEffect(() => {
-    setPromos(allPromos)
+    if (allPromos.length > 0) {
+      setPromos(allPromos)
+    }
   }, [allPromos]);
 
   const { data: allPrices = [], refetch: refetchPrices } = useQuery(allPricesQuery());
