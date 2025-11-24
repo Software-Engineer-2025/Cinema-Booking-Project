@@ -60,6 +60,17 @@ export default function MovieTab() {
             if ((field === 'genre' || field === 'cast_list' || field === 'reviews') && typeof value === 'string') {
               return { ...m, [field]: value.split(',').map(item => item.trim()).filter(Boolean) };
             }
+            if ((field === 'featured' || field === 'released') && typeof value === 'string' && (value === 'true' || value === 'false')) {
+              return { ...m, [field]: value === 'true'};
+            } else if ((field === 'featured' || field === 'released') && typeof value === 'string') {
+              toast(`Problem in field ${field}`, {
+                description: "Need to set value to true or false",
+                action: {
+                  label: "done"
+                }
+              });
+              return { ...m, [field]: false};
+            }
             return { ...m, [field]: value };
           }
           return m;
