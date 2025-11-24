@@ -1,6 +1,7 @@
 import { useState } from "react";
 import EditableCell from "./EditableCell";
 import ShowtimesModal from "./DashboardShowtimes";
+import {toast} from "sonner";
 
 export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -26,6 +27,24 @@ export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
   const handleUpdateShowtimes = (movieId, showtimes) => {
     onUpdate(movieId, "show_times", showtimes);
   };
+
+  const toastNotAvailable = (passedVal: number) => {
+    if (passedVal < 0) {
+      toast("Unable to edit unadded movie showtime!", {
+        description: "Please save the movie then you can add showtimes.",
+        action: {
+          label: "done"
+        }
+      });
+    } else {
+      toast("Unable to edit coming soon movie!", {
+        description: "Make sure to add showtimes only to currently running movies.",
+        action: {
+          label: "done"
+        }
+      });
+    }
+  }
 
   return (
     <>
@@ -81,7 +100,7 @@ export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
                 ))}
                 <td className="p-3 border-b bg-white/10">
                   <button
-                      onClick={() => setSelectedMovie(movie)}
+                      onClick={movie.movie_id >= 0 && movie.released ? () => setSelectedMovie(movie) : () => toastNotAvailable(movie.movie_id)}
                       className="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm"
                   >
                     Edit

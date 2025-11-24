@@ -13,7 +13,12 @@ import {
   listPromosApiV1PromosGet,
   createPromoApiV1PromosPost,
   deletePromoApiV1PromoIdDelete,
-  PromotionCreate, listPricesApiV1PricesGet, deletePricesApiV1PricesIdDelete, PriceCreate, createPriceApiV1PricesPost,
+  PromotionCreate,
+  listPricesApiV1PricesGet,
+  deletePricesApiV1PricesIdDelete,
+  PriceCreate,
+  createPriceApiV1PricesPost,
+  readShowroomsApiV1ShowroomsGet,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -246,3 +251,11 @@ export const useAddPriceCard = () => {
     },
   });
 };
+
+export const allShowroomsQuery = () => ({
+  queryKey: ["showrooms"],
+      queryFn: async () => {
+    const response = await readShowroomsApiV1ShowroomsGet();
+    return response.data || [];
+  },
+});

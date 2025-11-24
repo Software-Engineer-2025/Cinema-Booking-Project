@@ -1,8 +1,19 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
+import {useQuery} from "@tanstack/react-query";
+import {allPromosQuery, allShowroomsQuery} from "@/lib/utils/queries";
+import {Showroom} from "@/client";
 
 export default function DashboardShowtimes({ movie, onClose, onUpdate }) {
   const [showtimes, setShowtimes] = useState(movie.show_times || []);
   const [newShowtime, setNewShowtime] = useState("");
+  const [showrooms, setShowrooms] = useState<Showroom[]>([]);
+  const [selectedShowroom, setSelectedShowroom] = useState([]);
+
+  const { data: allShowrooms = [], refetch: refetchPromos } = useQuery(allShowroomsQuery());
+
+  useEffect(() => {
+    setShowrooms(allShowrooms)
+  }, [allShowrooms]);
 
   const handleAddShowtime = () => {
     if (newShowtime.trim()) {
@@ -18,7 +29,7 @@ export default function DashboardShowtimes({ movie, onClose, onUpdate }) {
   };
 
   const handleSave = () => {
-    onUpdate(movie.movie_id, showtimes);
+    //onUpdate(movie.movie_id, showtimes);
     onClose();
   };
 
@@ -56,15 +67,29 @@ export default function DashboardShowtimes({ movie, onClose, onUpdate }) {
         <div className="mb-6">
           <div className="flex gap-2 mb-4">
             <input
-              type="datetime-local"
-              value={newShowtime}
-              onChange={(e) => setNewShowtime(e.target.value)}
-              className="flex-1 border rounded px-3 py-2"
-              placeholder="Add new showtime"
+                type="datetime-local"
+                value={newShowtime}
+                onChange={(e) => setNewShowtime(e.target.value)}
+                className="flex-1 border rounded px-3 py-2"
+                placeholder="Add new showtime"
             />
+
+            <select
+                value={selectedShowroom}
+                onChange={(e) => setSelectedShowroom(e.target.value)}
+                className="border rounded px-3 py-2"
+            >
+              <option value="">Showroom?</option>
+              {showrooms.map((showroom) => (
+                  <option key={showroom.showroom_id} value={showroom.showroom_id}>
+                    {showroom.showroom_id}
+                  </option>
+              ))}
+            </select>
+
             <button
-              onClick={handleAddShowtime}
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+                onClick={handleAddShowtime}
+                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
             >
               Add
             </button>
@@ -72,12 +97,12 @@ export default function DashboardShowtimes({ movie, onClose, onUpdate }) {
 
           <div className="space-y-2">
             {showtimes.length === 0 ? (
-              <p className="text-gray-500 text-sm">No showtimes added yet</p>
+                <p className="text-gray-500 text-sm">No showtimes added yet</p>
             ) : (
-              showtimes.map((time, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center border rounded px-4 py-2 bg-gray-50"
+                showtimes.map((time, index) => (
+                    <div
+                        key={index}
+                        className="flex justify-between items-center border rounded px-4 py-2 bg-gray-50"
                 >
                   <span>{formatShowtime(time)}</span>
                   <button
@@ -116,7 +141,7 @@ export default function DashboardShowtimes({ movie, onClose, onUpdate }) {
             onClick={handleSave}
             className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
           >
-            Save Changes
+            Done
           </button>
         </div>
       </div>
