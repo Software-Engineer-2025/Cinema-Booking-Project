@@ -16,10 +16,10 @@ export default function TicketPricing({priceFields, onUpdate, onSave, prices}) {
                       <div className="flex items-center gap-2">
                           <span className="text-lg">$</span>
                           <input
-                              type="text"
+                              type="number"
                               value={prices.find(p => p.price_name === key)?.amount || 0}
                               onChange={(e) => onUpdate(key, e.target.value)}
-                              className="border rounded px-3 py-2 w-32 text-right bg-white/50"
+                              className="no-arrows border rounded px-3 py-2 w-32 text-right bg-white/50"
                           />
                       </div>
                   </div>

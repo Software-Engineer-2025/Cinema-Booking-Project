@@ -12,6 +12,7 @@ import {
 import {MovieCreate, Price, PriceCreate, Promotion, PromotionCreate} from "@/client";
 import {toast} from "sonner";
 import {dateRegex} from "@/lib/utils/regex";
+import {isNumber} from "node:util";
 
 export default function PriceTab() {
 
