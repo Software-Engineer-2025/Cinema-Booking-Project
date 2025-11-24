@@ -71,13 +71,25 @@ export default function MovieTab() {
       prev.map((m) => (m.movie_id === id ? { ...m, [field]: value } : m))
     );
   };
+
+  // checks if the movie_id is positive (when it's been saved) and then attempts to delete it from the database
   const handleDeleteMovie = (id) => {
-    if(id < 0) {
-      deleteMovie.mutate(id);
+    try{
+      if(id < 0) {
+        deleteMovie.mutate(id);
+      }
+      setMovies((prev) => prev.filter((m) => m.movie_id !== id));
+    } catch (error) {
+      toast("Movie has failed to be deleted", {
+        description: error.message,
+        action: {
+          label: "done"
+        }
+      });
     }
-    setMovies((prev) => prev.filter((m) => m.movie_id !== id));
   };
 
+  // Checks movie for filled in values, separates the genres, then adds the movies to the database
   const handleSaveMovie = (movie) => {
     try {
       Object.keys(movie).forEach(key => {
@@ -143,6 +155,7 @@ export default function MovieTab() {
         onUpdate={handleUpdateMovie}
         onDelete={handleDeleteMovie}
         onSave={handleSaveMovie}
+        refetch={refetchMovies}
       />
       <></>
     </div>

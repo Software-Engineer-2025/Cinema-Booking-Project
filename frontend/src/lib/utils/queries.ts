@@ -19,6 +19,10 @@ import {
   PriceCreate,
   createPriceApiV1PricesPost,
   readShowroomsApiV1ShowroomsGet,
+  ShowCreate,
+  createShowApiV1ShowsPost,
+  getShowsByMovieApiV1ShowsMovieMovieIdGet,
+  deleteShowApiV1ShowsShowIdDelete,
 } from "@/client";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
@@ -259,3 +263,54 @@ export const allShowroomsQuery = () => ({
     return response.data || [];
   },
 });
+
+export const useAddShowCard = () => {
+  return useMutation({
+    mutationFn: async (show: ShowCreate) => {
+      const result = await createShowApiV1ShowsPost({
+        body: show,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};
+
+export const getShowsByMovieIDQuery = (movieID: number) => ({
+  queryKey: ["shows", movieID],
+  queryFn: async () => {
+    const result = await getShowsByMovieApiV1ShowsMovieMovieIdGet({
+      path: {
+        movie_id: movieID,
+      },
+    });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result.data || [];
+  },
+});
+
+export const useDeleteShowByIdCard = () => {
+  return useMutation({
+    mutationFn: async (showID: number) => {
+      const result = await deleteShowApiV1ShowsShowIdDelete({
+        path: {
+          show_id: showID,
+        },
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data!;
+    },
+  });
+};

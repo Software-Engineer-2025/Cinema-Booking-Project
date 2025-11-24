@@ -168,6 +168,7 @@ export default function PriceTab() {
 
   const handleSavePromo = (promo: Promotion) => {
     try {
+      // checks values if its empty or valid
       Object.keys(promo).forEach(key => {
         if(key != "promotion_id" && promo[key] == newPromo[key]) {
           throw new Error("Need to fill in value: " + key);
@@ -178,7 +179,7 @@ export default function PriceTab() {
         }
       });
 
-
+      // checks for duplicate promos
       const duplicate = allPromos.find(
           p => p.promo_code.toLowerCase() === promo.promo_code.toLowerCase() &&
               p.promotion_id > 0 &&
@@ -196,6 +197,7 @@ export default function PriceTab() {
         discount: promo.discount,
       }
 
+      // if promotion name is already in the database
       if (promo.promotion_id > 0) {
         deletePromo.mutate(promo.promotion_id, {
           onSuccess: () => {
@@ -209,7 +211,7 @@ export default function PriceTab() {
             });
           }
         });
-      } else {
+      } else { // if the promotion name is not in the database already
         addPromo.mutate(passablePromo, {
           onSuccess: () => {
             refetchPromos();

@@ -3,7 +3,7 @@ import EditableCell from "./EditableCell";
 import ShowtimesModal from "./DashboardShowtimes";
 import {toast} from "sonner";
 
-export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
+export default function MovieTable({ movies, onUpdate, onDelete, onSave, refetch}) {
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   const columns = [
@@ -28,6 +28,7 @@ export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
     onUpdate(movieId, "show_times", showtimes);
   };
 
+  // Shows a specific toast messaged if passedVal (the movie_id) is negative (when it's not saved yet) or not
   const toastNotAvailable = (passedVal: number) => {
     if (passedVal < 0) {
       toast("Unable to edit unadded movie showtime!", {
@@ -125,6 +126,7 @@ export default function MovieTable({ movies, onUpdate, onDelete, onSave}) {
               movie={selectedMovie}
               onClose={() => setSelectedMovie(null)}
               onUpdate={handleUpdateShowtimes}
+              refetch={refetch}
           />
       )}
     </>
