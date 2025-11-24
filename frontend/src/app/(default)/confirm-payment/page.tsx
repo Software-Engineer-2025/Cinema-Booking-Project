@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import {useState, useMemo, useEffect} from "react";
 import { useQuery } from "@tanstack/react-query";
 import OrderInfo from "@/components/default/OrderInfo";
 import AccountDropdown from "@/components/ui/AccountDropdown";
@@ -40,6 +40,17 @@ export default function ConfirmPayment() {
   const seatsParam = searchParams.get("seats");
   const selectedSeats = seatsParam ? seatsParam.split(",") : [];
   const totalTickets = adultTickets + childTickets + seniorTickets;
+
+  useEffect(() => {
+    if(!user) {
+      toast("User not logged in!", {
+        description: "If confirm payment is selected you will be redirected to the login page and have to restart.",
+        action: {
+          label: "done"
+        }
+      });
+    }
+  }, [user]);
 
   // Payment and address states
   const [billingAddress, setBillingAddress] = useState<ShippingAddress>({
