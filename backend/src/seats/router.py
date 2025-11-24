@@ -42,4 +42,5 @@ async def get_available_seats_for_show(show_id: int):
     The showroom is automatically determined from the show.
     """
     seats_data = get_available_seats_crud(show_id)
-    return [Seat.model_validate(seat) for seat in seats_data]
+    # Return raw dicts so FastAPI/Pydantic can handle serialization across v1/v2
+    return seats_data
