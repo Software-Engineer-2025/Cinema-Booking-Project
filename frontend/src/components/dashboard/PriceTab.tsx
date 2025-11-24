@@ -88,18 +88,17 @@ export default function PriceTab() {
                 : price
         )
     );
-    console.log(prices);
   };
 
   const deletePrice = useDeletePriceCard();
   const addPrice = useAddPriceCard();
 
-  const longShot = async (price) => {
+  // Handles the changed to the prices in the correct order and sequentially so that it allows all changes to happen.
+  const handleAsyncPriceChange = async (price) => {
     const currentPrice = prices.find(p => p.price_name === price.key);
 
     if (!currentPrice) {
-      console.error(`Price not found for ${price.key}`);
-      return;
+      throw new Error(`Price not found for ${price.key}`);
     }
 
     const passablePrice: PriceCreate = {
@@ -111,10 +110,7 @@ export default function PriceTab() {
       await deletePrice.mutateAsync(currentPrice.price_id);
 
       await addPrice.mutateAsync(passablePrice);
-
-      console.log(`Updated ${price.key}`);
     } catch (error) {
-      console.error(`Failed to update ${price.key}:`, error);
       throw error;
     }
   }
@@ -122,8 +118,14 @@ export default function PriceTab() {
   const handleSavePricing = async () => {
     try {
       for (const price of priceFields) {
-        await longShot(price);
+        await handleAsyncPriceChange(price);
       }
+      toast("The prices have been updated!", {
+        description: "They are now able to be seen throughout the webapp.",
+        action: {
+          label: "done"
+        }
+      });
     } catch (error) {
       refetchPrices();
       toast("There was an error when trying to save the prices!", {
@@ -153,9 +155,34 @@ export default function PriceTab() {
 
   const handleDeletePromo = (id) => {
     if(id > 0) {
-      deletePromo.mutate(id);
+      deletePromo.mutate(id, {
+        onSuccess: () => {
+          toast("Promo deleted!", {
+            description: `Promo id: ${id}, has been deleted.`,
+            action: {
+              label: "done"
+            }
+          });
+          setPromos((prev) => prev.filter((p) => p.promotion_id !== id));
+        },
+        onError: () => {
+          toast("The promo has failed to be deleted!", {
+            description: `Promo id: ${id}, persists`,
+            action: {
+              label: "done"
+            }
+          });
+        }
+      });
+    } else {
+      setPromos((prev) => prev.filter((p) => p.promotion_id !== id));
+      toast("The unsaved promo has been deleted!", {
+        description: "Its not in the database, dont worry.",
+        action: {
+          label: "done"
+        }
+      });
     }
-    setPromos((prev) => prev.filter((p) => p.promotion_id !== id));
   };
 
   const isValidDate = (dateString) => {
@@ -211,6 +238,12 @@ export default function PriceTab() {
             });
           }
         });
+        toast("Promo has been saved!", {
+          description: "The values have been changed and updates should be able to be seen.",
+          action: {
+            label: "done"
+          }
+        });
       } else { // if the promotion name is not in the database already
         addPromo.mutate(passablePromo, {
           onSuccess: () => {
@@ -218,6 +251,12 @@ export default function PriceTab() {
           },
           onError: (error) => {
             refetchPromos();
+          }
+        });
+        toast("Promo has been saved!", {
+          description: "The promo is now available to be used and is in the database.",
+          action: {
+            label: "done"
           }
         });
       }
