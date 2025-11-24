@@ -108,11 +108,13 @@ export default function DashboardShowtimes({ movie, onClose, onUpdate, refetch})
 
   // formats the date from the database to a version that looks good for the user
   const formatDate = (dateStr: string) => {
+    console.log(dateStr);
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
+      timeZone: "UTC"
     });
   }
 
