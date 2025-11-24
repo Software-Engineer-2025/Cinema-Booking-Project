@@ -1,7 +1,17 @@
 import EditableCell from "./EditableCell";
+import {toast} from "sonner";
 
 export default function PromosTable({ promos, onUpdate, onDelete, onSave}) {
   const columns = ["promotion_id", "promo_code", "discount", "start_date", "end_date"];
+
+  const sendEmail = () => {
+      toast("Email has been sent!", {
+          description: "Verified users should now have an email in their inbox about the promo.",
+          action: {
+              label: "done"
+          }
+      });
+  }
 
   return (
     <div className="overflow-x-auto border">
@@ -63,7 +73,7 @@ export default function PromosTable({ promos, onUpdate, onDelete, onSave}) {
               ))}
               <td className="p-3 border-b bg-white/10">
                 <button
-                    onClick={() => print()}
+                    onClick={() => sendEmail()}
                     className="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm"
                 >
                   Send Email
