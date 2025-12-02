@@ -9,13 +9,22 @@ import {
 } from "@/lib/utils/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/context/AuthContext";
+import { toast } from "sonner";
 
 interface Card {
   id?: string;
-  cardNumber: string;
-  name: string;
-  expDate: string;
-  cvv: string;
+  card_id?: string;
+  cardNumber?: string;
+  card_last_four?: string;
+  card_details?: {
+    cardNumber: string;
+    name: string;
+    expDate: string;
+    cvv: string;
+  };
+  name?: string;
+  expDate?: string;
+  cvv?: string;
 }
 
 interface ShippingAddress {
@@ -33,9 +42,8 @@ interface AccountDropdownProps {
   defaultOpen?: boolean;
   className?: string;
   initialCards?: Card[];
-  // Callbacks to expose data to parent
   onShippingChange?: (address: ShippingAddress) => void;
-  onPaymentChange?: (cards: Card[]) => void;
+  onSelectedCardChange?: (card: Card | null) => void;
 }
 
 export default function AccountDropdown({
@@ -45,7 +53,7 @@ export default function AccountDropdown({
   className = "",
   initialCards,
   onShippingChange,
-  onPaymentChange,
+  onSelectedCardChange,
 }: AccountDropdownProps) {
   const [open, setOpen] = useState(defaultOpen);
   const addPaymentCard = useAddPaymentCard();
@@ -67,6 +75,7 @@ export default function AccountDropdown({
   // payment state
   const [cards, setCards] = useState<Card[]>(initialCards || []);
   const [selectedCardIdx, setSelectedCardIdx] = useState<number | null>(null);
+  const [selectedCardForPayment, setSelectedCardForPayment] = useState<number | null>(null);
   const [cardForm, setCardForm] = useState<Card>({
     cardNumber: "",
     name: "",
@@ -77,8 +86,20 @@ export default function AccountDropdown({
   const [showAddNew, setShowAddNew] = useState(false);
 
   useEffect(() => {
-    if (initialCards) setCards(initialCards);
-  }, [initialCards]);
+    if (initialCards && initialCards.length > 0) {
+      setCards(initialCards);
+      // Auto-select first card if available and none selected yet
+      if (selectedCardForPayment === null) {
+        setSelectedCardForPayment(0);
+        onSelectedCardChange?.(initialCards[0]);
+      }
+    }
+  }, [initialCards, selectedCardForPayment, onSelectedCardChange]);
+
+  const handleSelectCard = (idx: number) => {
+    setSelectedCardForPayment(idx);
+    onSelectedCardChange?.(cards[idx]);
+  };
 
   const updateShipping = (newShipping: ShippingAddress) => {
     setShipping(newShipping);
@@ -87,7 +108,6 @@ export default function AccountDropdown({
 
   const updateCards = (newCards: Card[]) => {
     setCards(newCards);
-    onPaymentChange?.(newCards);
   };
 
   const handleCardFormChange = (field: keyof Card, value: string) => {
@@ -102,12 +122,12 @@ export default function AccountDropdown({
       !cardForm.expDate ||
       !cardForm.cvv
     ) {
-      return alert("Please fill in all card fields.");
+      return toast.error("Please fill in all card fields.");
     }
 
     // Prevent duplicates
     if (cards.some((c) => c.cardNumber === cardForm.cardNumber)) {
-      return alert("This card is already added.");
+      return toast.error("This card is already added.");
     }
 
     if (!user) {
@@ -130,14 +150,19 @@ export default function AccountDropdown({
     // mutation
     addPaymentCard.mutate(payload, {
       onSuccess: (newCard) => {
-        updateCards([...cards, newCard]);
+        if (Array.isArray(newCard)) {
+          updateCards([...cards, ...newCard]);
+        } else {
+          updateCards([...cards, newCard]);
+        }
         setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
         setShowAddNew(false);
         queryClient.invalidateQueries({ queryKey: ["cards"] });
+        toast.success("Card saved successfully!");
       },
       onError: (err) => {
         console.error(err);
-        alert("Failed to save card.");
+        toast.error("Failed to save card.");
       },
     });
   };
@@ -165,7 +190,7 @@ export default function AccountDropdown({
     }
 
     const card = cards[selectedCardIdx];
-    if (!card.id) return alert("Missing card ID for update.");
+    if (!card.id) return toast.error("Missing card ID for update.");
 
     const payload = {
       details: {
@@ -180,19 +205,23 @@ export default function AccountDropdown({
       { cardId: card.id, updatedCard: payload },
       {
         onSuccess: (updatedCard) => {
-          const newCards = cards.map((c, i) =>
-            i === selectedCardIdx ? updatedCard : c
-          );
+          const newCards = cards.map((c, i) => {
+            if (i === selectedCardIdx) {
+              return Array.isArray(updatedCard) ? updatedCard[0] : updatedCard;
+            }
+            return c;
+          });
           updateCards(newCards);
           setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
           setSelectedCardIdx(null);
           setIsEditing(false);
           setShowAddNew(false);
           queryClient.invalidateQueries({ queryKey: ["cards"] });
+          toast.success("Card updated successfully!");
         },
         onError: (err) => {
           console.error(err);
-          alert("Failed to update card.");
+          toast.error("Failed to update card.");
         },
       }
     );
@@ -215,17 +244,18 @@ export default function AccountDropdown({
     }
 
     const card = cards[idx];
-    if (!card.id) return alert("Card ID missing — cannot delete.");
+    if (!card.id) return toast.error("Card ID missing — cannot delete.");
 
     deletePaymentCard.mutate(card.id, {
       onSuccess: () => {
         updateCards(cards.filter((_, i) => i !== idx));
         if (selectedCardIdx === idx) handleCancel();
         queryClient.invalidateQueries({ queryKey: ["cards"] });
+        toast.success("Card deleted successfully!");
       },
       onError: (err) => {
         console.error(err);
-        alert("Failed to delete card.");
+        toast.error("Failed to delete card.");
       },
     });
   };
@@ -340,14 +370,26 @@ export default function AccountDropdown({
             <div className="flex flex-col gap-2">
               {/* existing cards */}
               {cards.length > 0 &&
-                cards.map((c, idx) => (
+                cards.map((c, idx) => {
+                  const lastFour = c?.card_last_four || c?.cardNumber?.slice(-4) || c?.card_details?.cardNumber?.slice(-4) || "****";
+                  const isSelected = selectedCardForPayment === idx;
+                  return (
                   <div
                     key={idx}
-                    className="flex justify-between items-center px-2 py-1 rounded"
+                    className={`flex justify-between items-center px-2 py-1 rounded ${
+                      isSelected ? "border-white bg-white/10" : "border-white/20"
+                    }`}
                   >
-                    <div className="text-left flex-1">{`Card ending in ${c?.cardNumber?.slice(
-                      -4
-                    )}`}</div>
+                    <div className="flex items-center gap-3 flex-1">
+                      <input
+                        type="radio"
+                        name="selected-card"
+                        checked={isSelected}
+                        onChange={() => handleSelectCard(idx)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <div className="text-left">{`Card ending in ${lastFour}`}</div>
+                    </div>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -365,7 +407,7 @@ export default function AccountDropdown({
                       </button>
                     </div>
                   </div>
-                ))}
+                )})}
 
               {/* add new card button */}
               {!showAddNew && (
