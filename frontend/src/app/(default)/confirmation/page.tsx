@@ -9,6 +9,17 @@ import { allMoviesQuery } from "@/lib/utils/queries";
 export default function ConfirmationPage() {
   const searchParams = useSearchParams();
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
+  
+  const { data: prices = [] } = useQuery({
+    queryKey: ["prices"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:8000/api/v1/prices/");
+      if (!response.ok) return [];
+      return response.json();
+    },
+  });
+  
+  const bookingFee = prices.find((p: any) => p.price_name === "bookingFee")?.amount || 1.50;
 
   // Get booking details from URL
   const movieId = searchParams.get("movieId");
@@ -16,6 +27,7 @@ export default function ConfirmationPage() {
   const adultTickets = Number(searchParams.get("adultTickets")) || 0;
   const childTickets = Number(searchParams.get("childTickets")) || 0;
   const seniorTickets = Number(searchParams.get("seniorTickets")) || 0;
+  const discount = Number(searchParams.get("discount")) || 0;
   const seatsParam = searchParams.get("seats");
   const selectedSeats = seatsParam ? seatsParam.split(",") : [];
 
@@ -28,13 +40,26 @@ export default function ConfirmationPage() {
   const childPrice = 8;
   const seniorPrice = 10;
 
-  const totalPrice = useMemo(() => {
-    return (
+  const { ticketsSubtotal, discountAmount, salesTax, totalPrice } = useMemo(() => {
+    const ticketsSubtotal =
       adultTickets * adultPrice +
       childTickets * childPrice +
-      seniorTickets * seniorPrice
-    );
-  }, [adultTickets, childTickets, seniorTickets]);
+      seniorTickets * seniorPrice;
+    
+    const SALES_TAX_RATE = 0.07;
+    
+    const discountAmount = ticketsSubtotal * (discount / 100);
+    const subtotalAfterDiscount = ticketsSubtotal - discountAmount;
+    const salesTax = subtotalAfterDiscount * SALES_TAX_RATE;
+    const totalPrice = subtotalAfterDiscount + salesTax + bookingFee;
+    
+    return {
+      ticketsSubtotal,
+      discountAmount,
+      salesTax,
+      totalPrice,
+    };
+  }, [adultTickets, childTickets, seniorTickets, discount, bookingFee]);
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-10">
@@ -107,6 +132,37 @@ export default function ConfirmationPage() {
               ) : (
                 <span className="text-white/60">No seats selected</span>
               )}
+            </div>
+
+            <div className="border-b border-gray-300 mb-4"></div>
+
+            {/* Subtotal */}
+            <div className="flex justify-between mb-2">
+              <span>Subtotal</span>
+              <span>${ticketsSubtotal.toFixed(2)}</span>
+            </div>
+
+            {/* Discount */}
+            {discount > 0 && (
+              <div className="flex justify-between mb-2">
+                <span>
+                  <span className="text-white/40">Promotion</span>{" "}
+                  <span className="text-white">({discount}%)</span>
+                </span>
+                <span className="text-green-400">-${discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+
+            {/* Sales Tax */}
+            <div className="flex justify-between mb-2">
+              <span>Sales Tax (7%)</span>
+              <span>${salesTax.toFixed(2)}</span>
+            </div>
+
+            {/* Booking Fee */}
+            <div className="flex justify-between mb-2">
+              <span>Booking Fee</span>
+              <span>${bookingFee.toFixed(2)}</span>
             </div>
 
             <div className="border-b border-gray-300 mb-4"></div>
