@@ -14,6 +14,10 @@ def create_booking_with_tickets(booking_data: BookingCreate):
             "status": "confirmed"
         }
         
+        # Add payment_card_id if provided
+        if booking_data.payment_card_id:
+            booking_insert["payment_card_id"] = str(booking_data.payment_card_id)
+        
         booking_response = supabase.table("booking").insert(booking_insert).execute()
         
         if not booking_response.data:
