@@ -67,9 +67,11 @@ sql_paths = [
 "./seeds/seed_showrooms.sql",
 "./seeds/seed_seats.sql",
 "./seeds/seed_shows.sql",
-"./seeds/seed_tickets.sql",
-"./seeds/seed_promotion.sql",
 "./seeds/seed_prices.sql",
+"./seeds/seed_promotion.sql",
+"./seeds/seed_paymentcards.sql",
+"./seeds/seed_bookings.sql",
+"./seeds/seed_tickets.sql",
 ]
 
 [db.network_restrictions]

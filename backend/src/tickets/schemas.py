@@ -31,6 +31,7 @@ class BookingCreate(BaseModel):
     user_id: uuid.UUID
     show_id: int
     total_amount: float
+    payment_card_id: Optional[uuid.UUID] = None
     tickets: List[TicketCreate] 
 
 class Booking(BaseModel):
@@ -40,6 +41,7 @@ class Booking(BaseModel):
     booking_date: datetime
     total_amount: float
     status: str
+    payment_card_id: Optional[uuid.UUID] = None
 
     class Config:
         from_attributes = True
