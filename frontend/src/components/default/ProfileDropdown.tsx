@@ -53,10 +53,10 @@ export default function ProfileDropdown() {
               { admin ?
                   <></> : <>
                     <a
-                        href="/dashboard"
+                        href="/order-history"
                         className="block px-4 py-2 hover:text-gray-400 border-b border-dotted border-white"
                     >
-                      Dashboard
+                      Order History
                     </a>
                     <a
                         href="/profile"

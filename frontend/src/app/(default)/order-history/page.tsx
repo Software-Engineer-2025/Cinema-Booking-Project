@@ -3,20 +3,19 @@
 import { useAuth } from "@/lib/context/AuthContext";
 import { userBookingsQuery } from "@/lib/utils/queries";
 import { useQuery } from "@tanstack/react-query";
+import {use, useEffect, useState} from "react";
+import OrderDropdown from "@/components/default/OrderDropdown";
 
 export default function OrderHistoryPage() {
   const { user } = useAuth();
 
-  const { data: bookings, isLoading, error } = useQuery(
+  useEffect(() => {
+    if (!user) return;
+  }, [user]);
+
+  const { data: userBookings = [], isLoading, error } = useQuery(
     user ? userBookingsQuery(user.id) : { queryKey: [], queryFn: async () => [] }
   );
-
-
-  if (!user) {
-    return (
-        <p>Please log in to view your order history.</p>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -32,14 +31,19 @@ export default function OrderHistoryPage() {
   }
 
   return (
-    <div className="max-w-screen-lg mx-auto px-4 py-10 text-white">
-      {!bookings || bookings.length === 0 ? (
-          <p className="text-white/60">No bookings found</p>
-      ) : (
-        <div>
-            {JSON.stringify(bookings, null, 2)}
-        </div>
-      )}
-    </div>
+      <div className="m-auto w-[80dvw] text-center text-white/80 mb-10">
+        <h1 className={"mb-10 mt-5"}>Order History</h1>
+        {!userBookings || userBookings.length === 0 ? (
+            <p className="text-white/60">No bookings found</p>
+        ) : (
+            <>
+              <div className={"flex flex-col gap-2"}>
+                {userBookings.map((booking) => {
+                  return <OrderDropdown order={booking}/>
+                })}
+              </div>
+            </>
+        )}
+      </div>
   );
 }
