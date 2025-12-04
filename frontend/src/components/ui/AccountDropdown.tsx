@@ -83,6 +83,23 @@ export default function AccountDropdown({
   });
   const [showAddNew, setShowAddNew] = useState(false);
 
+  const isValidCardNumber = (num: string) => {
+    const digits = (num || "").replace(/\s|-/g, "");
+    return /^\d{13,19}$/.test(digits);
+  };
+
+  const isValidExpDate = (exp: string) => {
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp || "")) return false;
+    const [mm, yy] = exp.split("/");
+    const month = parseInt(mm, 10);
+    const year = 2000 + parseInt(yy, 10);
+    const now = new Date();
+    const expiry = new Date(year, month);
+    return expiry > now;
+  };
+
+  const isValidCvv = (cvv: string) => /^\d{3,4}$/.test(cvv || "");
+
   useEffect(() => {
     if (initialCards && initialCards.length > 0) {
       setCards(initialCards);
@@ -124,8 +141,18 @@ export default function AccountDropdown({
       return toast.error("Please fill in all card fields.");
     }
 
+    if (!isValidCardNumber(cardForm.cardNumber)) {
+      return toast.error("Enter a valid card number.");
+    }
+    if (!isValidExpDate(cardForm.expDate)) {
+      return toast.error("Enter a valid expiry date (MM/YY).");
+    }
+    if (!isValidCvv(cardForm.cvv)) {
+      return toast.error("Enter a valid CVV.");
+    }
+
     // Prevent duplicates
-    if (cards.some((c) => c.cardNumber === cardForm.cardNumber)) {
+    if (cards.some((c) => (c.card_details?.cardNumber ?? c.cardNumber) === cardForm.cardNumber)) {
       return toast.error("This card is already added.");
     }
 
@@ -175,10 +202,10 @@ export default function AccountDropdown({
     }
 
     const card = cards[idx];
-    console.log(card);
-    if (!card.id) return toast.error("Card ID missing — cannot delete.");
+    const cardId = card.card_id || card.id;
+    if (!cardId) return toast.error("Card ID missing — cannot delete.");
 
-    deletePaymentCard.mutate(card.id, {
+    deletePaymentCard.mutate(cardId, {
       onSuccess: () => {
         updateCards(cards.filter((_, i) => i !== idx));
         if (selectedCardIdx === idx) handleCancel();

@@ -243,6 +243,10 @@ export default function ConfirmPayment() {
               toast.error("Complete shipping address to continue.");
               return;
             }
+            if (/\d/.test(addr.city) || /\d/.test(addr.state) || /\d/.test(addr.country)) {
+              toast.error("City, state, and country must not contain numbers.");
+              return;
+            }
             if (!zipRegex.test(addr.zip)) {
               toast.error("Enter a valid ZIP code.");
               return;
