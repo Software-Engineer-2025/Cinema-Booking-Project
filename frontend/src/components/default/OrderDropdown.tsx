@@ -39,7 +39,7 @@ export default function OrderDropdown({ order }) {
                         Card Used: XXXX-XXXX-XXXX-{order.paymentcards?.card_last_four}
                     </DropdownBar>
                     {order.ticket?.map((tick) => {
-                        return <DropdownBar>1 x {tick.ticket_type.toUpperCase()} Ticket : Price -
+                        return <DropdownBar key={tick.ticket_id}>1 x {tick.ticket_type.toUpperCase()} Ticket : Price -
                             $ {tick.price}</DropdownBar>
                     })}
                 </div>
