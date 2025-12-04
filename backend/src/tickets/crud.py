@@ -14,6 +14,10 @@ def create_booking_with_tickets(booking_data: BookingCreate):
             "status": "confirmed"
         }
         
+        # Add payment_card_id if provided
+        if booking_data.payment_card_id:
+            booking_insert["payment_card_id"] = str(booking_data.payment_card_id)
+        
         booking_response = supabase.table("booking").insert(booking_insert).execute()
         
         if not booking_response.data:
@@ -63,7 +67,7 @@ def get_booking(booking_id: int):
     return response.data
 
 def get_bookings_by_user(user_id: UUID):
-    """Get all bookings for a user"""
+    """Get all bookings for a user with associated payment card and tickets"""
     response = supabase.table("booking").select("""
         *,
         show (
@@ -83,6 +87,12 @@ def get_bookings_by_user(user_id: UUID):
                 row_letter,
                 column_number
             )
+        ),
+        paymentcards (
+            card_id,
+            card_last_four,
+            card_brand,
+            is_default
         )
     """).eq("user_id", str(user_id)).order("booking_date", desc=True).execute()
     return response.data

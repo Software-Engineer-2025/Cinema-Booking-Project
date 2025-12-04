@@ -51,22 +51,33 @@ def get_payment_cards(user_id: str) -> Tuple[Optional[List[dict]], Optional[str]
         if not encrypted:
             continue
 
-        # Call the DB RPC to decrypt
-        decrypt_resp = supabase.rpc(
-            "decrypt_payment_card", {"encrypted_data": encrypted}
-        ).execute()
+        # Call the DB method to decrypt in Migration/functions.sql
+        try:
+            decrypt_resp = supabase.rpc(
+                "decrypt_payment_card", {"encrypted_data": encrypted}
+            ).execute()
+
+            details = CardDetails(
+                name=decrypt_resp.data["name"],
+                cardNumber=decrypt_resp.data["cardNumber"],
+                cvv=decrypt_resp.data["cvv"],
+                expDate=decrypt_resp.data["expDate"],
+            )
+        except Exception:
+            # Fallback
+            details = CardDetails(
+                name="",
+                cardNumber="****",
+                cvv="***",
+                expDate="",
+            )
 
         decrypted_cards.append(CardResponse(
             card_id=card["card_id"],
             card_last_four=card["card_last_four"],
             card_brand=card.get("card_brand"),
             is_default=card.get("is_default", False),
-            card_details=CardDetails(
-                name=decrypt_resp.data["name"],
-                cardNumber=decrypt_resp.data["cardNumber"],
-                cvv=decrypt_resp.data["cvv"],
-                expDate=decrypt_resp.data["expDate"],
-            )
+            card_details=details,
         ))
 
     return decrypted_cards, None

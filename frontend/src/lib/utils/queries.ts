@@ -314,3 +314,28 @@ export const useDeleteShowByIdCard = () => {
     },
   });
 };
+
+// Order history / bookings queries
+export const userBookingsQuery = (userId: string) => ({
+  queryKey: ["bookings", userId],
+  queryFn: async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/bookings/user/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+      throw error;
+    }
+  },
+});
