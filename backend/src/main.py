@@ -30,7 +30,7 @@ app.include_router(paymentcards_router.router, prefix="/api/v1", tags=["PaymentC
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
