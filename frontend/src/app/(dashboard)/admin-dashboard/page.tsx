@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {use, useEffect, useState} from "react";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import MovieTab from "@/components/dashboard/MovieTab";
 import PriceTab from "@/components/dashboard/PriceTab";
 import UsersTab from "@/components/dashboard/UsersTab";
+import {useAuth} from "@/lib/context/AuthContext";
+import {redirect} from "next/navigation";
 
 
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("movies");
+  const {user} = useAuth();
+
+  if (!user) {
+      redirect('/login');
+      return null;
+  }
 
   return (
     <div className="p-6 bg-gray-700 min-h-screen">

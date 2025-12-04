@@ -5,13 +5,17 @@ import { userBookingsQuery } from "@/lib/utils/queries";
 import { useQuery } from "@tanstack/react-query";
 import {use, useEffect, useState} from "react";
 import OrderDropdown from "@/components/default/OrderDropdown";
+import {redirect} from "next/navigation";
+import {toast} from "sonner";
 
 export default function OrderHistoryPage() {
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user) return;
-  }, [user]);
+  if (!user) {
+    redirect('/login');
+    return null;
+  }
+
 
   const { data: userBookings = [], isLoading, error } = useQuery(
     user ? userBookingsQuery(user.id) : { queryKey: [], queryFn: async () => [] }

@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cardsQuery } from "@/lib/utils/queries";
 import { Skeleton } from "@radix-ui/themes";
 import { toast } from "sonner";
+import {redirect} from "next/navigation";
 
 interface Card {
   cardNumber: string;
@@ -53,6 +54,11 @@ export default function ProfilePage() {
   });
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
   const [promotion, setPromotion] = useState(false);
+
+  if (!user) {
+    redirect('/login');
+    return null;
+  }
 
   // Load user info
   useEffect(() => {

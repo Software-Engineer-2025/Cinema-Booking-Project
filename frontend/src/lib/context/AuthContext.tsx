@@ -179,9 +179,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         case "SIGNED_OUT":
           setUser(null);
           setAdmin(null);
-          if (window.location.pathname != "/" && !window.location.pathname.startsWith("/login") && !window.location.pathname.startsWith("/create-account")) {
-            window.location.href = "/";
-          }
           break;
       }
     });
