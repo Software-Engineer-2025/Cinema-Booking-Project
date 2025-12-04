@@ -7,7 +7,8 @@ import OrderInfo from "@/components/default/OrderInfo";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "sonner";
-import { cardsQuery } from "@/lib/utils/queries";
+import { allMoviesQuery, cardsQuery } from "@/lib/utils/queries";
+import { supabaseClient } from "@/lib/supabase/client";
 
 interface Card {
   id?: string;
@@ -38,7 +39,7 @@ export default function ConfirmPayment() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
-  
+
   const { data: savedCards = [] } = useQuery({
     ...cardsQuery(),
     enabled: !!user,
@@ -52,8 +53,11 @@ export default function ConfirmPayment() {
       return response.json();
     },
   });
-  
-  const bookingFee = prices.find((p: any) => p.price_name === "bookingFee")?.amount || 1.50;
+
+  const { data: allMovies = [] } = useQuery(allMoviesQuery());
+
+  const bookingFee =
+    prices.find((p: any) => p.price_name === "bookingFee")?.amount || 1.5;
 
   // Get booking details from URL
   const movieId = searchParams.get("movieId");
@@ -65,13 +69,14 @@ export default function ConfirmPayment() {
   const selectedSeats = seatsParam ? seatsParam.split(",") : [];
 
   useEffect(() => {
-    if(!user) {
+    if (!user) {
       toast("User not logged in!", {
-        description: "If confirm payment is selected you will be redirected to the login page and have to restart.",
+        description:
+          "If confirm payment is selected you will be redirected to the login page and have to restart.",
         action: {
           label: "done",
-          onClick: () => {}
-        }
+          onClick: () => {},
+        },
       });
     }
   }, [user]);
@@ -94,11 +99,14 @@ export default function ConfirmPayment() {
     if (!promoCode.trim()) return toast.error("Enter a promo code");
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/promotions/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ promo_code: promoCode }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/v1/promotions/validate",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ promo_code: promoCode }),
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -114,8 +122,6 @@ export default function ConfirmPayment() {
       toast.error("Failed to validate promo code");
     }
   };
-
-
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-10">
@@ -166,8 +172,6 @@ export default function ConfirmPayment() {
                 </p>
               )}
             </div>
-
-
           </div>
         </div>
 
@@ -201,12 +205,14 @@ export default function ConfirmPayment() {
               toast.error("Add a payment method to continue.");
               return;
             }
-            
+
             setIsSubmitting(true);
             try {
               // 1) Find matching show_id by movie and showtime
               const movieIdNum = Number(movieId);
-              const showsResp = await fetch(`http://localhost:8000/api/v1/shows/movie/${movieIdNum}`);
+              const showsResp = await fetch(
+                `http://localhost:8000/api/v1/shows/movie/${movieIdNum}`
+              );
               if (!showsResp.ok) {
                 throw new Error("Failed to fetch shows for movie.");
               }
@@ -214,18 +220,22 @@ export default function ConfirmPayment() {
 
               // Expect showtime in format "YYYY-MM-DD HH:MM:SS"
               const [datePart, timePart] = showtime.split(" ");
-              const matchedShow = shows.find((s: any) => s.date === datePart && s.time === timePart);
+              const matchedShow = shows.find(
+                (s: any) => s.date === datePart && s.time === timePart
+              );
               if (!matchedShow) {
                 throw new Error("Selected showtime not found.");
               }
 
               // 2) Get available seats for the show to map seat labels to seat_id
-              const seatsResp = await fetch(`http://localhost:8000/api/v1/seats/show/${matchedShow.show_id}/available`);
+              const seatsResp = await fetch(
+                `http://localhost:8000/api/v1/seats/show/${matchedShow.show_id}/available`
+              );
               if (!seatsResp.ok) {
                 throw new Error("Failed to fetch available seats.");
               }
               const availableSeats = await seatsResp.json();
-              
+
               const seatLabelToSeatId: Record<string, number> = {};
               for (const seat of availableSeats) {
                 const label = `${seat.row_letter}${seat.column_number}`;
@@ -237,13 +247,19 @@ export default function ConfirmPayment() {
               for (const label of selectedSeats) {
                 const seatId = seatLabelToSeatId[label];
                 if (!seatId) {
-                  throw new Error(`Seat ${label} is no longer available. Please reselect seats.`);
+                  throw new Error(
+                    `Seat ${label} is no longer available. Please reselect seats.`
+                  );
                 }
                 selectedSeatIds.push(seatId);
               }
 
               // 3) Build tickets payload honoring ticket type counts
-              const tickets: Array<{ seat_id: number; ticket_type: string; price: number }> = [];
+              const tickets: Array<{
+                seat_id: number;
+                ticket_type: string;
+                price: number;
+              }> = [];
               let remainingAdult = adultTickets;
               let remainingChild = childTickets;
               let remainingSenior = seniorTickets;
@@ -261,12 +277,19 @@ export default function ConfirmPayment() {
                   type = "senior";
                   remainingSenior--;
                 }
-                tickets.push({ seat_id: seatId, ticket_type: type, price: prices[type] });
+                tickets.push({
+                  seat_id: seatId,
+                  ticket_type: type,
+                  price: prices[type],
+                });
               }
 
-              const ticketsSubtotal = tickets.reduce((sum, t) => sum + t.price, 0);
+              const ticketsSubtotal = tickets.reduce(
+                (sum, t) => sum + t.price,
+                0
+              );
               const SALES_TAX_RATE = 0.07;
-              
+
               const discountAmount = ticketsSubtotal * (appliedDiscount / 100);
               const subtotalAfterDiscount = ticketsSubtotal - discountAmount;
               const salesTax = subtotalAfterDiscount * SALES_TAX_RATE;
@@ -280,11 +303,14 @@ export default function ConfirmPayment() {
                 tickets,
               };
 
-              const bookingResp = await fetch("http://localhost:8000/api/v1/bookings/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(bookingPayload),
-              });
+              const bookingResp = await fetch(
+                "http://localhost:8000/api/v1/bookings/",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(bookingPayload),
+                }
+              );
 
               if (!bookingResp.ok) {
                 const errData = await bookingResp.json().catch(() => ({}));
@@ -302,6 +328,24 @@ export default function ConfirmPayment() {
               if (appliedDiscount > 0) {
                 params.set("discount", String(appliedDiscount));
               }
+
+              supabaseClient.functions.invoke("send-order-confirmation", {
+                body: {
+                  user_id: user.id,
+                  movie_title: allMovies.find(
+                    (m) => m.movie_id === Number(movieId)
+                  )?.title,
+                  showtime,
+                  seats: selectedSeats,
+                  adultTickets,
+                  childTickets,
+                  seniorTickets,
+                  subtotal: ticketsSubtotal,
+                  salesTax,
+                  bookingFee,
+                  totalPrice: totalAmount,
+                },
+              });
 
               router.push(`/confirmation?${params.toString()}`);
             } catch (error: any) {

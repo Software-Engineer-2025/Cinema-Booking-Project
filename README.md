@@ -85,8 +85,8 @@ python -m uvicorn main:app --reload
 npm run dev
 ```
 
-To enable edge function for sending promo emails run:
-`npx supabase functions serve send-promotion --env-file supabase/functions/.env`
+To enable edge functions for sending emails run:
+`npx supabase functions serve --env-file supabase/functions/.env`
 
 Then click the 172 host link provided by npm run dev and you can use the page.
 
