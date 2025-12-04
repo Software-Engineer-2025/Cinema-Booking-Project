@@ -1,6 +1,6 @@
 # <ins>Cinema-Booking-Project</ins>
 
-![Logo](./webapp/public/cc_logo.png)
+![Logo](./public/cc_logo.png)
 
 Software Engineer Project to Create a Cinema-Booking App
 
@@ -24,113 +24,127 @@ At the moment, this app is in development. Thank you for understanding.
 
 # <ins>Use Guide</ins>
 
-## <a name="#getting-started">Getting Started</a>
+## <a name="getting-started">Getting Started</a>
 
-Do a pull request on the dev branch.
+1. Pull the dev branch
 
-Go into the Backend directory and use the following command in the terminal
-
+2. Install backend dependencies from the backend directory:
 ```
 pip install -r requirements.txt
 ```
 
-Go into the front end directory and run the following command
-
+3. Install frontend dependencies:
 ```
 npm install
 ```
 
-Go into the root directory and use the following command in the terminal
-
+4. Install Supabase CLI from the root directory:
 ```
 npm install supabase --save-dev
 ```
 
-Have Docker desktop open and run the following in the root directory
-
+5. Make sure Docker Desktop is open and start Supabase:
 ```
 npx supabase start
 ```
 
-Make a copy of the .env.example as .env, add the API URL and the access key to the env
+6. Create `.env` files in the following directories:
 
-To run the FastAPI server run the following command from backend/src
+   **Backend (`backend/src/.env`):**
+   - Copy `backend/src/.env.example`
+   - Add your Supabase URL and API key
+   
+   **Frontend (`frontend/.env`):**
+   - Copy `frontend/.env.example`
+   - Add your Supabase configuration
+   
+   **Supabase Functions (`supabase/functions/.env`):**
+   - Copy `supabase/functions/.env.example`
+   - Add environment variables for edge functions (e.g., email service credentials)
+
+## <a name="start-up">How To Start Up</a>
+
+After the initial setup, use the following command from the root directory to start everything:
 
 ```
-uvicorn main:app
-
-or
-
-python -m uvicorn main:app --reload
+./run.sh
 ```
 
-Once that is ran and you open the hosted 172 link provided by the following command
+This will start:
+- Supabase database
+- FastAPI backend
+- Next.js frontend
 
-```
-npm run dev
-```
+Alternatively, you can run them in separate terminals:
 
-you can add /docs to the end of the link to see the API docs
-
-## <a name="#start-up">How To Start Up</a>
-
-After following the start up, anytime you want to run the dev environment,
-use the following commands in separate terminals.
-
+**Terminal 1 - Supabase:**
 ```
 npx supabase start
-
-python -m uvicorn main:app --reload
-
-npm run dev
 ```
 
-To enable edge functions for sending emails run:
-`npx supabase functions serve --env-file supabase/functions/.env`
+**Terminal 2 - Backend:**
+```
+./run.sh backend
+```
 
-Then click the 172 host link provided by npm run dev and you can use the page.
+**Terminal 3 - Frontend:**
+```
+./run.sh frontend
+```
 
-## <a name="#use-app">How To Use The App</a>
+Once running, open the link provided by the frontend (typically http://localhost:3000).
 
-Its a booking app similar to fandango. Have fun and explore the page.
+To view API documentation, add `/docs` to the backend URL (typically http://localhost:8000/docs).
 
-## <a name="#close-app">How to Close Down the App</a>
+## <a name="use-app">How To Use The App</a>
 
-In the terminal that run the supabase command to start, run the following:
+It's a booking app similar to Fandango. Browse movies, select showtimes, choose seats, and book your tickets!
 
+## <a name="close-app">How to Close Down the App</a>
+
+**To stop Supabase:**
 ```
 npx supabase stop
 ```
 
-In the npm run dev and uvicorn terminals, run use ctrl + C (^C) to close them.
+**To stop backend and frontend:**
+Use `Ctrl + C` in each terminal.
 
-## <a name="#aware-of">Things To Be Aware Of</a>
+## <a name="aware-of">Things To Be Aware Of</a>
 
-You should make sure to stop the supabase docker container so that you don't waste your computers resources, it takes up a lot.
+- Always stop the Supabase Docker container when not in use to save system resources
+- Make sure Docker Desktop is running before starting Supabase
+- The backend and frontend must be running for the app to work properly
 
-## <a name="#further-work">Ideas for Further Work</a>
+## <a name="further-work">Ideas for Further Work</a>
 
-.
+- Mobile app optimization
+- Payment processing integration
+- Advanced seat selection UI
+- User review system
 
-## <a name="#other-dependencies">Other Dependencies</a>
+## <a name="other-dependencies">Other Dependencies</a>
 
-We used the supabase local development database:
-https://supabase.com/docs/guides/local-development
+- **Supabase Local Development**: https://supabase.com/docs/guides/local-development
+- **HeyAPI TypeScript Client Generator**: https://heyapi.dev/
+- **FastAPI**: https://fastapi.tiangolo.com/
+- **Next.js**: https://nextjs.org/
 
-We used heyapi to generate typescript client for the backend:
-https://heyapi.dev/
+## <a name="contrib-acknow">Contributors & Acknowledgements</a>
 
-## <a name="#contrib-acknow">Contributors & Acknowledgements</a>
+This app was created by the Software Engineer 2025 team.
+- Kade Styron | KadeStyron
+- Ben Wright | BenWrightSWE
+- Heyran Lee | hran-8
+- Ty Torbett | Tytorb
+- Sean Choi  | seanhchoi10
 
-This app was created by myself (BenWrightSWE).
+## <a name="contrib-guidelines">Contribution Guidelines</a>
 
-## <a name="#contrib-guidelines">Contribution Guidelines</a>
+Follow the AGPL-3.0 license guidelines. Please create a pull request and message the team regarding any changes you make.
 
-Follow the license guideline and please message me regarding any changes you may have made. I'd love to hear about them
-and implement them in this version after checking them out.
+## <a name="license">License</a>
 
-## <a name="#license">License</a>
+This project uses the AGPL-3.0 license. Please respect this.
 
-For this project I am using the AGPL-3.0 license. Please respect this.
-
-If you want further information regarding the license go to the LICENSE file.
+For more information, see the LICENSE file.
