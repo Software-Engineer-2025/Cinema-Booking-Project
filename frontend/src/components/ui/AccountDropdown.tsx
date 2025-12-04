@@ -57,7 +57,6 @@ export default function AccountDropdown({
 }: AccountDropdownProps) {
   const [open, setOpen] = useState(defaultOpen);
   const addPaymentCard = useAddPaymentCard();
-  const updatePaymentCard = useUpdatePaymentCard();
   const deletePaymentCard = useDeletePaymentCard();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -82,7 +81,6 @@ export default function AccountDropdown({
     expDate: "",
     cvv: "",
   });
-  const [isEditing, setIsEditing] = useState(false);
   const [showAddNew, setShowAddNew] = useState(false);
 
   useEffect(() => {
@@ -167,74 +165,6 @@ export default function AccountDropdown({
     });
   };
 
-  const handleEditCard = (idx: number) => {
-    setSelectedCardIdx(idx);
-    setCardForm(cards[idx]);
-    setIsEditing(true);
-    setShowAddNew(true);
-  };
-
-  const handleConfirmEdit = () => {
-    if (selectedCardIdx === null) return;
-
-    if (!user) {
-      const newCards = cards.map((c, i) =>
-        i === selectedCardIdx ? cardForm : c
-      );
-      updateCards(newCards);
-      setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-      setSelectedCardIdx(null);
-      setIsEditing(false);
-      setShowAddNew(false);
-      return;
-    }
-
-    const card = cards[selectedCardIdx];
-    if (!card.id) return toast.error("Missing card ID for update.");
-
-    const payload = {
-      details: {
-        name: cardForm.name,
-        cardNumber: cardForm.cardNumber,
-        expDate: cardForm.expDate,
-        cvv: cardForm.cvv,
-      },
-    };
-
-    updatePaymentCard.mutate(
-      { cardId: card.id, updatedCard: payload },
-      {
-        onSuccess: (updatedCard) => {
-          const newCards = cards.map((c, i) => {
-            if (i === selectedCardIdx) {
-              return Array.isArray(updatedCard) ? updatedCard[0] : updatedCard;
-            }
-            return c;
-          });
-          updateCards(newCards);
-          setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-          setSelectedCardIdx(null);
-          setIsEditing(false);
-          setShowAddNew(false);
-          queryClient.invalidateQueries({ queryKey: ["cards"] });
-          toast.success("Card updated successfully!");
-        },
-        onError: (err) => {
-          console.error(err);
-          toast.error("Failed to update card.");
-        },
-      }
-    );
-  };
-
-  // Cancel edits
-  const handleCancel = () => {
-    setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
-    setSelectedCardIdx(null);
-    setIsEditing(false);
-    setShowAddNew(false);
-  };
-
   // Delete card
   const handleDeleteCard = (idx: number) => {
     if (!user) {
@@ -261,7 +191,6 @@ export default function AccountDropdown({
   };
   const handleAddNewCard = () => {
     setShowAddNew(true);
-    setIsEditing(false);
     setSelectedCardIdx(null);
     setCardForm({ cardNumber: "", name: "", expDate: "", cvv: "" });
   };
@@ -390,14 +319,6 @@ export default function AccountDropdown({
                       />
                       <div className="text-left">{`Card ending in ${lastFour}`}</div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleEditCard(idx)}
-                        className="text-white px-2 hover:text-gray-500"
-                      >
-                        Edit
-                      </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteCard(idx)}
@@ -405,7 +326,6 @@ export default function AccountDropdown({
                       >
                         Delete
                       </button>
-                    </div>
                   </div>
                 )})}
 
@@ -425,9 +345,7 @@ export default function AccountDropdown({
               {showAddNew && (
                 <div className="mt-2 pt-2 flex flex-col gap-2">
                   <p className="font-bold">
-                    {isEditing
-                      ? "Edit Payment Method"
-                      : "Add New Payment Method"}
+                      Add New Payment Method
                   </p>
                   <AuthInput
                     type="text"
@@ -470,23 +388,11 @@ export default function AccountDropdown({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        isEditing ? handleConfirmEdit() : handleSaveCard();
+                        handleSaveCard();
                       }}
                     >
-                      {isEditing ? "Confirm Edits" : "Save Card Info"}
+                      Save Card Info
                     </BlackButton>
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCancel();
-                        }}
-                        className="ml-2 text-gray-300 hover:text-white"
-                      >
-                        Cancel
-                      </button>
-                    )}
                   </div>
                 </div>
               )}
