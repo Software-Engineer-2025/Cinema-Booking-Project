@@ -1,6 +1,6 @@
 # <ins>Cinema-Booking-Project</ins>
 
-![Logo](.frontend/public/logo-cinema.png)
+![Logo](./frontend/public/logo-cinema.png)
 
 Software Engineer Project to Create a Cinema-Booking App
 
