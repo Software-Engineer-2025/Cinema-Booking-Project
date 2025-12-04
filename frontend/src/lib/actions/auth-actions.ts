@@ -219,6 +219,42 @@ export async function updateProfileAction(updates: {
       }
     }
 
+    const changes: string[] = [];
+
+    const fields: { key: keyof typeof updates; label: string }[] = [
+    { key: "first_name", label: "First Name" },
+    { key: "last_name", label: "Last Name" },
+    { key: "phone", label: "Phone" },
+    { key: "address_line_1", label: "Address Line 1" },
+    { key: "address_line_2", label: "Address Line 2" },
+    { key: "city", label: "City" },
+    { key: "state", label: "State" },
+    { key: "zip", label: "ZIP" },
+    { key: "country", label: "Country" },
+    { key: "promotion", label: "Promotion preference" },
+    ];
+
+    // Create change list for email
+    for (const { key, label } of fields) {
+    if (
+        updates[key] !== undefined &&
+        updates[key] !== user.user_metadata[key]
+    ) {
+        changes.push(`${label} updated`);
+    }
+    }
+
+    // Send email
+    supabase.functions.invoke(
+    "send-profile-update",
+    {
+        body: {
+        user_id: user.id,
+        changes,
+        },
+    }
+    );
+
     revalidatePath('/profile', 'layout');
 
     return { success: true };
