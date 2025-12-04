@@ -7,8 +7,9 @@ import OrderInfo from "@/components/default/OrderInfo";
 import AccountDropdown from "@/components/ui/AccountDropdown";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "sonner";
-import { cardsQuery } from "@/lib/utils/queries";
+import { allMoviesQuery, cardsQuery } from "@/lib/utils/queries";
 import { zipRegex } from "@/lib/utils/regex";
+import { supabaseClient } from "@/lib/supabase/client";
 
 interface Card {
   id?: string;
@@ -54,6 +55,7 @@ export default function ConfirmPayment() {
     },
   });
 
+  const { data: allMovies = [] } = useQuery(allMoviesQuery());
   const bookingFee =
     prices.find((p: any) => p.price_name === "bookingFee")?.amount || 1.5;
 
@@ -232,6 +234,7 @@ export default function ConfirmPayment() {
               return;
             }
 
+            // Validate shipping address
             const addr = billingAddress;
             if (
               !addr.address1 ||
@@ -252,6 +255,7 @@ export default function ConfirmPayment() {
               return;
             }
 
+            // Validate payment card
             const details = getCardDetails(paymentMethods[0]);
             if (
               !details ||
@@ -398,6 +402,24 @@ export default function ConfirmPayment() {
               if (appliedDiscount > 0) {
                 params.set("discount", String(appliedDiscount));
               }
+
+              supabaseClient.functions.invoke("send-order-confirmation", {
+                body: {
+                  user_id: user.id,
+                  movie_title: allMovies.find(
+                    (m) => m.movie_id === Number(movieId)
+                  )?.title,
+                  showtime,
+                  seats: selectedSeats,
+                  adultTickets,
+                  childTickets,
+                  seniorTickets,
+                  subtotal: ticketsSubtotal,
+                  salesTax,
+                  bookingFee,
+                  totalPrice: totalAmount,
+                },
+              });
 
               router.push(`/confirmation?${params.toString()}`);
             } catch (error: any) {

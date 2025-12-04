@@ -91,10 +91,10 @@ export default function Navbar() {
           {user ? (
             <>
               <a
-                href="/dashboard"
+                href="/order-history"
                 className="block hover:text-gray-400 border-b border-dotted border-gray-600 pb-2"
               >
-                Dashboard
+                Order History
               </a>
               <a
                 href="/profile"
