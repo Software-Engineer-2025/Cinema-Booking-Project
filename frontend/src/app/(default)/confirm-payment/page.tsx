@@ -8,6 +8,7 @@ import AccountDropdown from "@/components/ui/AccountDropdown";
 import { useAuth } from "@/lib/context/AuthContext";
 import { toast } from "sonner";
 import { allMoviesQuery, cardsQuery } from "@/lib/utils/queries";
+import { zipRegex } from "@/lib/utils/regex";
 import { supabaseClient } from "@/lib/supabase/client";
 
 interface Card {
@@ -55,7 +56,6 @@ export default function ConfirmPayment() {
   });
 
   const { data: allMovies = [] } = useQuery(allMoviesQuery());
-
   const bookingFee =
     prices.find((p: any) => p.price_name === "bookingFee")?.amount || 1.5;
 
@@ -94,6 +94,34 @@ export default function ConfirmPayment() {
   const [promoCode, setPromoCode] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isValidCardNumber = (num: string) => {
+    const digits = (num || "").replace(/\s|-/g, "");
+    return /^\d{13,19}$/.test(digits);
+  };
+
+  const isValidExpDate = (exp: string) => {
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp || "")) return false;
+    const [mm, yy] = exp.split("/");
+    const month = parseInt(mm, 10);
+    const year = 2000 + parseInt(yy, 10);
+    const now = new Date();
+    const expiry = new Date(year, month);
+    return expiry > now;
+  };
+
+  const isValidCvv = (cvv: string) => /^\d{3,4}$/.test(cvv || "");
+
+  const getCardDetails = (c: Card | undefined | null) => {
+    if (!c) return null;
+    const d = c.card_details;
+    return {
+      cardNumber: d?.cardNumber ?? c.cardNumber ?? "",
+      name: d?.name ?? c.name ?? "",
+      expDate: d?.expDate ?? c.expDate ?? "",
+      cvv: d?.cvv ?? c.cvv ?? "",
+    };
+  };
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return toast.error("Enter a promo code");
@@ -203,6 +231,52 @@ export default function ConfirmPayment() {
             }
             if (paymentMethods.length === 0) {
               toast.error("Add a payment method to continue.");
+              return;
+            }
+
+            // Validate shipping address
+            const addr = billingAddress;
+            if (
+              !addr.address1 ||
+              !addr.city ||
+              !addr.state ||
+              !addr.zip ||
+              !addr.country
+            ) {
+              toast.error("Complete shipping address to continue.");
+              return;
+            }
+            if (/\d/.test(addr.city) || /\d/.test(addr.state) || /\d/.test(addr.country)) {
+              toast.error("City, state, and country must not contain numbers.");
+              return;
+            }
+            if (!zipRegex.test(addr.zip)) {
+              toast.error("Enter a valid ZIP code.");
+              return;
+            }
+
+            // Validate payment card
+            const details = getCardDetails(paymentMethods[0]);
+            if (
+              !details ||
+              !details.cardNumber ||
+              !details.name ||
+              !details.expDate ||
+              !details.cvv
+            ) {
+              toast.error("Add a valid payment method.");
+              return;
+            }
+            if (!isValidCardNumber(details.cardNumber)) {
+              toast.error("Enter a valid card number.");
+              return;
+            }
+            if (!isValidExpDate(details.expDate)) {
+              toast.error("Enter a valid expiry date (MM/YY).");
+              return;
+            }
+            if (!isValidCvv(details.cvv)) {
+              toast.error("Enter a valid CVV.");
               return;
             }
 

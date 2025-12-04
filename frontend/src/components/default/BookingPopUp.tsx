@@ -25,7 +25,7 @@ export default function BookingPopUp() {
     /* Checks to make sure its not in the booking page, if it is, it is set to true and hides the component */
     useEffect(() => {
         setIsOpen(false);
-        setIsBookingPage(pathname.startsWith('/book') || pathname.startsWith('/select-seats') || pathname.startsWith('/confirm-payment'));
+        setIsBookingPage(pathname.startsWith('/book') || pathname.startsWith('/select-seats') || pathname.startsWith('/confirm-payment') || pathname.startsWith('/confirmation'));
     }, [pathname]);
 
     return (
