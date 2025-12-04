@@ -91,6 +91,7 @@ export default function AccountDropdown({
         setSelectedCardForPayment(0);
         onSelectedCardChange?.(initialCards[0]);
       }
+      console.log(initialCards);
     }
   }, [initialCards, selectedCardForPayment, onSelectedCardChange]);
 
@@ -174,6 +175,7 @@ export default function AccountDropdown({
     }
 
     const card = cards[idx];
+    console.log(card);
     if (!card.id) return toast.error("Card ID missing — cannot delete.");
 
     deletePaymentCard.mutate(card.id, {
