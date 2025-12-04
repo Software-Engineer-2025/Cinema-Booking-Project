@@ -9,19 +9,22 @@ import {redirect} from "next/navigation";
 import {toast} from "sonner";
 
 export default function OrderHistoryPage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  const { data: userBookings = [], isLoadingBookings, error } = useQuery(
+    user ? userBookingsQuery(user.id) : { queryKey: [], queryFn: async () => [] }
+  );
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   if (!user) {
     redirect('/login');
     return null;
   }
 
-
-  const { data: userBookings = [], isLoading, error } = useQuery(
-    user ? userBookingsQuery(user.id) : { queryKey: [], queryFn: async () => [] }
-  );
-
-  if (isLoading) {
+  if (isLoadingBookings) {
     return (
         <p>Loading bookings...</p>
     );
@@ -43,7 +46,7 @@ export default function OrderHistoryPage() {
             <>
               <div className={"flex flex-col gap-2"}>
                 {userBookings.map((booking) => {
-                  return <OrderDropdown order={booking}/>
+                  return <OrderDropdown key={booking.booking_id} order={booking}/>
                 })}
               </div>
             </>

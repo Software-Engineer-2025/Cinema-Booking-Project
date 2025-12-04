@@ -12,9 +12,13 @@ import {redirect} from "next/navigation";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("movies");
-  const {user} = useAuth();
+  const {user, admin, isLoading} = useAuth();
 
-  if (!user) {
+  if (isLoading) {
+      return <p>Loading...</p>;
+  }
+
+  if (!user && !admin) {
       redirect('/login');
       return null;
   }

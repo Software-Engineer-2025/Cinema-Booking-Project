@@ -55,6 +55,10 @@ export default function ProfilePage() {
   const [paymentMethods, setPaymentMethods] = useState<Card[]>([]);
   const [promotion, setPromotion] = useState(false);
 
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
   if (!user) {
     redirect('/login');
     return null;
